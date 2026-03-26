@@ -1,19 +1,23 @@
 const features = [
   {
-    title: "Agency CRM",
-    body: "Contacts, leads, tasks, and notes scoped per office — so your team stays aligned without spreadsheet chaos.",
+    title: "Manage leads and listings in one place",
+    body: "Run CRM and inventory from one workspace. No more switching between disconnected tools.",
   },
   {
-    title: "Property & listings",
-    body: "One source of truth for inventory: draft, publish, and archive sale and rental listings with media and internal notes.",
+    title: "Publish listings everywhere",
+    body: "Push listings to your website and feed channels with clear status, logs, and retries.",
   },
   {
-    title: "Distribution engine",
-    body: "Queue-based publishing to your public site and exports — built to add portal adapters when you are ready.",
+    title: "Never miss an inquiry",
+    body: "Capture public inquiries, route them into CRM, and convert them to actionable leads fast.",
   },
   {
-    title: "AI-assisted workflows",
-    body: "Generate descriptions, summarize leads, and match buyers to listings — always with human review.",
+    title: "Use AI where it saves time",
+    body: "Generate listing descriptions, summarize lead context, and draft better responses with review control.",
+  },
+  {
+    title: "Work as a team",
+    body: "Assign leads, manage tasks, add notes, and collaborate with clear role-based access.",
   },
 ];
 
@@ -22,10 +26,10 @@ export default function MarketingFeatures() {
     <section id="features" className="mk-section mk-section--alt" aria-labelledby="features-heading">
       <div className="shell">
         <h2 id="features-heading" className="mk-section__title">
-          Everything in one platform
+          Why agencies choose Synthr
         </h2>
         <p className="mk-section__subtitle">
-          Replace fragmented tools with a single tenant-aware stack designed for residential agencies.
+          Real outcomes for real estate teams: faster execution, cleaner data, and better conversion from inquiry to deal.
         </p>
         <ul className="mk-feature-grid">
           {features.map((f) => (

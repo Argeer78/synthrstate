@@ -2,15 +2,37 @@ import Link from "next/link";
 
 export default function MarketingProductPreview() {
   return (
-    <section className="mk-section" aria-labelledby="preview-heading">
+    <section id="product" className="mk-section" aria-labelledby="preview-heading">
       <div className="shell">
         <h2 id="preview-heading" className="mk-section__title">
-          Listings, managed end-to-end
+          Built for daily agency operations
         </h2>
         <p className="mk-section__subtitle">
-          Capture the property once, enrich with photos and copy, then push to your branded site — with status,
-          logs, and retries handled by the worker, not your sales team.
+          Synthr combines CRM, listing operations, distribution, AI tools, and team workflow so your office can run
+          from one source of truth.
         </p>
+        <div className="mk-feature-grid" style={{ marginBottom: "1.5rem" }}>
+          <div className="mk-feature-card">
+            <h3 className="mk-feature-card__title">CRM</h3>
+            <p className="mk-feature-card__body">Track contacts, leads, tasks, notes, and inquiry conversion in one pipeline.</p>
+          </div>
+          <div className="mk-feature-card">
+            <h3 className="mk-feature-card__title">Listings</h3>
+            <p className="mk-feature-card__body">Create, edit, enrich with media, and manage listing status with clear ownership.</p>
+          </div>
+          <div className="mk-feature-card">
+            <h3 className="mk-feature-card__title">Distribution</h3>
+            <p className="mk-feature-card__body">Publish to website/channels with publication logs and XML feed support.</p>
+          </div>
+          <div className="mk-feature-card">
+            <h3 className="mk-feature-card__title">AI tools</h3>
+            <p className="mk-feature-card__body">Generate descriptions and summaries to save hours while keeping human review.</p>
+          </div>
+          <div className="mk-feature-card">
+            <h3 className="mk-feature-card__title">Team workflow</h3>
+            <p className="mk-feature-card__body">Role-based collaboration, assignment, and notifications keep everyone aligned.</p>
+          </div>
+        </div>
         <div className="mk-preview">
           <div className="mk-preview__chrome" aria-hidden>
             <span className="mk-preview__dot" />
@@ -45,8 +67,7 @@ export default function MarketingProductPreview() {
             </div>
           </div>
           <p className="mk-preview__caption">
-            Illustrative UI — explore a live sample feed on our{" "}
-            <Link href="/listings">demo listings</Link> page.
+            Illustrative UI. See public listing output in our <Link href="/listings">demo listings</Link> page.
           </p>
         </div>
       </div>

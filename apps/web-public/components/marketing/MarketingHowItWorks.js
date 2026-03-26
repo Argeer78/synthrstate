@@ -1,18 +1,28 @@
 const steps = [
   {
     step: "01",
-    title: "Onboard your office",
-    body: "Create your agency workspace, invite agents with roles, and connect your brand domain when you are ready.",
+    title: "Add your listing",
+    body: "Create a property and listing record once, with all the details your team needs.",
   },
   {
     step: "02",
-    title: "Run deals in CRM",
-    body: "Log leads, tasks, and viewings against contacts. Keep context where the next action is obvious.",
+    title: "Publish everywhere",
+    body: "Push listings to website and feed channels with clear publication status and logs.",
   },
   {
     step: "03",
-    title: "Publish listings once",
-    body: "List properties, attach media, and enqueue publication. Your site and feeds stay in sync from a single record.",
+    title: "Capture inquiries",
+    body: "Receive public inquiries into CRM so no lead gets lost in inboxes or spreadsheets.",
+  },
+  {
+    step: "04",
+    title: "Convert to leads",
+    body: "Turn qualified inquiries into structured leads and contacts in one click.",
+  },
+  {
+    step: "05",
+    title: "Close deals",
+    body: "Use tasks, notes, summaries, and team workflow to move opportunities to won.",
   },
 ];
 
@@ -21,10 +31,10 @@ export default function MarketingHowItWorks() {
     <section id="how-it-works" className="mk-section" aria-labelledby="how-heading">
       <div className="shell">
         <h2 id="how-heading" className="mk-section__title">
-          How it works
+          How Synthr works
         </h2>
         <p className="mk-section__subtitle">
-          A straight path from first login to live listings — without custom integrations on day one.
+          A practical workflow from listing creation to closed deals.
         </p>
         <ol className="mk-steps">
           {steps.map((s) => (

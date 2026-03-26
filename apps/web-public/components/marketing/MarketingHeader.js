@@ -1,10 +1,11 @@
 import Link from "next/link";
 
 const nav = [
-  { href: "#features", label: "Features" },
+  { href: "#features", label: "Why Synthr" },
+  { href: "#product", label: "Product" },
   { href: "#how-it-works", label: "How it works" },
   { href: "#pricing", label: "Pricing" },
-  { href: "#contact", label: "Contact" },
+  { href: "#social-proof", label: "Trust" },
 ];
 
 export default function MarketingHeader() {
@@ -30,8 +31,8 @@ export default function MarketingHeader() {
             </li>
           </ul>
         </nav>
-        <a href="#contact" className="mk-btn mk-btn--header">
-          Get started
+        <a href="https://app.synthrstate.com/login/" className="mk-btn mk-btn--header">
+          Start free
         </a>
       </div>
     </header>

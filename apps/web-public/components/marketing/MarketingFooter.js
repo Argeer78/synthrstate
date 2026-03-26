@@ -9,7 +9,7 @@ export default function MarketingFooter() {
           <Link href="/" className="mk-logo mk-logo--footer">
             Synthr
           </Link>
-          <p className="mk-footer__tagline">CRM & listing distribution for real estate agencies.</p>
+          <p className="mk-footer__tagline">Real estate CRM, listings, and distribution in one workflow.</p>
         </div>
         <div className="mk-footer__cols">
           <div>
@@ -17,6 +17,9 @@ export default function MarketingFooter() {
             <ul className="mk-footer__links">
               <li>
                 <a href="#features">Features</a>
+              </li>
+              <li>
+                <a href="#product">Product</a>
               </li>
               <li>
                 <a href="#pricing">Pricing</a>

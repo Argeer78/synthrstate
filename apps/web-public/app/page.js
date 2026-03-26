@@ -6,11 +6,12 @@ import MarketingHero from "../components/marketing/MarketingHero";
 import MarketingHowItWorks from "../components/marketing/MarketingHowItWorks";
 import MarketingPricing from "../components/marketing/MarketingPricing";
 import MarketingProductPreview from "../components/marketing/MarketingProductPreview";
+import MarketingSocialProof from "../components/marketing/MarketingSocialProof";
 
 export const metadata = {
-  title: "Synthr — Real estate CRM & listing distribution",
+  title: "Synthr — CRM and listing distribution for agencies",
   description:
-    "Synthr is a multi-tenant CRM and listing distribution platform built for real estate agencies — one source of truth for inventory, CRM, and publishing.",
+    "Synthr is a real estate CRM and listing distribution platform for agencies that helps them manage leads, publish listings, and close deals faster.",
 };
 
 export default function MarketingHomePage() {
@@ -23,6 +24,7 @@ export default function MarketingHomePage() {
         <MarketingProductPreview />
         <MarketingHowItWorks />
         <MarketingPricing />
+        <MarketingSocialProof />
         <MarketingCta />
       </main>
       <MarketingFooter />

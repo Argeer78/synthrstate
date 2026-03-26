@@ -26,8 +26,8 @@ const tiers = [
     name: "Starter",
     price: "€49",
     period: "/month",
-    description: "For small agencies and solo agents who want one place for CRM and listings.",
-    cta: "Get started",
+    description: "For small agencies that need core CRM, listings, and distribution in one clean workflow.",
+    cta: "Start free",
     ctaVariant: "secondary",
     featured: false,
     action: "checkout",
@@ -36,7 +36,7 @@ const tiers = [
       "Limited active listings",
       "Basic CRM — contacts & pipeline",
       "Property & listing records",
-      "Basic export & public feed",
+      "Public website + XML feed",
       "Email support",
     ],
   },
@@ -45,8 +45,8 @@ const tiers = [
     name: "Growth",
     price: "€129",
     period: "/month",
-    description: "For growing agencies that need scale, AI assist, and reliable multi-channel publishing.",
-    cta: "Start with Growth",
+    description: "For growing agencies that need stronger automation, AI support, and reliable publishing.",
+    cta: "Start free",
     ctaVariant: "primary",
     featured: true,
     action: "checkout",
@@ -54,6 +54,7 @@ const tiers = [
       "Unlimited listings",
       "Full CRM — contacts, leads, tasks & notes",
       "AI listing descriptions & lead summaries",
+      "Gmail integration (connect and sync)",
       "Multi-channel publishing & queue-based sync",
       "Publication logs & retry-safe exports",
       "Priority support",
@@ -61,23 +62,23 @@ const tiers = [
     ],
   },
   {
-    id: "pro",
-    name: "Pro",
+    id: "custom",
+    name: "Custom / Enterprise",
     price: "Custom",
     period: "",
-    description: "For larger teams that need governance, automation, and deep integrations.",
+    description: "For multi-office agencies that need custom workflows, integrations, and rollout support.",
     cta: "Talk to sales",
     ctaVariant: "secondary",
     featured: false,
     action: "sales",
     features: [
-      "Advanced team & role management",
+      "Advanced team governance",
       "Workflow automation & guardrails",
       "API access for your stack",
       "Custom integrations & channel adapters",
       "Dedicated onboarding & success",
       "SLA options",
-      "Everything in Growth",
+      "Tailored onboarding and migration support",
     ],
   },
 ];
@@ -98,11 +99,10 @@ export default function MarketingPricing() {
             id="pricing-heading"
             className="text-3xl font-semibold tracking-tight text-neutral-950 sm:text-4xl"
           >
-            Plans that scale with your agency
+            Pricing built for agency growth
           </h2>
           <p className="mt-4 text-base leading-relaxed text-neutral-600 sm:text-lg">
-            One platform for pipeline and inventory — pay for outcomes, not chaos. All prices in EUR, billed
-            monthly.
+            Start simple, scale when your team grows. Monthly pricing in EUR.
           </p>
         </div>
 
@@ -184,8 +184,8 @@ export default function MarketingPricing() {
         </div>
 
         <p className="mx-auto mt-10 max-w-xl text-center text-xs leading-relaxed text-neutral-500">
-          Early access pricing — subject to change. Final quotes may reflect seats, offices, and add-ons. No
-          hidden per-listing fees on core CRM and publishing.
+          Need migration support or custom integration work? Choose Custom / Enterprise and we will scope it with
+          your team.
         </p>
       </div>
     </section>
