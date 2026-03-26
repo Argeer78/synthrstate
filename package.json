@@ -1,0 +1,20 @@
+{
+  "name": "synthr",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm -r --parallel dev",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test",
+    "db:migrate": "pnpm --filter @synthr/api db:migrate",
+    "db:seed": "pnpm --filter @synthr/api db:seed"
+  },
+  "devDependencies": {
+    "typescript": "^5.8.0",
+    "prisma": "^6.0.0",
+    "@prisma/client": "^6.0.0",
+    "bcryptjs": "^2.4.3",
+    "@types/bcryptjs": "^2.4.6",
+    "ts-node": "^10.9.2"
+  }
+}

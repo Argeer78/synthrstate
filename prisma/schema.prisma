@@ -1,0 +1,1020 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  OWNER
+  MANAGER
+  AGENT
+  STAFF
+}
+
+enum UserStatus {
+  ACTIVE
+  DISABLED
+}
+
+enum ContactType {
+  PERSON
+  ORGANIZATION
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  VIEWING
+  OFFER
+  WON
+  LOST
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+  CANCELLED
+}
+
+enum ListingType {
+  SALE
+  RENT
+}
+
+enum ListingStatus {
+  DRAFT
+  ACTIVE
+  ARCHIVED
+  SOLD
+  RENTED
+}
+
+enum EnergyClass {
+  A
+  B
+  C
+  D
+  E
+  F
+  G
+  UNKNOWN
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+  FLOORPLAN
+  OTHER
+}
+
+enum MediaUploadStatus {
+  UPLOADING
+  ACTIVE
+}
+
+enum NoteTargetType {
+  CONTACT
+  LEAD
+}
+
+enum ActivityEntityType {
+  CONTACT
+  LEAD
+  TASK
+  NOTE
+}
+
+enum ActivityAction {
+  CREATED
+  UPDATED
+  STATUS_CHANGED
+  ASSIGNED
+  COMPLETED
+}
+
+enum InquiryPreferredContactMethod {
+  EMAIL
+  PHONE
+  CALLBACK
+  WHATSAPP
+}
+
+enum InquiryStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  CONVERTED
+  CLOSED
+}
+
+enum InquirySource {
+  WEBSITE_FORM
+  IMPORT
+  API
+}
+
+model Agency {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  officeCount Int @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memberships AgencyMembership[]
+  contacts    Contact[]
+  leads       Lead[]
+  tasks       Task[]
+  notes       Note[]
+  activities  ActivityEvent[]
+
+  // Catalog / public
+  properties Property[]
+  listings   Listing[]
+  mediaAssets MediaAsset[]
+  inquiries Inquiry[]
+  propertyInternalNotes PropertyInternalNote[]
+  listingInternalNotes  ListingInternalNote[]
+
+  // AI
+  aiPromptTemplates AiPromptTemplate[]
+  aiListingDescriptionGenerations AiListingDescriptionGeneration[]
+  aiLeadSummaryGenerations AiLeadSummaryGeneration[]
+  aiBuyerMatchGenerations AiBuyerPropertyMatchGeneration[]
+  aiBuyerMatchRecommendations AiBuyerPropertyMatchRecommendation[]
+
+  // Publishing / distribution
+  publicationChannels PublicationChannel[]
+  feedMappings FeedMapping[]
+  listingPublications ListingPublication[]
+  publicationLogs PublicationLog[]
+
+  subscriptions AgencySubscription[]
+  stripeWebhookEvents StripeWebhookEvent[]
+
+  @@index([slug])
+}
+
+model User {
+  id           String     @id @default(uuid())
+  email        String     @unique
+  fullName     String?
+  passwordHash String
+  status       UserStatus @default(ACTIVE)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  memberships AgencyMembership[]
+
+  @@index([email])
+}
+
+model AgencyMembership {
+  id        String   @id @default(uuid())
+  agencyId  String
+  userId    String
+  role      UserRole
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  assignedLeads Lead[] @relation("LeadAssignedTo")
+  assignedTasks Task[] @relation("TaskAssignedTo")
+
+  createdContacts Contact[] @relation("ContactCreatedBy")
+  createdLeads    Lead[]    @relation("LeadCreatedBy")
+  createdTasks    Task[]    @relation("TaskCreatedBy")
+  createdNotes    Note[]    @relation("NoteCreatedBy")
+  createdActivities ActivityEvent[] @relation("ActivityCreatedBy")
+
+  @@unique([agencyId, userId])
+  @@index([agencyId, role])
+  @@index([userId])
+}
+
+model Contact {
+  id        String      @id @default(uuid())
+  agencyId  String
+  type      ContactType @default(PERSON)
+
+  firstName String?
+  lastName  String?
+  organizationName String?
+  email     String?
+  phone     String?
+
+  createdByMembershipId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  createdByMembership AgencyMembership? @relation("ContactCreatedBy", fields: [createdByMembershipId], references: [id], onDelete: SetNull)
+
+  leads Lead[]
+  notes Note[]
+  activities ActivityEvent[]
+  ownedProperties Property[] @relation("PropertyOwner")
+
+  @@index([agencyId, email])
+  @@index([agencyId, phone])
+  @@index([agencyId, lastName])
+  @@index([agencyId, organizationName])
+  @@index([agencyId, createdAt])
+}
+
+model Lead {
+  id        String     @id @default(uuid())
+  agencyId  String
+
+  contactId String
+  status    LeadStatus @default(NEW)
+  title     String?
+
+  assignedToMembershipId String?
+  createdByMembershipId  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  contact Contact @relation(fields: [contactId], references: [id], onDelete: Restrict)
+
+  assignedToMembership AgencyMembership? @relation("LeadAssignedTo", fields: [assignedToMembershipId], references: [id], onDelete: SetNull)
+  createdByMembership  AgencyMembership? @relation("LeadCreatedBy", fields: [createdByMembershipId], references: [id], onDelete: SetNull)
+
+  tasks Task[]
+  notes Note[]
+  activities ActivityEvent[]
+  inquiries Inquiry[]
+  leadSummaryGenerations AiLeadSummaryGeneration[]
+  buyerMatchGenerations AiBuyerPropertyMatchGeneration[] @relation("BuyerLead")
+
+  // Buyer preferences for matching (optional MVP fields)
+  buyerListingType ListingType?
+  buyerMinPrice Decimal? @db.Decimal(12, 2)
+  buyerMaxPrice Decimal? @db.Decimal(12, 2)
+  buyerMinBedrooms Int?
+  buyerCity String?
+  buyerArea String?
+  buyerFeatureKeywords Json?
+
+  @@index([agencyId, status])
+  @@index([agencyId, assignedToMembershipId])
+  @@index([agencyId, contactId])
+  @@index([agencyId, buyerListingType])
+  @@index([agencyId, buyerCity])
+  @@index([agencyId, createdAt])
+}
+
+model Task {
+  id        String     @id @default(uuid())
+  agencyId  String
+
+  title       String
+  description String?
+  status      TaskStatus @default(TODO)
+  dueAt       DateTime?
+
+  leadId String?
+
+  assignedToMembershipId String?
+  createdByMembershipId  String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  lead   Lead?  @relation(fields: [leadId], references: [id], onDelete: SetNull)
+
+  assignedToMembership AgencyMembership? @relation("TaskAssignedTo", fields: [assignedToMembershipId], references: [id], onDelete: SetNull)
+  createdByMembership  AgencyMembership? @relation("TaskCreatedBy", fields: [createdByMembershipId], references: [id], onDelete: SetNull)
+
+  notes Note[]
+  activities ActivityEvent[]
+
+  @@index([agencyId, status])
+  @@index([agencyId, dueAt])
+  @@index([agencyId, assignedToMembershipId, status])
+  @@index([agencyId, leadId])
+  @@index([agencyId, createdAt])
+}
+
+model Note {
+  id        String @id @default(uuid())
+  agencyId  String
+
+  content String @db.Text
+
+  // Notes attach to contacts or leads for MVP
+  contactId String?
+  leadId    String?
+  taskId    String?
+
+  createdByMembershipId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  contact Contact? @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  lead    Lead?    @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  task    Task?    @relation(fields: [taskId], references: [id], onDelete: SetNull)
+
+  createdByMembership AgencyMembership? @relation("NoteCreatedBy", fields: [createdByMembershipId], references: [id], onDelete: SetNull)
+
+  activities ActivityEvent[]
+
+  @@index([agencyId, contactId])
+  @@index([agencyId, leadId])
+  @@index([agencyId, createdAt])
+}
+
+model Property {
+  id        String @id @default(uuid())
+  agencyId  String
+
+  // Single-owner MVP using Contact relationship
+  ownerContactId String
+
+  // Address/geolocation for searching + public display (when mapped)
+  address     String
+  city        String?
+  area        String?
+  latitude    Decimal? @db.Decimal(10, 7)
+  longitude   Decimal? @db.Decimal(10, 7)
+
+  energyClass EnergyClass @default(UNKNOWN)
+  features    Json?
+
+  createdByMembershipId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Soft-delete
+  deletedAt DateTime?
+  deletedByMembershipId String?
+
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  ownerContact Contact @relation("PropertyOwner", fields: [ownerContactId], references: [id], onDelete: Restrict)
+
+  listings Listing[]
+  internalNotes PropertyInternalNote[]
+  mediaAssets MediaAsset[]
+
+  @@index([agencyId, ownerContactId])
+  @@index([agencyId, address])
+  @@index([agencyId, city])
+  @@index([agencyId, area])
+  @@index([agencyId, latitude])
+  @@index([agencyId, longitude])
+  @@index([agencyId, deletedAt])
+}
+
+model Listing {
+  id        String @id @default(uuid())
+  agencyId  String
+
+  propertyId String
+  listingType ListingType
+  status      ListingStatus
+
+  // Market-facing content (pulled into web listings)
+  title       String
+  slug        String
+  description String @db.Text
+  descriptionEl String? @db.Text
+
+  price    Decimal? @db.Decimal(12, 2)
+  currency String?  @db.VarChar(3)
+
+  bedrooms Int?
+  bathrooms Int?
+  sqm       Decimal? @db.Decimal(10, 2)
+
+  createdByMembershipId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Soft-delete
+  deletedAt DateTime?
+  deletedByMembershipId String?
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Restrict)
+  internalNotes ListingInternalNote[]
+
+  publications ListingPublication[]
+  mediaAssets MediaAsset[]
+  inquiries Inquiry[]
+  aiListingDescriptionGenerations AiListingDescriptionGeneration[]
+  buyerMatchRecommendations AiBuyerPropertyMatchRecommendation[]
+
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+
+  @@index([agencyId, propertyId])
+  @@index([agencyId, listingType, status])
+  @@index([agencyId, price])
+  @@index([agencyId, deletedAt])
+  @@unique([agencyId, slug])
+}
+
+enum AiTone {
+  STANDARD
+  PREMIUM
+  CONCISE
+}
+
+enum AiGenerationType {
+  LISTING_DESCRIPTION
+  LEAD_SUMMARY
+  BUYER_PROPERTY_MATCH
+}
+
+enum AiGenerationStatus {
+  PENDING
+  RUNNING
+  SUCCEEDED
+  FAILED
+  EDITED_SAVED
+}
+
+model AiPromptTemplate {
+  id        String @id @default(uuid())
+  agencyId  String
+  code      String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  versions AiPromptTemplateVersion[]
+
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+
+  @@unique([agencyId, code])
+  @@index([agencyId, code])
+}
+
+model AiPromptTemplateVersion {
+  id                 String @id @default(uuid())
+  agencyId           String
+  promptTemplateId  String
+  versionNumber     Int
+
+  // Store prompt(s) as text. Keep output format constraints in promptText.
+  systemPromptText   String?
+  userPromptText     String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  promptTemplate AiPromptTemplate @relation(fields: [promptTemplateId], references: [id], onDelete: Cascade)
+
+  generations AiListingDescriptionGeneration[]
+  leadSummaryGenerations AiLeadSummaryGeneration[]
+  buyerMatchGenerations AiBuyerPropertyMatchGeneration[]
+
+  @@unique([agencyId, promptTemplateId, versionNumber])
+  @@index([agencyId, promptTemplateId, versionNumber])
+}
+
+model AiListingDescriptionGeneration {
+  id        String @id @default(uuid())
+  agencyId  String
+
+  listingId String
+  tone      AiTone
+
+  type      AiGenerationType @default(LISTING_DESCRIPTION)
+  status    AiGenerationStatus @default(PENDING)
+
+  // Versioned prompt used for this generation
+  promptTemplateVersionId String
+  promptTemplateVersion   AiPromptTemplateVersion @relation(fields: [promptTemplateVersionId], references: [id], onDelete: Restrict)
+
+  // Provider metadata
+  provider     String?
+  model        String?
+  providerRaw  Json?
+
+  // Inputs/outputs
+  inputJson  Json?
+  outputJson Json?
+
+  generatedDescriptionEn String? @db.Text
+  generatedDescriptionEl String? @db.Text
+
+  errorMessage String? @db.Text
+
+  // Optional edited/saved version
+  savedDescriptionEn String? @db.Text
+  savedDescriptionEl String? @db.Text
+  savedAt DateTime?
+  savedByMembershipId String?
+
+  createdByMembershipId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@index([agencyId, listingId, status, createdAt])
+  @@index([agencyId, listingId])
+  @@index([agencyId, tone, createdAt])
+}
+
+enum AiLeadSummaryTone {
+  STANDARD
+  ACTIONABLE
+}
+
+model AiLeadSummaryGeneration {
+  id        String @id @default(uuid())
+  agencyId  String
+
+  leadId String
+
+  status AiGenerationStatus @default(PENDING)
+  type   AiGenerationType @default(LEAD_SUMMARY)
+
+  promptTemplateVersionId String
+  promptTemplateVersion   AiPromptTemplateVersion @relation(fields: [promptTemplateVersionId], references: [id], onDelete: Restrict)
+
+  // Inputs/outputs
+  inputJson  Json?
+  outputJson Json?
+
+  generatedSummaryEn String? @db.Text
+  generatedSummaryEl String? @db.Text
+  generatedNextActionEn String? @db.Text
+  generatedNextActionEl String? @db.Text
+
+  errorMessage String? @db.Text
+
+  createdByMembershipId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  lead   Lead   @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([agencyId, leadId, status, createdAt])
+  @@index([agencyId, leadId])
+}
+
+model AiBuyerPropertyMatchGeneration {
+  id        String @id @default(uuid())
+  agencyId  String
+
+  buyerLeadId String
+
+  status AiGenerationStatus @default(PENDING)
+  type   AiGenerationType @default(BUYER_PROPERTY_MATCH)
+
+  promptTemplateVersionId String
+  promptTemplateVersion   AiPromptTemplateVersion @relation(fields: [promptTemplateVersionId], references: [id], onDelete: Restrict)
+
+  inputJson  Json?
+  outputJson Json?
+
+  errorMessage String? @db.Text
+
+  createdByMembershipId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  buyerLead Lead @relation("BuyerLead", fields: [buyerLeadId], references: [id], onDelete: Cascade)
+
+  recommendations AiBuyerPropertyMatchRecommendation[]
+
+  @@index([agencyId, buyerLeadId, status, createdAt])
+  @@index([agencyId, buyerLeadId])
+}
+
+model AiBuyerPropertyMatchRecommendation {
+  id        String @id @default(uuid())
+  agencyId  String
+
+  matchGenerationId String
+  listingId String
+
+  score Int
+
+  // store structured reasons for both languages
+  reasonsEn Json?
+  reasonsEl Json?
+
+  baseScore Int?
+
+  createdAt DateTime @default(now())
+
+  matchGeneration AiBuyerPropertyMatchGeneration @relation(fields: [matchGenerationId], references: [id], onDelete: Cascade)
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Restrict)
+
+  @@index([agencyId, matchGenerationId, score])
+  @@index([agencyId, listingId])
+}
+
+model PropertyInternalNote {
+  id        String @id @default(uuid())
+  agencyId  String
+
+  propertyId String
+  content   String @db.Text
+
+  createdByMembershipId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+
+  @@index([agencyId, propertyId, createdAt])
+}
+
+model ListingInternalNote {
+  id        String @id @default(uuid())
+  agencyId  String
+
+  listingId String
+  content   String @db.Text
+
+  createdByMembershipId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  agency  Agency  @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+
+  @@index([agencyId, listingId, createdAt])
+}
+
+model MediaAsset {
+  id        String @id @default(uuid())
+  agencyId  String
+
+  // Soft-deletable so we can recover accidentally removed media
+  deletedAt DateTime?
+  deletedByMembershipId String?
+
+  mediaType MediaType
+  uploadStatus MediaUploadStatus @default(UPLOADING)
+
+  // S3 metadata
+  storageKey String @unique
+  fileName   String?
+  mimeType   String?
+  sizeBytes  Int?
+
+  // Future processing fields (thumbnails/dimensions)
+  width  Int?
+  height Int?
+
+  // Ordering inside a listing (images/videos/floorplans can share same table)
+  listingId String?
+  propertyId String?
+  sortOrder Int @default(0)
+  isCover    Boolean @default(false)
+
+  createdByMembershipId String?
+  uploadedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+
+  // Optional relationships: only set one side in services for now.
+  listing Listing? @relation(fields: [listingId], references: [id], onDelete: SetNull)
+  property Property? @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+
+  @@index([agencyId, listingId, deletedAt])
+  @@index([agencyId, propertyId, deletedAt])
+  @@index([agencyId, mediaType, uploadStatus])
+  @@index([agencyId, listingId, sortOrder])
+  @@index([agencyId, listingId, isCover, deletedAt])
+}
+
+model Inquiry {
+  id        String @id @default(uuid())
+  agencyId  String
+
+  source    InquirySource
+  status    InquiryStatus @default(NEW)
+
+  listingId String
+
+  // Inbound fields
+  name     String
+  email    String?
+  phone    String?
+  message  String? @db.Text
+
+  preferredContactMethod InquiryPreferredContactMethod?
+
+  // Optional lead conversion later
+  leadId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  agency  Agency  @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Restrict)
+  lead    Lead?   @relation(fields: [leadId], references: [id], onDelete: SetNull)
+
+  @@index([agencyId, listingId, status])
+  @@index([agencyId, createdAt])
+  @@index([agencyId, email])
+}
+
+model ActivityEvent {
+  id        String @id @default(uuid())
+  agencyId  String
+
+  entityType ActivityEntityType
+  entityId   String
+  action     ActivityAction
+
+  // Optional denormalized context for filtering
+  contactId String?
+  leadId    String?
+  taskId    String?
+  noteId    String?
+
+  actorMembershipId String?
+  message String?
+  metadata Json?
+
+  createdAt DateTime @default(now())
+
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  actorMembership AgencyMembership? @relation("ActivityCreatedBy", fields: [actorMembershipId], references: [id], onDelete: SetNull)
+
+  contact Contact? @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  lead    Lead?    @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  task    Task?    @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  note    Note?    @relation(fields: [noteId], references: [id], onDelete: SetNull)
+
+  @@index([agencyId, createdAt])
+  @@index([agencyId, entityType, entityId])
+  @@index([agencyId, contactId, createdAt])
+  @@index([agencyId, leadId, createdAt])
+}
+
+enum PublicationChannelType {
+  WEBSITE
+  PORTAL
+  EXTRANET
+}
+
+enum ListingPublicationStatus {
+  QUEUED
+  PROCESSING
+  SUCCEEDED
+  FAILED
+  RETRYING
+  CANCELLED
+}
+
+enum PublicationAttemptStatus {
+  STARTED
+  SUCCESS
+  FAILED
+}
+
+enum SubscriptionPlanCode {
+  STARTER
+  PRO
+  ENTERPRISE
+}
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  UNPAID
+  INCOMPLETE
+  INCOMPLETE_EXPIRED
+}
+
+enum StripeWebhookEventType {
+  CUSTOMER_SUBSCRIPTION_CREATED
+  CUSTOMER_SUBSCRIPTION_UPDATED
+  CUSTOMER_SUBSCRIPTION_DELETED
+  INVOICE_PAYMENT_FAILED
+  INVOICE_PAID
+  CHECKOUT_SESSION_COMPLETED
+  UNKNOWN
+}
+
+model SubscriptionPlan {
+  id        String @id @default(uuid())
+  code      SubscriptionPlanCode @unique
+  name      String
+
+  // Store monthly price metadata (optional for MVP; checkout uses Stripe price IDs)
+  currency        String?
+  amountCents     Int? // legacy/summary field
+  officeAmountCents Int?
+  seatAmountCents   Int?
+  trialDays       Int?
+
+  seatLimit Int
+
+  // Feature flags for the plan baseline. JSON allows future flags without schema churn.
+  features Json
+
+  // Stripe price for monthly billing (Starter/Pro/Enterprise)
+  stripePriceIdMonthly String? @unique // legacy/summary field
+  stripePriceIdOfficeMonthly String?
+  stripePriceIdSeatMonthly   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  agencies AgencySubscription[]
+
+  @@index([code])
+}
+
+enum AgencySubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  UNPAID
+  INCOMPLETE
+  INCOMPLETE_EXPIRED
+}
+
+model AgencySubscription {
+  id        String @id @default(uuid())
+  agencyId  String @unique
+
+  planCode SubscriptionPlanCode
+  status   AgencySubscriptionStatus @default(ACTIVE)
+
+  // Stripe identifiers
+  stripeCustomerId      String?
+  stripeSubscriptionId  String? @unique
+
+  // Period information
+  currentPeriodEnd DateTime?
+  trialEndsAt DateTime?
+  cancelAtPeriodEnd Boolean @default(false)
+
+  // Graceful downgrade enforcement:
+  // - while now < seatGraceEndsAt, seat enforcement uses the previous plan
+  // - after that, enforce seatLimit from the effective plan
+  seatGraceEndsAt DateTime?
+
+  // When a downgrade is scheduled, store the pending plan details for later enforcement.
+  pendingPlanCode     SubscriptionPlanCode?
+  pendingSeatLimit    Int?
+  pendingEffectiveAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  plan   SubscriptionPlan @relation(fields: [planCode], references: [code])
+
+  stripeWebhookEvents StripeWebhookEvent[] @relation("SubscriptionWebhookEvents")
+
+  @@index([agencyId, status])
+}
+
+model StripeWebhookEvent {
+  id        String @id @default(uuid())
+  // Stripe sends an event ID; store it for idempotency.
+  stripeEventId String @unique
+  agencyId       String?
+  // If known, link to the agency subscription (same logical tenant, separate FK to avoid collisions)
+  subscriptionAgencyId String?
+  eventType      StripeWebhookEventType
+  receivedAt     DateTime @default(now())
+  processedAt    DateTime?
+  payload        Json
+
+  // Optional relation if we can map to an agency at receipt time.
+  agencySubscription AgencySubscription? @relation("SubscriptionWebhookEvents", fields: [subscriptionAgencyId], references: [agencyId], onDelete: SetNull)
+  agency             Agency?              @relation(fields: [agencyId], references: [id], onDelete: SetNull)
+
+  @@index([agencyId, eventType, receivedAt])
+  @@index([subscriptionAgencyId, eventType, receivedAt])
+}
+
+model PublicationChannel {
+  id            String @id @default(uuid())
+  agencyId      String
+  channelType   PublicationChannelType
+  code          String
+  displayName   String?
+  isEnabled     Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  feedMappings     FeedMapping[]
+  listingPublications ListingPublication[]
+
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+
+  @@unique([agencyId, code])
+  @@index([agencyId, channelType, isEnabled])
+}
+
+model FeedMapping {
+  id        String @id @default(uuid())
+  agencyId  String
+
+  channelId String
+  // Allows evolving mapping rules while preserving historical exports
+  mappingVersion Int
+
+  adapterCode String // e.g. "xml.generic.v1"
+  mapping Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  channel PublicationChannel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  listingPublications ListingPublication[]
+
+  @@unique([agencyId, channelId, mappingVersion])
+  @@index([agencyId, channelId, mappingVersion])
+}
+
+model ListingPublication {
+  id        String @id @default(uuid())
+  agencyId  String
+
+  channelId String
+  listingId String
+  mappingVersion Int
+
+  status ListingPublicationStatus @default(QUEUED)
+
+  requestedAt DateTime @default(now())
+  publishedAt DateTime?
+
+  // Snapshot reference for idempotency / correctness
+  sourceListingUpdatedAt DateTime?
+
+  externalReference String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  channel PublicationChannel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  feedMapping FeedMapping @relation(fields: [agencyId, channelId, mappingVersion], references: [agencyId, channelId, mappingVersion], onDelete: Restrict)
+
+  logs PublicationLog[]
+
+  @@unique([agencyId, channelId, listingId])
+  @@index([agencyId, channelId, status])
+  @@index([agencyId, channelId, requestedAt])
+  @@index([agencyId, listingId])
+}
+
+model PublicationLog {
+  id        String @id @default(uuid())
+  agencyId  String
+
+  listingPublicationId String
+  attemptNo Int
+  status PublicationAttemptStatus
+
+  startedAt DateTime @default(now())
+  finishedAt DateTime?
+
+  // Adapter telemetry
+  externalStatusCode Int?
+  errorMessage String? @db.Text
+
+  requestPayload Json?
+  responsePayload Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  listingPublication ListingPublication @relation(fields: [listingPublicationId], references: [id], onDelete: Cascade)
+
+  @@unique([agencyId, listingPublicationId, attemptNo])
+  @@index([agencyId, listingPublicationId, startedAt])
+  @@index([agencyId, status, startedAt])
+}
+

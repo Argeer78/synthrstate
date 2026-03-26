@@ -1,0 +1,23 @@
+{
+  "name": "@synthr/worker",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "nodemon --watch src --ext ts --exec ts-node src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "start": "node dist/index.js",
+    "lint": "echo \"No lint configured for @synthr/worker yet\"",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "echo \"No tests yet for @synthr/worker\""
+  },
+  "dependencies": {
+    "@prisma/client": "*",
+    "@synthr/types": "workspace:*"
+  },
+  "devDependencies": {
+    "nodemon": "*",
+    "ts-node": "*",
+    "typescript": "*",
+    "@types/node": "*"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "name": "@synthr/prompts",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "echo \"@synthr/prompts is data-only\"",
+    "build": "echo \"@synthr/prompts has no build step\"",
+    "lint": "echo \"No lint configured for @synthr/prompts\"",
+    "test": "echo \"No tests yet for @synthr/prompts\""
+  }
+}

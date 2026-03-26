@@ -1,0 +1,11 @@
+{
+  "name": "@synthr/config",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "echo \"@synthr/config has no dev server\"",
+    "build": "echo \"@synthr/config is config-only\"",
+    "lint": "echo \"No lint configured for @synthr/config\"",
+    "test": "echo \"No tests configured for @synthr/config\""
+  }
+}

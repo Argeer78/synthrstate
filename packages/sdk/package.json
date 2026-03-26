@@ -1,0 +1,17 @@
+{
+  "name": "@synthr/sdk",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "echo \"@synthr/sdk is a shared library\"",
+    "build": "tsc -p tsconfig.json",
+    "lint": "echo \"No lint configured for @synthr/sdk\"",
+    "test": "echo \"No tests yet for @synthr/sdk\""
+  },
+  "dependencies": {
+    "@synthr/types": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "*"
+  }
+}

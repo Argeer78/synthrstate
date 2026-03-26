@@ -1,0 +1,14 @@
+{
+  "name": "@synthr/types",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "echo \"@synthr/types is a shared TypeScript types package\"",
+    "build": "tsc -p tsconfig.json",
+    "lint": "echo \"No lint configured for @synthr/types\"",
+    "test": "echo \"No tests yet for @synthr/types\""
+  },
+  "devDependencies": {
+    "typescript": "*"
+  }
+}

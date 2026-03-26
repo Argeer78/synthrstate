@@ -1,0 +1,10 @@
+{
+  "extends": "../packages/config/tsconfig/node.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "types": ["node"],
+    "moduleResolution": "Node"
+  },
+  "include": ["./seed.ts"]
+}
+

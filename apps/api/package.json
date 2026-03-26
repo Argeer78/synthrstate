@@ -1,0 +1,54 @@
+{
+  "name": "@synthr/api",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "nest start --watch",
+    "build": "nest build",
+    "start": "node dist/main.js",
+    "lint": "echo \"No lint configured for @synthr/api yet\"",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "jest",
+    "db:migrate": "prisma migrate dev --schema ../../prisma/schema.prisma",
+    "db:seed": "prisma db seed --schema ../../prisma/schema.prisma"
+  },
+  "dependencies": {
+    "@nestjs/common": "*",
+    "@nestjs/jwt": "*",
+    "@nestjs/core": "*",
+    "@nestjs/passport": "*",
+    "@nestjs/platform-express": "*",
+    "@nestjs/config": "*",
+    "@aws-sdk/client-s3": "*",
+    "@aws-sdk/s3-request-presigner": "*",
+    "bcryptjs": "*",
+    "cookie-parser": "*",
+    "express": "*",
+    "reflect-metadata": "*",
+    "rxjs": "*",
+    "class-transformer": "*",
+    "class-validator": "*",
+    "passport": "*",
+    "passport-jwt": "*",
+    "@prisma/client": "^6.0.0"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "*",
+    "@nestjs/testing": "*",
+    "prisma": "^6.0.0",
+    "jest": "*",
+    "supertest": "*",
+    "ts-jest": "*",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.0",
+    "@types/node": "*",
+    "@types/cookie-parser": "*",
+    "@types/express": "*",
+    "@types/passport-jwt": "*",
+    "@types/jest": "*",
+    "@types/supertest": "*"
+  },
+  "prisma": {
+    "seed": "ts-node -P ../../prisma/tsconfig.seed.json ../../prisma/seed.ts"
+  }
+}
