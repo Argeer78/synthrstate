@@ -50,6 +50,34 @@ export async function fetchPublicListingDetail(slug) {
 }
 
 /**
+ * @param {string} slug
+ * @param {{ name: string; email?: string; phone?: string; message?: string }} dto
+ */
+export async function createPublicInquiry(slug, dto) {
+  const base = getPublicApiBase();
+  const url = `${base}/public/${PUBLIC_AGENCY_SLUG}/listings/${encodeURIComponent(slug)}/inquiries`;
+  const res = await fetch(url, {
+    method: "POST",
+    headers: { Accept: "application/json", "content-type": "application/json" },
+    body: JSON.stringify(dto),
+  });
+  if (!res.ok) {
+    const text = await res.text().catch(() => "");
+    // Nest often returns JSON with `message`
+    try {
+      const j = text ? JSON.parse(text) : null;
+      const msg = j?.message;
+      if (Array.isArray(msg)) throw new Error(msg.map(String).join("; "));
+      if (typeof msg === "string" && msg.trim()) throw new Error(msg);
+    } catch (e) {
+      if (e instanceof Error && e.message) throw e;
+    }
+    throw new Error(`Inquiry failed (${res.status} ${res.statusText})${text ? `: ${text.slice(0, 200)}` : ""}`);
+  }
+  return res.json();
+}
+
+/**
  * @param {number | null | undefined} amount
  * @param {string | null | undefined} currency
  */

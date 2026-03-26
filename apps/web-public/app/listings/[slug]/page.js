@@ -111,7 +111,7 @@ export default async function ListingDetailPage({ params }) {
           )}
         </section>
 
-        <ListingInquirySection listingTitle={title} />
+        <ListingInquirySection listingTitle={title} listingSlug={slug} />
       </article>
     </div>
   );

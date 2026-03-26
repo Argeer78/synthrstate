@@ -30,6 +30,7 @@ const tiers = [
     cta: "Get started",
     ctaVariant: "secondary",
     featured: false,
+    action: "checkout",
     features: [
       "Up to 3 team seats",
       "Limited active listings",
@@ -48,6 +49,7 @@ const tiers = [
     cta: "Start with Growth",
     ctaVariant: "primary",
     featured: true,
+    action: "checkout",
     features: [
       "Unlimited listings",
       "Full CRM — contacts, leads, tasks & notes",
@@ -67,6 +69,7 @@ const tiers = [
     cta: "Talk to sales",
     ctaVariant: "secondary",
     featured: false,
+    action: "sales",
     features: [
       "Advanced team & role management",
       "Workflow automation & guardrails",
@@ -80,6 +83,9 @@ const tiers = [
 ];
 
 export default function MarketingPricing() {
+  const adminBase = (process.env.NEXT_PUBLIC_ADMIN_APP_URL ?? "https://app.synthrstate.com").replace(/\/$/, "");
+  const supportEmail = process.env.NEXT_PUBLIC_BILLING_SUPPORT_EMAIL ?? "hello@synthrstate.com";
+
   return (
     <section
       id="pricing"
@@ -158,7 +164,11 @@ export default function MarketingPricing() {
                 </ul>
 
                 <a
-                  href="#contact"
+                  href={
+                    tier.action === "checkout"
+                      ? `${adminBase}/billing/`
+                      : `mailto:${supportEmail}?subject=Synthr%20${encodeURIComponent(tier.name)}%20plan`
+                  }
                   className={[
                     "mt-8 inline-flex w-full items-center justify-center rounded-xl px-4 py-3 text-sm font-semibold transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2",
                     tier.ctaVariant === "primary"

@@ -1,6 +1,8 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../../../prisma/prisma.service";
 import { Prisma, type EnergyClass } from "@prisma/client";
+import type { ActorScope } from "../../auth/rbac-query.util";
+import { contactScopeWhere, propertyScopeWhere } from "../../auth/rbac-query.util";
 
 @Injectable()
 export class PropertiesService {
@@ -8,6 +10,7 @@ export class PropertiesService {
 
   async create(params: {
     agencyId: string;
+    actor: ActorScope;
     ownerContactId: string;
     actorMembershipId?: string;
     data: {
@@ -22,7 +25,7 @@ export class PropertiesService {
   }) {
     // Ensure owner contact belongs to this agency
     const owner = await this.prisma.contact.findFirst({
-      where: { id: params.ownerContactId, agencyId: params.agencyId },
+      where: { id: params.ownerContactId, agencyId: params.agencyId, ...contactScopeWhere(params.actor) },
       select: { id: true },
     });
     if (!owner) throw new BadRequestException("Invalid ownerContactId");
@@ -47,15 +50,17 @@ export class PropertiesService {
 
   async list(params: {
     agencyId: string;
+    actor: ActorScope;
     q?: string;
     ownerContactId?: string;
     skip: number;
     take: number;
     sort?: "createdAt" | "address";
   }) {
-    const where: any = {
+    const where: Prisma.PropertyWhereInput = {
       agencyId: params.agencyId,
       deletedAt: null,
+      ...propertyScopeWhere(params.actor),
     };
 
     if (params.ownerContactId) where.ownerContactId = params.ownerContactId;
@@ -98,9 +103,9 @@ export class PropertiesService {
     return { items, total };
   }
 
-  async get(params: { agencyId: string; id: string }) {
+  async get(params: { agencyId: string; actor: ActorScope; id: string }) {
     const property = await this.prisma.property.findFirst({
-      where: { id: params.id, agencyId: params.agencyId, deletedAt: null },
+      where: { id: params.id, agencyId: params.agencyId, deletedAt: null, ...propertyScopeWhere(params.actor) },
       include: {
         ownerContact: { select: { id: true, firstName: true, lastName: true, organizationName: true, email: true } },
       },
@@ -111,6 +116,7 @@ export class PropertiesService {
 
   async update(params: {
     agencyId: string;
+    actor: ActorScope;
     actorMembershipId?: string;
     id: string;
     data: {
@@ -125,14 +131,14 @@ export class PropertiesService {
     };
   }) {
     const existing = await this.prisma.property.findFirst({
-      where: { id: params.id, agencyId: params.agencyId, deletedAt: null },
+      where: { id: params.id, agencyId: params.agencyId, deletedAt: null, ...propertyScopeWhere(params.actor) },
       select: { id: true, ownerContactId: true },
     });
     if (!existing) throw new NotFoundException("Property not found");
 
     if (typeof params.data.ownerContactId === "string") {
       const owner = await this.prisma.contact.findFirst({
-        where: { id: params.data.ownerContactId, agencyId: params.agencyId },
+        where: { id: params.data.ownerContactId, agencyId: params.agencyId, ...contactScopeWhere(params.actor) },
         select: { id: true },
       });
       if (!owner) throw new BadRequestException("Invalid ownerContactId");
@@ -153,12 +159,12 @@ export class PropertiesService {
     });
 
     // Return fully loaded property
-    return this.get({ agencyId: params.agencyId, id: property.id });
+    return this.get({ agencyId: params.agencyId, actor: params.actor, id: property.id });
   }
 
-  async softDelete(params: { agencyId: string; actorMembershipId?: string; id: string }) {
+  async softDelete(params: { agencyId: string; actor: ActorScope; actorMembershipId?: string; id: string }) {
     const existing = await this.prisma.property.findFirst({
-      where: { id: params.id, agencyId: params.agencyId, deletedAt: null },
+      where: { id: params.id, agencyId: params.agencyId, deletedAt: null, ...propertyScopeWhere(params.actor) },
       select: { id: true },
     });
     if (!existing) throw new NotFoundException("Property not found");
@@ -176,12 +182,13 @@ export class PropertiesService {
 
   async createInternalNote(params: {
     agencyId: string;
+    actor: ActorScope;
     actorMembershipId?: string;
     propertyId: string;
     content: string;
   }) {
     const property = await this.prisma.property.findFirst({
-      where: { id: params.propertyId, agencyId: params.agencyId, deletedAt: null },
+      where: { id: params.propertyId, agencyId: params.agencyId, deletedAt: null, ...propertyScopeWhere(params.actor) },
       select: { id: true },
     });
     if (!property) throw new NotFoundException("Property not found");
@@ -196,9 +203,15 @@ export class PropertiesService {
     });
   }
 
-  async listInternalNotes(params: { agencyId: string; propertyId: string; skip: number; take: number }) {
+  async listInternalNotes(params: {
+    agencyId: string;
+    actor: ActorScope;
+    propertyId: string;
+    skip: number;
+    take: number;
+  }) {
     const property = await this.prisma.property.findFirst({
-      where: { id: params.propertyId, agencyId: params.agencyId, deletedAt: null },
+      where: { id: params.propertyId, agencyId: params.agencyId, deletedAt: null, ...propertyScopeWhere(params.actor) },
       select: { id: true },
     });
     if (!property) throw new NotFoundException("Property not found");
@@ -218,7 +231,13 @@ export class PropertiesService {
     return { items, total };
   }
 
-  async deleteInternalNote(params: { agencyId: string; propertyId: string; noteId: string }) {
+  async deleteInternalNote(params: { agencyId: string; actor: ActorScope; propertyId: string; noteId: string }) {
+    const property = await this.prisma.property.findFirst({
+      where: { id: params.propertyId, agencyId: params.agencyId, deletedAt: null, ...propertyScopeWhere(params.actor) },
+      select: { id: true },
+    });
+    if (!property) throw new NotFoundException("Property not found");
+
     const existing = await this.prisma.propertyInternalNote.findFirst({
       where: { id: params.noteId, agencyId: params.agencyId, propertyId: params.propertyId },
       select: { id: true },

@@ -2,6 +2,9 @@ import { BadRequestException, Injectable, NotFoundException } from "@nestjs/comm
 import { ActivityAction, ActivityEntityType, Prisma, TaskStatus } from "@prisma/client";
 import { PrismaService } from "../../../prisma/prisma.service";
 import { ActivityService } from "../timeline/activity.service";
+import type { ActorScope } from "../../auth/rbac-query.util";
+import { leadScopeWhere, taskScopeWhere } from "../../auth/rbac-query.util";
+import { assertAgentAssignsSelfOnly } from "../../auth/rbac-assign.util";
 
 @Injectable()
 export class TasksService {
@@ -12,6 +15,7 @@ export class TasksService {
 
   async create(params: {
     agencyId: string;
+    actor: ActorScope;
     actorMembershipId?: string;
     data: {
       title: string;
@@ -22,9 +26,15 @@ export class TasksService {
       assignedToMembershipId?: string;
     };
   }) {
+    assertAgentAssignsSelfOnly(
+      params.actor.role,
+      params.actor.membershipId,
+      params.data.assignedToMembershipId,
+    );
+
     if (params.data.leadId) {
       const lead = await this.prisma.lead.findFirst({
-        where: { id: params.data.leadId, agencyId: params.agencyId },
+        where: { id: params.data.leadId, agencyId: params.agencyId, ...leadScopeWhere(params.actor) },
         select: { id: true, contactId: true },
       });
       if (!lead) throw new BadRequestException("Invalid leadId");
@@ -73,6 +83,7 @@ export class TasksService {
 
   async list(params: {
     agencyId: string;
+    actor: ActorScope;
     status?: TaskStatus;
     assignedToMembershipId?: string;
     leadId?: string;
@@ -80,7 +91,10 @@ export class TasksService {
     take: number;
     sort?: "dueAt" | "createdAt";
   }) {
-    const where: any = { agencyId: params.agencyId };
+    const where: Prisma.TaskWhereInput = {
+      agencyId: params.agencyId,
+      ...taskScopeWhere(params.actor),
+    };
     if (params.status) where.status = params.status;
     if (params.assignedToMembershipId) where.assignedToMembershipId = params.assignedToMembershipId;
     if (params.leadId) where.leadId = params.leadId;
@@ -103,9 +117,9 @@ export class TasksService {
     return { items, total };
   }
 
-  async get(params: { agencyId: string; id: string }) {
+  async get(params: { agencyId: string; actor: ActorScope; id: string }) {
     const task = await this.prisma.task.findFirst({
-      where: { id: params.id, agencyId: params.agencyId },
+      where: { id: params.id, agencyId: params.agencyId, ...taskScopeWhere(params.actor) },
     });
     if (!task) throw new NotFoundException("Task not found");
     return task;
@@ -113,6 +127,7 @@ export class TasksService {
 
   async update(params: {
     agencyId: string;
+    actor: ActorScope;
     actorMembershipId?: string;
     id: string;
     data: {
@@ -123,8 +138,14 @@ export class TasksService {
       assignedToMembershipId?: string;
     };
   }) {
+    assertAgentAssignsSelfOnly(
+      params.actor.role,
+      params.actor.membershipId,
+      params.data.assignedToMembershipId,
+    );
+
     const existing = await this.prisma.task.findFirst({
-      where: { id: params.id, agencyId: params.agencyId },
+      where: { id: params.id, agencyId: params.agencyId, ...taskScopeWhere(params.actor) },
       select: { id: true, status: true, assignedToMembershipId: true, leadId: true },
     });
     if (!existing) throw new NotFoundException("Task not found");
@@ -194,12 +215,12 @@ export class TasksService {
       });
     }
 
-    return this.get({ agencyId: params.agencyId, id: updated.id });
+    return this.get({ agencyId: params.agencyId, actor: params.actor, id: updated.id });
   }
 
-  async delete(params: { agencyId: string; actorMembershipId?: string; id: string }) {
+  async delete(params: { agencyId: string; actor: ActorScope; actorMembershipId?: string; id: string }) {
     const existing = await this.prisma.task.findFirst({
-      where: { id: params.id, agencyId: params.agencyId },
+      where: { id: params.id, agencyId: params.agencyId, ...taskScopeWhere(params.actor) },
       select: { id: true, leadId: true },
     });
     if (!existing) throw new NotFoundException("Task not found");

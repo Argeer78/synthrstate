@@ -74,7 +74,8 @@ body {
 .admin-main {
   flex: 1;
   display: grid;
-  place-items: center;
+  justify-content: center;
+  align-items: start;
   padding: 2rem 1.25rem 3rem;
 }
 
@@ -174,6 +175,16 @@ body {
 .admin-btn-ghost:hover {
   color: var(--admin-text);
   border-color: rgba(255, 255, 255, 0.14);
+}
+
+.admin-link {
+  color: var(--admin-text);
+  text-decoration: none;
+  font-weight: 650;
+}
+
+.admin-link:hover {
+  text-decoration: underline;
 }
 
 .admin-foot {

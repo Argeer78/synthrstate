@@ -9,6 +9,8 @@ import { NotesController } from "./notes/notes.controller";
 import { NotesService } from "./notes/notes.service";
 import { ActivityController } from "./timeline/activity.controller";
 import { ActivityService } from "./timeline/activity.service";
+import { InquiriesController } from "./inquiries/inquiries.controller";
+import { InquiriesService } from "./inquiries/inquiries.service";
 
 @Module({
   controllers: [
@@ -17,8 +19,9 @@ import { ActivityService } from "./timeline/activity.service";
     TasksController,
     NotesController,
     ActivityController,
+    InquiriesController,
   ],
-  providers: [ContactsService, LeadsService, TasksService, NotesService, ActivityService],
+  providers: [ContactsService, LeadsService, TasksService, NotesService, ActivityService, InquiriesService],
 })
 export class CrmModule {}
 

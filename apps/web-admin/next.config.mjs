@@ -4,7 +4,9 @@ const nextConfig = {
   // Required for Hostinger File Manager–only hosting (static files, no Node).
   output: "export",
   images: { unoptimized: true },
-  trailingSlash: false,
+  // Hostinger static hosting may return 403 for directory routes without index.html.
+  // With `trailingSlash: true`, Next exports `/login/` as `out/login/index.html`.
+  trailingSlash: true,
   env: {
     NEXT_PUBLIC_API_URL:
       process.env.NEXT_PUBLIC_API_URL || "https://api.synthrstate.com",

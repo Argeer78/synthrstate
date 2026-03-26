@@ -1,7 +1,11 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from "@nestjs/common";
 import type { Request } from "express";
+import { UserRole } from "@prisma/client";
 import { JwtAuthGuard } from "../../auth/guards/jwt-auth.guard";
 import { TenantGuard } from "../../auth/guards/tenant.guard";
+import { RolesGuard } from "../../auth/guards/roles.guard";
+import { Roles } from "../../auth/roles.decorator";
+import { ROLES_MUTATE } from "../../auth/rbac.constants";
 import { getAuthContext } from "../shared/tenant.req";
 import { getPagination } from "../shared/pagination.dto";
 import { CreatePropertyDto } from "./dto/create-property.dto";
@@ -12,15 +16,17 @@ import { InternalNotesListQueryDto } from "./dto/internal-notes.query.dto";
 import { PropertiesService } from "./properties.service";
 
 @Controller("catalog/properties")
-@UseGuards(JwtAuthGuard, TenantGuard)
+@UseGuards(JwtAuthGuard, TenantGuard, RolesGuard)
 export class PropertiesController {
   constructor(private readonly properties: PropertiesService) {}
 
   @Post()
+  @Roles(...ROLES_MUTATE)
   async create(@Req() req: Request, @Body() dto: CreatePropertyDto) {
-    const { agencyId, membershipId } = getAuthContext(req);
+    const { agencyId, membershipId, role } = getAuthContext(req);
     return this.properties.create({
       agencyId,
+      actor: { role, membershipId },
       actorMembershipId: membershipId,
       ownerContactId: dto.ownerContactId,
       data: {
@@ -37,11 +43,12 @@ export class PropertiesController {
 
   @Get()
   async list(@Req() req: Request, @Query() query: PropertyListQueryDto) {
-    const { agencyId } = getAuthContext(req);
+    const { agencyId, role, membershipId } = getAuthContext(req);
     const { skip, take, page, pageSize } = getPagination(query);
     const sort = query.sort === "address" ? "address" : "createdAt";
     const { items, total } = await this.properties.list({
       agencyId,
+      actor: { role, membershipId },
       q: query.q,
       ownerContactId: query.ownerContactId,
       skip,
@@ -53,15 +60,17 @@ export class PropertiesController {
 
   @Get(":id")
   async get(@Req() req: Request, @Param("id") id: string) {
-    const { agencyId } = getAuthContext(req);
-    return this.properties.get({ agencyId, id });
+    const { agencyId, role, membershipId } = getAuthContext(req);
+    return this.properties.get({ agencyId, actor: { role, membershipId }, id });
   }
 
   @Patch(":id")
+  @Roles(...ROLES_MUTATE)
   async update(@Req() req: Request, @Param("id") id: string, @Body() dto: UpdatePropertyDto) {
-    const { agencyId, membershipId } = getAuthContext(req);
+    const { agencyId, membershipId, role } = getAuthContext(req);
     return this.properties.update({
       agencyId,
+      actor: { role, membershipId },
       actorMembershipId: membershipId,
       id,
       data: {
@@ -78,16 +87,19 @@ export class PropertiesController {
   }
 
   @Delete(":id")
+  @Roles(UserRole.OWNER, UserRole.MANAGER)
   async delete(@Req() req: Request, @Param("id") id: string) {
-    const { agencyId, membershipId } = getAuthContext(req);
-    return this.properties.softDelete({ agencyId, actorMembershipId: membershipId, id });
+    const { agencyId, membershipId, role } = getAuthContext(req);
+    return this.properties.softDelete({ agencyId, actor: { role, membershipId }, actorMembershipId: membershipId, id });
   }
 
   @Post(":id/internal-notes")
+  @Roles(...ROLES_MUTATE)
   async createInternalNote(@Req() req: Request, @Param("id") id: string, @Body() dto: CreatePropertyInternalNoteDto) {
-    const { agencyId, membershipId } = getAuthContext(req);
+    const { agencyId, membershipId, role } = getAuthContext(req);
     return this.properties.createInternalNote({
       agencyId,
+      actor: { role, membershipId },
       actorMembershipId: membershipId,
       propertyId: id,
       content: dto.content,
@@ -100,10 +112,11 @@ export class PropertiesController {
     @Param("id") id: string,
     @Query() query: InternalNotesListQueryDto,
   ) {
-    const { agencyId } = getAuthContext(req);
+    const { agencyId, role, membershipId } = getAuthContext(req);
     const { skip, take, page, pageSize } = getPagination(query);
     const { items, total } = await this.properties.listInternalNotes({
       agencyId,
+      actor: { role, membershipId },
       propertyId: id,
       skip,
       take,
@@ -112,9 +125,10 @@ export class PropertiesController {
   }
 
   @Delete(":id/internal-notes/:noteId")
+  @Roles(...ROLES_MUTATE)
   async deleteInternalNote(@Req() req: Request, @Param("id") id: string, @Param("noteId") noteId: string) {
-    const { agencyId } = getAuthContext(req);
-    return this.properties.deleteInternalNote({ agencyId, propertyId: id, noteId });
+    const { agencyId, role, membershipId } = getAuthContext(req);
+    return this.properties.deleteInternalNote({ agencyId, actor: { role, membershipId }, propertyId: id, noteId });
   }
 }
 

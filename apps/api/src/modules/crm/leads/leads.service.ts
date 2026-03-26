@@ -1,7 +1,10 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { ActivityAction, ActivityEntityType, LeadStatus } from "@prisma/client";
+import { ActivityAction, ActivityEntityType, LeadStatus, Prisma } from "@prisma/client";
 import { PrismaService } from "../../../prisma/prisma.service";
 import { ActivityService } from "../timeline/activity.service";
+import type { ActorScope } from "../../auth/rbac-query.util";
+import { contactScopeWhere, leadScopeWhere } from "../../auth/rbac-query.util";
+import { assertAgentAssignsSelfOnly } from "../../auth/rbac-assign.util";
 
 @Injectable()
 export class LeadsService {
@@ -12,6 +15,7 @@ export class LeadsService {
 
   async create(params: {
     agencyId: string;
+    actor: ActorScope;
     actorMembershipId?: string;
     data: {
       contactId: string;
@@ -20,8 +24,14 @@ export class LeadsService {
       assignedToMembershipId?: string;
     };
   }) {
+    assertAgentAssignsSelfOnly(
+      params.actor.role,
+      params.actor.membershipId,
+      params.data.assignedToMembershipId,
+    );
+
     const contact = await this.prisma.contact.findFirst({
-      where: { id: params.data.contactId, agencyId: params.agencyId },
+      where: { id: params.data.contactId, agencyId: params.agencyId, ...contactScopeWhere(params.actor) },
       select: { id: true },
     });
     if (!contact) throw new BadRequestException("Invalid contactId");
@@ -53,6 +63,7 @@ export class LeadsService {
 
   async list(params: {
     agencyId: string;
+    actor: ActorScope;
     status?: LeadStatus;
     assignedToMembershipId?: string;
     contactId?: string;
@@ -60,7 +71,10 @@ export class LeadsService {
     skip: number;
     take: number;
   }) {
-    const where: any = { agencyId: params.agencyId };
+    const where: Prisma.LeadWhereInput = {
+      agencyId: params.agencyId,
+      ...leadScopeWhere(params.actor),
+    };
     if (params.status) where.status = params.status;
     if (params.assignedToMembershipId) where.assignedToMembershipId = params.assignedToMembershipId;
     if (params.contactId) where.contactId = params.contactId;
@@ -91,9 +105,9 @@ export class LeadsService {
     return { items, total };
   }
 
-  async get(params: { agencyId: string; id: string }) {
+  async get(params: { agencyId: string; actor: ActorScope; id: string }) {
     const lead = await this.prisma.lead.findFirst({
-      where: { id: params.id, agencyId: params.agencyId },
+      where: { id: params.id, agencyId: params.agencyId, ...leadScopeWhere(params.actor) },
       include: { contact: true },
     });
     if (!lead) throw new NotFoundException("Lead not found");
@@ -102,6 +116,7 @@ export class LeadsService {
 
   async update(params: {
     agencyId: string;
+    actor: ActorScope;
     actorMembershipId?: string;
     id: string;
     data: {
@@ -110,8 +125,14 @@ export class LeadsService {
       assignedToMembershipId?: string;
     };
   }) {
+    assertAgentAssignsSelfOnly(
+      params.actor.role,
+      params.actor.membershipId,
+      params.data.assignedToMembershipId,
+    );
+
     const existing = await this.prisma.lead.findFirst({
-      where: { id: params.id, agencyId: params.agencyId },
+      where: { id: params.id, agencyId: params.agencyId, ...leadScopeWhere(params.actor) },
       select: { id: true, status: true, assignedToMembershipId: true, contactId: true },
     });
     if (!existing) throw new NotFoundException("Lead not found");
@@ -167,12 +188,12 @@ export class LeadsService {
       });
     }
 
-    return this.get({ agencyId: params.agencyId, id: updated.id });
+    return this.get({ agencyId: params.agencyId, actor: params.actor, id: updated.id });
   }
 
-  async delete(params: { agencyId: string; actorMembershipId?: string; id: string }) {
+  async delete(params: { agencyId: string; actor: ActorScope; actorMembershipId?: string; id: string }) {
     const existing = await this.prisma.lead.findFirst({
-      where: { id: params.id, agencyId: params.agencyId },
+      where: { id: params.id, agencyId: params.agencyId, ...leadScopeWhere(params.actor) },
       select: { id: true, contactId: true },
     });
     if (!existing) throw new NotFoundException("Lead not found");

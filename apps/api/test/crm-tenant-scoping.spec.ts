@@ -1,5 +1,6 @@
 import { ContactsService } from "../src/modules/crm/contacts/contacts.service";
 import { ActivityService } from "../src/modules/crm/timeline/activity.service";
+import { UserRole } from "@prisma/client";
 
 describe("CRM tenant scoping", () => {
   test("ContactsService.list always scopes by agencyId", async () => {
@@ -13,7 +14,14 @@ describe("CRM tenant scoping", () => {
 
     const svc = new ContactsService(prisma, activity);
 
-    await svc.list({ agencyId: "agency-1", skip: 0, take: 10, sort: "createdAt", q: "john" });
+    await svc.list({
+      agencyId: "agency-1",
+      actor: { membershipId: "m-1", role: UserRole.OWNER },
+      skip: 0,
+      take: 10,
+      sort: "createdAt",
+      q: "john",
+    });
 
     expect(prisma.contact.findMany).toHaveBeenCalledWith(
       expect.objectContaining({

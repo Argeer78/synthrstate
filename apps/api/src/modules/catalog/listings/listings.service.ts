@@ -1,6 +1,9 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { ListingStatus, ListingType } from "@prisma/client";
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
+import { ListingStatus, ListingType, Prisma } from "@prisma/client";
 import { PrismaService } from "../../../prisma/prisma.service";
+import { hasFullAgencyDataScope } from "../../auth/rbac.constants";
+import type { ActorScope } from "../../auth/rbac-query.util";
+import { listingScopeWhere, propertyScopeWhere } from "../../auth/rbac-query.util";
 
 @Injectable()
 export class ListingsService {
@@ -18,6 +21,7 @@ export class ListingsService {
 
   async create(params: {
     agencyId: string;
+    actor: ActorScope;
     actorMembershipId?: string;
     data: {
       propertyId: string;
@@ -34,10 +38,16 @@ export class ListingsService {
     };
   }) {
     const property = await this.prisma.property.findFirst({
-      where: { id: params.data.propertyId, agencyId: params.agencyId, deletedAt: null },
+      where: { id: params.data.propertyId, agencyId: params.agencyId, deletedAt: null, ...propertyScopeWhere(params.actor) },
       select: { id: true },
     });
     if (!property) throw new BadRequestException("Invalid propertyId");
+
+    if (!hasFullAgencyDataScope(params.actor.role)) {
+      if (params.data.status && params.data.status !== ListingStatus.DRAFT) {
+        throw new ForbiddenException("Only Owners and Managers can publish listings");
+      }
+    }
 
     const baseSlug = this.slugify(params.data.title);
     let slug = baseSlug;
@@ -74,6 +84,7 @@ export class ListingsService {
 
   async list(params: {
     agencyId: string;
+    actor: ActorScope;
     listingType?: ListingType;
     status?: ListingStatus;
     ownerContactId?: string;
@@ -84,24 +95,23 @@ export class ListingsService {
     skip: number;
     take: number;
   }) {
-    const where: any = {
+    const where: Prisma.ListingWhereInput = {
       agencyId: params.agencyId,
       deletedAt: null,
       property: {
         deletedAt: null,
+        ...(params.ownerContactId ? { ownerContactId: params.ownerContactId } : {}),
       },
+      ...listingScopeWhere(params.actor),
     };
 
     if (params.listingType) where.listingType = params.listingType;
     if (params.status) where.status = params.status;
-    if (params.ownerContactId) where.property.ownerContactId = params.ownerContactId;
-    if (typeof params.minPrice === "number") {
-      where.price = where.price ?? {};
-      where.price = { ...(where.price ?? {}), gte: params.minPrice };
-    }
-    if (typeof params.maxPrice === "number") {
-      where.price = where.price ?? {};
-      where.price = { ...(where.price ?? {}), lte: params.maxPrice };
+    if (typeof params.minPrice === "number" || typeof params.maxPrice === "number") {
+      where.price = {
+        ...(typeof params.minPrice === "number" ? { gte: params.minPrice } : {}),
+        ...(typeof params.maxPrice === "number" ? { lte: params.maxPrice } : {}),
+      };
     }
     if (typeof params.bedrooms === "number") where.bedrooms = params.bedrooms;
 
@@ -144,9 +154,15 @@ export class ListingsService {
     return { items, total };
   }
 
-  async get(params: { agencyId: string; id: string }) {
+  async get(params: { agencyId: string; actor: ActorScope; id: string }) {
     const listing = await this.prisma.listing.findFirst({
-      where: { id: params.id, agencyId: params.agencyId, deletedAt: null, property: { deletedAt: null } },
+      where: {
+        id: params.id,
+        agencyId: params.agencyId,
+        deletedAt: null,
+        property: { deletedAt: null },
+        ...listingScopeWhere(params.actor),
+      },
       include: {
         property: {
           include: {
@@ -161,6 +177,7 @@ export class ListingsService {
 
   async update(params: {
     agencyId: string;
+    actor: ActorScope;
     actorMembershipId?: string;
     id: string;
     data: {
@@ -176,10 +193,19 @@ export class ListingsService {
     };
   }) {
     const existing = await this.prisma.listing.findFirst({
-      where: { id: params.id, agencyId: params.agencyId, deletedAt: null },
-      select: { id: true },
+      where: { id: params.id, agencyId: params.agencyId, deletedAt: null, ...listingScopeWhere(params.actor) },
+      select: { id: true, status: true },
     });
     if (!existing) throw new NotFoundException("Listing not found");
+
+    if (!hasFullAgencyDataScope(params.actor.role)) {
+      if (existing.status !== ListingStatus.DRAFT) {
+        throw new ForbiddenException("Only draft listings can be edited");
+      }
+      if (params.data.status != null && params.data.status !== ListingStatus.DRAFT) {
+        throw new ForbiddenException("Only Owners and Managers can publish listings");
+      }
+    }
 
     const listing = await this.prisma.listing.update({
       where: { id: existing.id },
@@ -196,12 +222,12 @@ export class ListingsService {
       },
     });
 
-    return this.get({ agencyId: params.agencyId, id: listing.id });
+    return this.get({ agencyId: params.agencyId, actor: params.actor, id: listing.id });
   }
 
-  async softDelete(params: { agencyId: string; actorMembershipId?: string; id: string }) {
+  async softDelete(params: { agencyId: string; actor: ActorScope; actorMembershipId?: string; id: string }) {
     const existing = await this.prisma.listing.findFirst({
-      where: { id: params.id, agencyId: params.agencyId, deletedAt: null },
+      where: { id: params.id, agencyId: params.agencyId, deletedAt: null, ...listingScopeWhere(params.actor) },
       select: { id: true },
     });
     if (!existing) throw new NotFoundException("Listing not found");
@@ -219,12 +245,13 @@ export class ListingsService {
 
   async createInternalNote(params: {
     agencyId: string;
+    actor: ActorScope;
     actorMembershipId?: string;
     listingId: string;
     content: string;
   }) {
     const listing = await this.prisma.listing.findFirst({
-      where: { id: params.listingId, agencyId: params.agencyId, deletedAt: null },
+      where: { id: params.listingId, agencyId: params.agencyId, deletedAt: null, ...listingScopeWhere(params.actor) },
       select: { id: true },
     });
     if (!listing) throw new NotFoundException("Listing not found");
@@ -239,9 +266,15 @@ export class ListingsService {
     });
   }
 
-  async listInternalNotes(params: { agencyId: string; listingId: string; skip: number; take: number }) {
+  async listInternalNotes(params: {
+    agencyId: string;
+    actor: ActorScope;
+    listingId: string;
+    skip: number;
+    take: number;
+  }) {
     const listing = await this.prisma.listing.findFirst({
-      where: { id: params.listingId, agencyId: params.agencyId, deletedAt: null },
+      where: { id: params.listingId, agencyId: params.agencyId, deletedAt: null, ...listingScopeWhere(params.actor) },
       select: { id: true },
     });
     if (!listing) throw new NotFoundException("Listing not found");
@@ -261,7 +294,13 @@ export class ListingsService {
     return { items, total };
   }
 
-  async deleteInternalNote(params: { agencyId: string; listingId: string; noteId: string }) {
+  async deleteInternalNote(params: { agencyId: string; actor: ActorScope; listingId: string; noteId: string }) {
+    const listing = await this.prisma.listing.findFirst({
+      where: { id: params.listingId, agencyId: params.agencyId, deletedAt: null, ...listingScopeWhere(params.actor) },
+      select: { id: true },
+    });
+    if (!listing) throw new NotFoundException("Listing not found");
+
     const existing = await this.prisma.listingInternalNote.findFirst({
       where: { id: params.noteId, agencyId: params.agencyId, listingId: params.listingId },
       select: { id: true },

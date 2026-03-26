@@ -157,6 +157,11 @@ model Agency {
   subscriptions AgencySubscription[]
   stripeWebhookEvents StripeWebhookEvent[]
 
+  // Integrations
+  gmailConnections GmailConnection[]
+  gmailThreads GmailThread[]
+  gmailMessages GmailMessage[]
+
   @@index([slug])
 }
 
@@ -194,6 +199,11 @@ model AgencyMembership {
   createdNotes    Note[]    @relation("NoteCreatedBy")
   createdActivities ActivityEvent[] @relation("ActivityCreatedBy")
 
+  // Integrations
+  gmailConnection GmailConnection?
+  gmailThreads GmailThread[]
+  gmailMessages GmailMessage[]
+
   @@unique([agencyId, userId])
   @@index([agencyId, role])
   @@index([userId])
@@ -221,6 +231,8 @@ model Contact {
   notes Note[]
   activities ActivityEvent[]
   ownedProperties Property[] @relation("PropertyOwner")
+
+  gmailThreads GmailThread[]
 
   @@index([agencyId, email])
   @@index([agencyId, phone])
@@ -255,6 +267,8 @@ model Lead {
   inquiries Inquiry[]
   leadSummaryGenerations AiLeadSummaryGeneration[]
   buyerMatchGenerations AiBuyerPropertyMatchGeneration[] @relation("BuyerLead")
+
+  gmailThreads GmailThread[]
 
   // Buyer preferences for matching (optional MVP fields)
   buyerListingType ListingType?
@@ -413,6 +427,8 @@ model Listing {
   inquiries Inquiry[]
   aiListingDescriptionGenerations AiListingDescriptionGeneration[]
   buyerMatchRecommendations AiBuyerPropertyMatchRecommendation[]
+
+  gmailThreads GmailThread[]
 
   agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
 
@@ -909,6 +925,105 @@ model StripeWebhookEvent {
 
   @@index([agencyId, eventType, receivedAt])
   @@index([subscriptionAgencyId, eventType, receivedAt])
+}
+
+// --- Integrations: Gmail (MVP) ---
+// Per-membership Gmail connection. Tokens are encrypted at rest in DB.
+model GmailConnection {
+  id        String @id @default(uuid())
+  agencyId  String
+  membershipId String @unique
+
+  gmailUserEmail String
+
+  // OAuth tokens (encrypted JSON blobs)
+  accessTokenEnc  String?
+  refreshTokenEnc String?
+  tokenExpiryAt   DateTime?
+  scope           String?
+
+  // Sync cursor (Gmail historyId) for incremental sync later
+  gmailHistoryId String?
+  lastSyncedAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  membership AgencyMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+
+  threads GmailThread[]
+
+  @@index([agencyId, gmailUserEmail])
+  @@index([agencyId, membershipId])
+}
+
+model GmailThread {
+  id        String @id @default(uuid())
+  agencyId  String
+  membershipId String
+
+  connectionId String
+  gmailThreadId String
+
+  subject   String?
+  snippet   String?
+  fromEmail String?
+  toEmails  Json?
+
+  // Optional linking to CRM entities (best-effort)
+  contactId String?
+  leadId    String?
+  listingId String?
+
+  lastMessageAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  membership AgencyMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+  connection GmailConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+
+  contact Contact? @relation(fields: [contactId], references: [id], onDelete: SetNull)
+  lead    Lead?    @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  listing Listing? @relation(fields: [listingId], references: [id], onDelete: SetNull)
+
+  messages GmailMessage[]
+
+  @@unique([agencyId, gmailThreadId, membershipId])
+  @@index([agencyId, membershipId, lastMessageAt])
+  @@index([agencyId, contactId, lastMessageAt])
+  @@index([agencyId, leadId, lastMessageAt])
+}
+
+model GmailMessage {
+  id        String @id @default(uuid())
+  agencyId  String
+  membershipId String
+
+  threadId  String
+  gmailMessageId String
+
+  internalDate DateTime?
+  fromEmail String?
+  toEmails  Json?
+  subject   String?
+  snippet   String?
+
+  // Store a small text body for AI context (MVP)
+  bodyText  String? @db.Text
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  membership AgencyMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+  thread GmailThread @relation(fields: [threadId], references: [id], onDelete: Cascade)
+
+  @@unique([agencyId, gmailMessageId, membershipId])
+  @@index([agencyId, membershipId, internalDate])
+  @@index([agencyId, threadId, internalDate])
 }
 
 model PublicationChannel {

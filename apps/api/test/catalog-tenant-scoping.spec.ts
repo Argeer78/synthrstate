@@ -1,5 +1,6 @@
 import { PropertiesService } from "../src/modules/catalog/properties/properties.service";
 import { ListingsService } from "../src/modules/catalog/listings/listings.service";
+import { UserRole } from "@prisma/client";
 
 describe("Catalog tenant scoping", () => {
   test("PropertiesService.list always filters deletedAt:null and agencyId", async () => {
@@ -16,6 +17,7 @@ describe("Catalog tenant scoping", () => {
     const svc = new PropertiesService(prisma);
     await svc.list({
       agencyId: "agency-1",
+      actor: { membershipId: "m-1", role: UserRole.OWNER },
       skip: 0,
       take: 10,
       sort: "createdAt",
@@ -48,6 +50,7 @@ describe("Catalog tenant scoping", () => {
     const svc = new ListingsService(prisma);
     await svc.list({
       agencyId: "agency-1",
+      actor: { membershipId: "m-1", role: UserRole.OWNER },
       skip: 0,
       take: 10,
       status: "ACTIVE" as any,
@@ -75,7 +78,12 @@ describe("Catalog tenant scoping", () => {
     };
 
     const svc = new PropertiesService(prisma);
-    await svc.softDelete({ agencyId: "agency-1", actorMembershipId: "m-1", id: "prop-1" });
+    await svc.softDelete({
+      agencyId: "agency-1",
+      actor: { membershipId: "m-1", role: UserRole.OWNER },
+      actorMembershipId: "m-1",
+      id: "prop-1",
+    });
 
     expect(prisma.property.findFirst).toHaveBeenCalledWith(
       expect.objectContaining({ where: expect.objectContaining({ agencyId: "agency-1", deletedAt: null }) }),

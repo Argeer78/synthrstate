@@ -2,6 +2,8 @@ import { Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../../../prisma/prisma.service";
 import { ActivityAction, ActivityEntityType, Prisma } from "@prisma/client";
 import { ActivityService } from "../timeline/activity.service";
+import type { ActorScope } from "../../auth/rbac-query.util";
+import { contactScopeWhere } from "../../auth/rbac-query.util";
 
 @Injectable()
 export class ContactsService {
@@ -46,12 +48,16 @@ export class ContactsService {
 
   async list(params: {
     agencyId: string;
+    actor: ActorScope;
     q?: string;
     skip: number;
     take: number;
     sort?: "createdAt" | "lastName";
   }) {
-    const where: any = { agencyId: params.agencyId };
+    const where: Prisma.ContactWhereInput = {
+      agencyId: params.agencyId,
+      ...contactScopeWhere(params.actor),
+    };
     if (params.q) {
       const q = params.q.trim();
       where.OR = [
@@ -81,9 +87,9 @@ export class ContactsService {
     return { items, total };
   }
 
-  async get(params: { agencyId: string; id: string }) {
+  async get(params: { agencyId: string; actor: ActorScope; id: string }) {
     const contact = await this.prisma.contact.findFirst({
-      where: { id: params.id, agencyId: params.agencyId },
+      where: { id: params.id, agencyId: params.agencyId, ...contactScopeWhere(params.actor) },
     });
     if (!contact) throw new NotFoundException("Contact not found");
     return contact;
@@ -91,6 +97,7 @@ export class ContactsService {
 
   async update(params: {
     agencyId: string;
+    actor: ActorScope;
     actorMembershipId?: string;
     id: string;
     data: {
@@ -103,7 +110,7 @@ export class ContactsService {
     };
   }) {
     const updated = await this.prisma.contact.updateMany({
-      where: { id: params.id, agencyId: params.agencyId },
+      where: { id: params.id, agencyId: params.agencyId, ...contactScopeWhere(params.actor) },
       data: {
         ...params.data,
         email: params.data.email?.toLowerCase(),
@@ -111,7 +118,7 @@ export class ContactsService {
     });
     if (updated.count !== 1) throw new NotFoundException("Contact not found");
 
-    const contact = await this.get({ agencyId: params.agencyId, id: params.id });
+    const contact = await this.get({ agencyId: params.agencyId, actor: params.actor, id: params.id });
 
     await this.activity.log({
       agencyId: params.agencyId,
@@ -126,9 +133,9 @@ export class ContactsService {
     return contact;
   }
 
-  async delete(params: { agencyId: string; actorMembershipId?: string; id: string }) {
+  async delete(params: { agencyId: string; actor: ActorScope; actorMembershipId?: string; id: string }) {
     const deleted = await this.prisma.contact.deleteMany({
-      where: { id: params.id, agencyId: params.agencyId },
+      where: { id: params.id, agencyId: params.agencyId, ...contactScopeWhere(params.actor) },
     });
     if (deleted.count !== 1) throw new NotFoundException("Contact not found");
 

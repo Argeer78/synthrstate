@@ -2,12 +2,16 @@ import { BadRequestException, ForbiddenException, Injectable, NotFoundException 
 import { PrismaService } from "../../../prisma/prisma.service";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { MediaType, MediaUploadStatus } from "@prisma/client";
+import { ListingStatus, MediaType, MediaUploadStatus, UserRole } from "@prisma/client";
 import { randomUUID } from "crypto";
+import { hasFullAgencyDataScope } from "../../auth/rbac.constants";
+import type { ActorScope } from "../../auth/rbac-query.util";
+import { listingScopeWhere } from "../../auth/rbac-query.util";
 
 type CreateSignedImageUploadParams = {
   agencyId: string;
   listingId: string;
+  actor: ActorScope;
   actorMembershipId?: string;
   fileName: string;
   contentType: string;
@@ -55,30 +59,46 @@ export class MediaService {
     return fileName.replace(/[^a-zA-Z0-9._-]/g, "_");
   }
 
-  private listingMustBelongToAgency(agencyId: string, listingId: string) {
-    return this.prisma.listing.findFirst({
-      where: { id: listingId, agencyId, deletedAt: null },
-      select: { id: true },
+  private async assertListingForMedia(params: {
+    agencyId: string;
+    listingId: string;
+    actor: ActorScope;
+    requireDraftForAgent: boolean;
+  }) {
+    const listing = await this.prisma.listing.findFirst({
+      where: { id: params.listingId, agencyId: params.agencyId, deletedAt: null, ...listingScopeWhere(params.actor) },
+      select: { id: true, status: true },
     });
+    if (!listing) throw new NotFoundException("Listing not found");
+    if (
+      params.requireDraftForAgent &&
+      !hasFullAgencyDataScope(params.actor.role) &&
+      params.actor.role === UserRole.AGENT &&
+      listing.status !== ListingStatus.DRAFT
+    ) {
+      throw new ForbiddenException("Media can only be edited while the listing is in draft");
+    }
+    return listing;
   }
 
   async listListingMedia(params: {
     agencyId: string;
     listingId: string;
+    actor: ActorScope;
     skip: number;
     take: number;
     includeDeleted: boolean;
     onlyActiveUploads: boolean;
     mediaType?: MediaType;
   }) {
-    // Ensure listing belongs to tenant
-    const listing = await this.prisma.listing.findFirst({
-      where: { id: params.listingId, agencyId: params.agencyId, deletedAt: null },
-      select: { id: true },
+    await this.assertListingForMedia({
+      agencyId: params.agencyId,
+      listingId: params.listingId,
+      actor: params.actor,
+      requireDraftForAgent: false,
     });
-    if (!listing) throw new NotFoundException("Listing not found");
 
-    const where: any = {
+    const where: Record<string, unknown> = {
       agencyId: params.agencyId,
       listingId: params.listingId,
       mediaType: params.mediaType ?? "IMAGE",
@@ -103,8 +123,12 @@ export class MediaService {
   async createSignedImageUpload(params: CreateSignedImageUploadParams) {
     this.assertImageAllowed(params.contentType, params.sizeBytes);
 
-    const listing = await this.listingMustBelongToAgency(params.agencyId, params.listingId);
-    if (!listing) throw new NotFoundException("Listing not found");
+    await this.assertListingForMedia({
+      agencyId: params.agencyId,
+      listingId: params.listingId,
+      actor: params.actor,
+      requireDraftForAgent: true,
+    });
 
     const existingActive = await this.prisma.mediaAsset.findMany({
       where: { agencyId: params.agencyId, listingId: params.listingId, mediaType: "IMAGE", deletedAt: null, uploadStatus: "ACTIVE" },
@@ -164,7 +188,20 @@ export class MediaService {
     };
   }
 
-  async completeUpload(params: { agencyId: string; listingId: string; assetId: string; etag?: string }) {
+  async completeUpload(params: {
+    agencyId: string;
+    listingId: string;
+    actor: ActorScope;
+    assetId: string;
+    etag?: string;
+  }) {
+    await this.assertListingForMedia({
+      agencyId: params.agencyId,
+      listingId: params.listingId,
+      actor: params.actor,
+      requireDraftForAgent: true,
+    });
+
     const asset = await this.prisma.mediaAsset.findFirst({
       where: { id: params.assetId, agencyId: params.agencyId, listingId: params.listingId },
     });
@@ -201,7 +238,20 @@ export class MediaService {
     return { ok: true };
   }
 
-  async softDeleteMedia(params: { agencyId: string; listingId: string; assetId: string; actorMembershipId?: string }) {
+  async softDeleteMedia(params: {
+    agencyId: string;
+    listingId: string;
+    actor: ActorScope;
+    assetId: string;
+    actorMembershipId?: string;
+  }) {
+    await this.assertListingForMedia({
+      agencyId: params.agencyId,
+      listingId: params.listingId,
+      actor: params.actor,
+      requireDraftForAgent: true,
+    });
+
     const asset = await this.prisma.mediaAsset.findFirst({
       where: { id: params.assetId, agencyId: params.agencyId, listingId: params.listingId, deletedAt: null },
       select: { id: true, isCover: true, mediaType: true },
@@ -227,12 +277,18 @@ export class MediaService {
     return { ok: true };
   }
 
-  async reorderListingMedia(params: { agencyId: string; listingId: string; orderedAssetIds: string[] }) {
-    const listing = await this.prisma.listing.findFirst({
-      where: { id: params.listingId, agencyId: params.agencyId, deletedAt: null },
-      select: { id: true },
+  async reorderListingMedia(params: {
+    agencyId: string;
+    listingId: string;
+    actor: ActorScope;
+    orderedAssetIds: string[];
+  }) {
+    await this.assertListingForMedia({
+      agencyId: params.agencyId,
+      listingId: params.listingId,
+      actor: params.actor,
+      requireDraftForAgent: true,
     });
-    if (!listing) throw new NotFoundException("Listing not found");
 
     const assets = await this.prisma.mediaAsset.findMany({
       where: { agencyId: params.agencyId, listingId: params.listingId, deletedAt: null, uploadStatus: "ACTIVE", id: { in: params.orderedAssetIds } },
@@ -256,7 +312,20 @@ export class MediaService {
     return { ok: true };
   }
 
-  async setListingCover(params: { agencyId: string; listingId: string; assetId: string; isCover: boolean }) {
+  async setListingCover(params: {
+    agencyId: string;
+    listingId: string;
+    actor: ActorScope;
+    assetId: string;
+    isCover: boolean;
+  }) {
+    await this.assertListingForMedia({
+      agencyId: params.agencyId,
+      listingId: params.listingId,
+      actor: params.actor,
+      requireDraftForAgent: true,
+    });
+
     if (!params.isCover) {
       // MVP: allow turning off by setting cover to another image later; disallow empty cover via simplicity
       // For now just forbid.

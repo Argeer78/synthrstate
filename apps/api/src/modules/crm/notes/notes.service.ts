@@ -1,7 +1,9 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { ActivityAction, ActivityEntityType } from "@prisma/client";
+import { ActivityAction, ActivityEntityType, Prisma } from "@prisma/client";
 import { PrismaService } from "../../../prisma/prisma.service";
 import { ActivityService } from "../timeline/activity.service";
+import type { ActorScope } from "../../auth/rbac-query.util";
+import { contactScopeWhere, leadScopeWhere, noteScopeWhere } from "../../auth/rbac-query.util";
 
 @Injectable()
 export class NotesService {
@@ -12,6 +14,7 @@ export class NotesService {
 
   async create(params: {
     agencyId: string;
+    actor: ActorScope;
     actorMembershipId?: string;
     data: { content: string; contactId?: string; leadId?: string };
   }) {
@@ -24,14 +27,14 @@ export class NotesService {
 
     if (params.data.contactId) {
       const contact = await this.prisma.contact.findFirst({
-        where: { id: params.data.contactId, agencyId: params.agencyId },
+        where: { id: params.data.contactId, agencyId: params.agencyId, ...contactScopeWhere(params.actor) },
         select: { id: true },
       });
       if (!contact) throw new BadRequestException("Invalid contactId");
     }
     if (params.data.leadId) {
       const lead = await this.prisma.lead.findFirst({
-        where: { id: params.data.leadId, agencyId: params.agencyId },
+        where: { id: params.data.leadId, agencyId: params.agencyId, ...leadScopeWhere(params.actor) },
         select: { id: true, contactId: true },
       });
       if (!lead) throw new BadRequestException("Invalid leadId");
@@ -62,8 +65,18 @@ export class NotesService {
     return note;
   }
 
-  async list(params: { agencyId: string; contactId?: string; leadId?: string; skip: number; take: number }) {
-    const where: any = { agencyId: params.agencyId };
+  async list(params: {
+    agencyId: string;
+    actor: ActorScope;
+    contactId?: string;
+    leadId?: string;
+    skip: number;
+    take: number;
+  }) {
+    const where: Prisma.NoteWhereInput = {
+      agencyId: params.agencyId,
+      ...noteScopeWhere(params.actor),
+    };
     if (params.contactId) where.contactId = params.contactId;
     if (params.leadId) where.leadId = params.leadId;
 
@@ -80,17 +93,23 @@ export class NotesService {
     return { items, total };
   }
 
-  async get(params: { agencyId: string; id: string }) {
+  async get(params: { agencyId: string; actor: ActorScope; id: string }) {
     const note = await this.prisma.note.findFirst({
-      where: { id: params.id, agencyId: params.agencyId },
+      where: { id: params.id, agencyId: params.agencyId, ...noteScopeWhere(params.actor) },
     });
     if (!note) throw new NotFoundException("Note not found");
     return note;
   }
 
-  async update(params: { agencyId: string; actorMembershipId?: string; id: string; content?: string }) {
+  async update(params: {
+    agencyId: string;
+    actor: ActorScope;
+    actorMembershipId?: string;
+    id: string;
+    content?: string;
+  }) {
     const existing = await this.prisma.note.findFirst({
-      where: { id: params.id, agencyId: params.agencyId },
+      where: { id: params.id, agencyId: params.agencyId, ...noteScopeWhere(params.actor) },
       select: { id: true, contactId: true, leadId: true },
     });
     if (!existing) throw new NotFoundException("Note not found");
@@ -100,7 +119,7 @@ export class NotesService {
       data: { content: params.content },
     });
 
-    const note = await this.get({ agencyId: params.agencyId, id: existing.id });
+    const note = await this.get({ agencyId: params.agencyId, actor: params.actor, id: existing.id });
 
     await this.activity.log({
       agencyId: params.agencyId,
@@ -117,9 +136,9 @@ export class NotesService {
     return note;
   }
 
-  async delete(params: { agencyId: string; actorMembershipId?: string; id: string }) {
+  async delete(params: { agencyId: string; actor: ActorScope; actorMembershipId?: string; id: string }) {
     const existing = await this.prisma.note.findFirst({
-      where: { id: params.id, agencyId: params.agencyId },
+      where: { id: params.id, agencyId: params.agencyId, ...noteScopeWhere(params.actor) },
       select: { id: true, contactId: true, leadId: true },
     });
     if (!existing) throw new NotFoundException("Note not found");

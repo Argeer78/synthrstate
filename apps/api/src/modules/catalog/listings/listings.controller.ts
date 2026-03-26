@@ -1,7 +1,11 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req, UseGuards } from "@nestjs/common";
 import type { Request } from "express";
+import { UserRole } from "@prisma/client";
 import { JwtAuthGuard } from "../../auth/guards/jwt-auth.guard";
 import { TenantGuard } from "../../auth/guards/tenant.guard";
+import { RolesGuard } from "../../auth/guards/roles.guard";
+import { Roles } from "../../auth/roles.decorator";
+import { ROLES_MUTATE } from "../../auth/rbac.constants";
 import { getAuthContext } from "../shared/tenant.req";
 import { getPagination } from "../shared/pagination.dto";
 import { CreateInternalNoteDto } from "./dto/internal-note.dto";
@@ -12,15 +16,17 @@ import { UpdateListingDto } from "./dto/update-listing.dto";
 import { ListingsService } from "./listings.service";
 
 @Controller("catalog/listings")
-@UseGuards(JwtAuthGuard, TenantGuard)
+@UseGuards(JwtAuthGuard, TenantGuard, RolesGuard)
 export class ListingsController {
   constructor(private readonly listings: ListingsService) {}
 
   @Post()
+  @Roles(...ROLES_MUTATE)
   async create(@Req() req: Request, @Body() dto: CreateListingDto) {
-    const { agencyId, membershipId } = getAuthContext(req);
+    const { agencyId, membershipId, role } = getAuthContext(req);
     return this.listings.create({
       agencyId,
+      actor: { role, membershipId },
       actorMembershipId: membershipId,
       data: dto,
     });
@@ -28,10 +34,11 @@ export class ListingsController {
 
   @Get()
   async list(@Req() req: Request, @Query() query: ListingListQueryDto) {
-    const { agencyId } = getAuthContext(req);
+    const { agencyId, role, membershipId } = getAuthContext(req);
     const { skip, take, page, pageSize } = getPagination(query);
     const { items, total } = await this.listings.list({
       agencyId,
+      actor: { role, membershipId },
       listingType: query.listingType,
       status: query.status,
       ownerContactId: query.ownerContactId,
@@ -48,15 +55,17 @@ export class ListingsController {
 
   @Get(":id")
   async get(@Req() req: Request, @Param("id") id: string) {
-    const { agencyId } = getAuthContext(req);
-    return this.listings.get({ agencyId, id });
+    const { agencyId, role, membershipId } = getAuthContext(req);
+    return this.listings.get({ agencyId, actor: { role, membershipId }, id });
   }
 
   @Patch(":id")
+  @Roles(...ROLES_MUTATE)
   async update(@Req() req: Request, @Param("id") id: string, @Body() dto: UpdateListingDto) {
-    const { agencyId, membershipId } = getAuthContext(req);
+    const { agencyId, membershipId, role } = getAuthContext(req);
     return this.listings.update({
       agencyId,
+      actor: { role, membershipId },
       actorMembershipId: membershipId,
       id,
       data: dto,
@@ -64,20 +73,23 @@ export class ListingsController {
   }
 
   @Delete(":id")
+  @Roles(UserRole.OWNER)
   async softDelete(@Req() req: Request, @Param("id") id: string) {
-    const { agencyId, membershipId } = getAuthContext(req);
-    return this.listings.softDelete({ agencyId, actorMembershipId: membershipId, id });
+    const { agencyId, membershipId, role } = getAuthContext(req);
+    return this.listings.softDelete({ agencyId, actor: { role, membershipId }, actorMembershipId: membershipId, id });
   }
 
   @Post(":id/internal-notes")
+  @Roles(...ROLES_MUTATE)
   async createInternalNote(
     @Req() req: Request,
     @Param("id") id: string,
     @Body() dto: CreateInternalNoteDto,
   ) {
-    const { agencyId, membershipId } = getAuthContext(req);
+    const { agencyId, membershipId, role } = getAuthContext(req);
     return this.listings.createInternalNote({
       agencyId,
+      actor: { role, membershipId },
       actorMembershipId: membershipId,
       listingId: id,
       content: dto.content,
@@ -90,10 +102,11 @@ export class ListingsController {
     @Param("id") id: string,
     @Query() query: InternalNotesListQueryDto,
   ) {
-    const { agencyId } = getAuthContext(req);
+    const { agencyId, role, membershipId } = getAuthContext(req);
     const { skip, take, page, pageSize } = getPagination(query);
     const { items, total } = await this.listings.listInternalNotes({
       agencyId,
+      actor: { role, membershipId },
       listingId: id,
       skip,
       take,
@@ -102,9 +115,10 @@ export class ListingsController {
   }
 
   @Delete(":id/internal-notes/:noteId")
+  @Roles(...ROLES_MUTATE)
   async deleteInternalNote(@Req() req: Request, @Param("id") id: string, @Param("noteId") noteId: string) {
-    const { agencyId } = getAuthContext(req);
-    return this.listings.deleteInternalNote({ agencyId, listingId: id, noteId });
+    const { agencyId, role, membershipId } = getAuthContext(req);
+    return this.listings.deleteInternalNote({ agencyId, actor: { role, membershipId }, listingId: id, noteId });
   }
 }
 

@@ -1,7 +1,9 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
 import { OpenAiProvider } from "./providers/openai.provider";
-import { AiGenerationStatus, AiGenerationType, AiTone } from "@prisma/client";
+import { AiGenerationStatus, AiGenerationType, AiTone, ListingStatus, UserRole } from "@prisma/client";
+import type { ActorScope } from "../auth/rbac-query.util";
+import { leadScopeWhere, listingScopeWhere, noteScopeWhere, taskScopeWhere } from "../auth/rbac-query.util";
 import type { ApplyGeneratedDescriptionDto } from "./dto/apply-generated-description.dto";
 import type { BuyerPreferencesOverrideDto } from "./dto/buyer-match.dto";
 
@@ -39,6 +41,7 @@ export class AiService {
     agencyId: string;
     listingId: string;
     membershipId: string;
+    actor: ActorScope;
     tone: AiTone;
     listingOverride?: { title?: string; descriptionEn?: string; descriptionEl?: string };
   }) {
@@ -48,6 +51,7 @@ export class AiService {
         agencyId: params.agencyId,
         deletedAt: null,
         property: { deletedAt: null },
+        ...listingScopeWhere(params.actor),
       },
       include: {
         property: {
@@ -74,6 +78,10 @@ export class AiService {
     });
 
     if (!listing) throw new NotFoundException("Listing not found");
+
+    if (params.actor.role === UserRole.AGENT && listing.status !== ListingStatus.DRAFT) {
+      throw new ForbiddenException("Agents can only generate descriptions for draft listings");
+    }
 
     // Load latest prompt template version for this tone
     const templateVersion = await this.prisma.aiPromptTemplateVersion.findFirst({
@@ -166,6 +174,7 @@ export class AiService {
     agencyId: string;
     generationId: string;
     membershipId: string;
+    role: UserRole;
     dto: ApplyGeneratedDescriptionDto;
   }) {
     const generation = await this.prisma.aiListingDescriptionGeneration.findFirst({
@@ -193,10 +202,22 @@ export class AiService {
     }
 
     const listing = await this.prisma.listing.findFirst({
-      where: { id: generation.listingId, agencyId: params.agencyId, deletedAt: null, property: { deletedAt: null } },
-      select: { id: true },
+      where: {
+        id: generation.listingId,
+        agencyId: params.agencyId,
+        deletedAt: null,
+        property: { deletedAt: null },
+        ...listingScopeWhere({ role: params.role, membershipId: params.membershipId }),
+      },
+      select: { id: true, status: true },
     });
     if (!listing) throw new NotFoundException("Listing not found");
+    if (
+      params.role === UserRole.AGENT &&
+      listing.status !== ListingStatus.DRAFT
+    ) {
+      throw new ForbiddenException("Agents can only apply AI output to draft listings");
+    }
 
     await this.prisma.$transaction(async (tx) => {
       await tx.listing.update({
@@ -222,9 +243,13 @@ export class AiService {
     return { ok: true };
   }
 
-  async getGeneration(params: { agencyId: string; generationId: string }) {
+  async getGeneration(params: { agencyId: string; generationId: string; actor: ActorScope }) {
     const generation = await this.prisma.aiListingDescriptionGeneration.findFirst({
-      where: { id: params.generationId, agencyId: params.agencyId },
+      where: {
+        id: params.generationId,
+        agencyId: params.agencyId,
+        listing: { is: { deletedAt: null, ...listingScopeWhere(params.actor) } },
+      },
       include: {
         promptTemplateVersion: {
           include: { promptTemplate: true },
@@ -239,12 +264,13 @@ export class AiService {
     agencyId: string;
     leadId: string;
     membershipId: string;
+    actor: ActorScope;
     maxNotes?: number;
     maxTasks?: number;
     includeInquiries?: boolean;
   }) {
     const lead = await this.prisma.lead.findFirst({
-      where: { id: params.leadId, agencyId: params.agencyId },
+      where: { id: params.leadId, agencyId: params.agencyId, ...leadScopeWhere(params.actor) },
       include: {
         contact: true,
       },
@@ -257,13 +283,14 @@ export class AiService {
         where: {
           agencyId: params.agencyId,
           OR: [{ leadId: lead.id }, { contactId: lead.contactId }],
+          ...noteScopeWhere(params.actor),
         },
         orderBy: { createdAt: "desc" },
         take: params.maxNotes ?? 10,
         select: { content: true, createdAt: true, leadId: true, contactId: true },
       }),
       this.prisma.task.findMany({
-        where: { agencyId: params.agencyId, leadId: lead.id },
+        where: { agencyId: params.agencyId, leadId: lead.id, ...taskScopeWhere(params.actor) },
         orderBy: { dueAt: "asc", createdAt: "desc" },
         take: params.maxTasks ?? 8,
         select: { title: true, status: true, dueAt: true, createdAt: true },
@@ -377,9 +404,13 @@ export class AiService {
     }
   }
 
-  async getLeadSummaryGeneration(params: { agencyId: string; generationId: string }) {
+  async getLeadSummaryGeneration(params: { agencyId: string; generationId: string; actor: ActorScope }) {
     const generation = await this.prisma.aiLeadSummaryGeneration.findFirst({
-      where: { id: params.generationId, agencyId: params.agencyId },
+      where: {
+        id: params.generationId,
+        agencyId: params.agencyId,
+        lead: { is: { ...leadScopeWhere(params.actor) } },
+      },
       include: { lead: { select: { id: true, status: true, title: true } } },
     });
     if (!generation) throw new NotFoundException("Generation not found");
@@ -499,11 +530,12 @@ export class AiService {
     agencyId: string;
     buyerLeadId: string;
     membershipId: string;
+    actor: ActorScope;
     limit?: number;
     preferencesOverride?: BuyerPreferencesOverrideDto;
   }) {
     const lead = await this.prisma.lead.findFirst({
-      where: { id: params.buyerLeadId, agencyId: params.agencyId },
+      where: { id: params.buyerLeadId, agencyId: params.agencyId, ...leadScopeWhere(params.actor) },
       include: { contact: true },
     });
     if (!lead) throw new NotFoundException("Buyer lead not found");
@@ -535,11 +567,12 @@ export class AiService {
     const shortlistLimit = Math.min(candidateLimit * 3, 30);
 
     // Candidate selection (published only for now)
-    const where: any = {
+    const where: Record<string, unknown> = {
       agencyId: params.agencyId,
       status: "ACTIVE",
       deletedAt: null,
       property: { deletedAt: null },
+      ...listingScopeWhere(params.actor),
     };
     if (prefs.listingType) where.listingType = prefs.listingType;
     if (typeof prefs.minPrice === "number" || typeof prefs.maxPrice === "number") {
@@ -721,9 +754,13 @@ export class AiService {
     }
   }
 
-  async getBuyerMatchGeneration(params: { agencyId: string; generationId: string }) {
+  async getBuyerMatchGeneration(params: { agencyId: string; generationId: string; actor: ActorScope }) {
     const generation = await this.prisma.aiBuyerPropertyMatchGeneration.findFirst({
-      where: { id: params.generationId, agencyId: params.agencyId },
+      where: {
+        id: params.generationId,
+        agencyId: params.agencyId,
+        buyerLead: { is: { ...leadScopeWhere(params.actor) } },
+      },
       include: {
         recommendations: {
           include: { listing: { select: { id: true, slug: true, title: true, listingType: true, price: true } } },
