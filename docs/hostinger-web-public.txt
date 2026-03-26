@@ -5,7 +5,7 @@ The Next.js app is NOT at the repository root. It lives in:
 
   apps/web-public/
 
-If Root directory is locked to ./ (repo root), the root package.json delegates install/build/start to apps/web-public (postinstall + build + start scripts). Set Output directory to: apps/web-public/.next
+If Root directory is locked to ./ (repo root), the root package.json delegates install/build/start to apps/web-public, then copies .next to the repo root (scripts/sync-web-public-next.mjs). Set Output directory to: .next
 
 Full monorepo build locally: pnpm run build:all
 
