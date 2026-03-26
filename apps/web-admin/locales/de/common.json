@@ -1,0 +1,32 @@
+{
+  "common": {
+    "home": "Startseite",
+    "crm": "CRM",
+    "listings": "Immobilien",
+    "billing": "Abrechnung",
+    "ai": "KI",
+    "userManagement": "Benutzerverwaltung",
+    "apiFeeds": "API und Feeds",
+    "userManual": "Benutzerhandbuch",
+    "feedback": "Feedback",
+    "close": "Schließen",
+    "back": "Zurück",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "refresh": "Aktualisieren",
+    "loading": "Lädt...",
+    "signOut": "Abmelden",
+    "signingOut": "Abmeldung..."
+  },
+  "language": {
+    "label": "Sprache",
+    "english": "Englisch",
+    "spanish": "Spanisch",
+    "french": "Französisch",
+    "german": "Deutsch",
+    "italian": "Italienisch",
+    "portuguese": "Portugiesisch",
+    "greek": "Griechisch"
+  }
+}
+

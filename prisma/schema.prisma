@@ -54,6 +54,17 @@ enum ListingStatus {
   RENTED
 }
 
+enum TranslationSource {
+  AI
+  HUMAN
+}
+
+enum TranslationReviewStatus {
+  DRAFT
+  REVIEWED
+  APPROVED
+}
+
 enum EnergyClass {
   A
   B
@@ -97,6 +108,29 @@ enum ActivityAction {
   COMPLETED
 }
 
+// Collaboration / notifications (MVP)
+enum NotificationType {
+  INQUIRY_RECEIVED
+  INQUIRY_CONVERTED
+  LEAD_ASSIGNED
+  TASK_DUE_SOON
+  LISTING_PUBLISH_FAILED
+  MENTION
+  IMPORTANT_UPDATE
+}
+
+enum CommentTargetType {
+  LEAD
+  LISTING
+  TASK
+}
+
+enum AttachmentTargetType {
+  LEAD
+  LISTING
+  TASK
+}
+
 enum InquiryPreferredContactMethod {
   EMAIL
   PHONE
@@ -123,6 +157,15 @@ model Agency {
   name      String
   slug      String   @unique
   officeCount Int @default(1)
+  phone     String?
+  email     String?
+  descriptionShort String? @db.Text
+  officeAddress    String? @db.Text
+  brandColorHex    String? @db.VarChar(16)
+  logoUrl          String?
+
+  onboardingCompletedAt DateTime?
+  onboardingDismissedAt DateTime?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -136,6 +179,7 @@ model Agency {
   // Catalog / public
   properties Property[]
   listings   Listing[]
+  listingTranslations ListingContentTranslation[]
   mediaAssets MediaAsset[]
   inquiries Inquiry[]
   propertyInternalNotes PropertyInternalNote[]
@@ -162,6 +206,11 @@ model Agency {
   gmailThreads GmailThread[]
   gmailMessages GmailMessage[]
 
+  // Collaboration / notifications
+  notifications Notification[]
+  comments Comment[]
+  attachments Attachment[]
+
   @@index([slug])
 }
 
@@ -184,6 +233,8 @@ model AgencyMembership {
   agencyId  String
   userId    String
   role      UserRole
+  phone     String?
+  titleLabel String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -203,6 +254,11 @@ model AgencyMembership {
   gmailConnection GmailConnection?
   gmailThreads GmailThread[]
   gmailMessages GmailMessage[]
+
+  // Collaboration / notifications
+  notifications Notification[]
+  createdComments Comment[] @relation("CommentCreatedBy")
+  attachments Attachment[] @relation("AttachmentCreatedBy")
 
   @@unique([agencyId, userId])
   @@index([agencyId, role])
@@ -270,6 +326,10 @@ model Lead {
 
   gmailThreads GmailThread[]
 
+  comments Comment[]
+  attachments Attachment[]
+  notifications Notification[]
+
   // Buyer preferences for matching (optional MVP fields)
   buyerListingType ListingType?
   buyerMinPrice Decimal? @db.Decimal(12, 2)
@@ -306,6 +366,10 @@ model Task {
 
   agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
   lead   Lead?  @relation(fields: [leadId], references: [id], onDelete: SetNull)
+
+  comments Comment[]
+  attachments Attachment[]
+  notifications Notification[]
 
   assignedToMembership AgencyMembership? @relation("TaskAssignedTo", fields: [assignedToMembershipId], references: [id], onDelete: SetNull)
   createdByMembership  AgencyMembership? @relation("TaskCreatedBy", fields: [createdByMembershipId], references: [id], onDelete: SetNull)
@@ -403,6 +467,7 @@ model Listing {
   slug        String
   description String @db.Text
   descriptionEl String? @db.Text
+  originalLanguageCode String @default("en") @db.VarChar(8)
 
   price    Decimal? @db.Decimal(12, 2)
   currency String?  @db.VarChar(3)
@@ -426,9 +491,14 @@ model Listing {
   mediaAssets MediaAsset[]
   inquiries Inquiry[]
   aiListingDescriptionGenerations AiListingDescriptionGeneration[]
+  translations ListingContentTranslation[]
   buyerMatchRecommendations AiBuyerPropertyMatchRecommendation[]
 
   gmailThreads GmailThread[]
+
+  comments Comment[]
+  attachments Attachment[]
+  notifications Notification[]
 
   agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
 
@@ -437,6 +507,34 @@ model Listing {
   @@index([agencyId, price])
   @@index([agencyId, deletedAt])
   @@unique([agencyId, slug])
+}
+
+model ListingContentTranslation {
+  id        String @id @default(uuid())
+  agencyId  String
+  listingId String
+
+  languageCode String @db.VarChar(8)
+  title String
+  description String @db.Text
+  shortDescription String? @db.Text
+
+  translatedBy TranslationSource @default(AI)
+  translatedAt DateTime?
+  reviewStatus TranslationReviewStatus @default(DRAFT)
+  reviewedAt DateTime?
+  reviewedByMembershipId String?
+  createdByMembershipId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  listing Listing @relation(fields: [listingId], references: [id], onDelete: Cascade)
+
+  @@unique([agencyId, listingId, languageCode])
+  @@index([agencyId, listingId, languageCode])
+  @@index([agencyId, languageCode, reviewStatus])
 }
 
 enum AiTone {
@@ -744,6 +842,8 @@ model Inquiry {
   listing Listing @relation(fields: [listingId], references: [id], onDelete: Restrict)
   lead    Lead?   @relation(fields: [leadId], references: [id], onDelete: SetNull)
 
+  notifications Notification[]
+
   @@index([agencyId, listingId, status])
   @@index([agencyId, createdAt])
   @@index([agencyId, email])
@@ -1026,6 +1126,105 @@ model GmailMessage {
   @@index([agencyId, threadId, internalDate])
 }
 
+model Notification {
+  id        String @id @default(uuid())
+  agencyId  String
+  membershipId String
+
+  type NotificationType
+  title String
+  body  String?
+  metadata Json?
+
+  // Optional deep-link context
+  leadId String?
+  listingId String?
+  taskId String?
+  inquiryId String?
+  commentId String?
+
+  isRead Boolean @default(false)
+  readAt DateTime?
+
+  createdAt DateTime @default(now())
+
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  membership AgencyMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+
+  lead Lead? @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  listing Listing? @relation(fields: [listingId], references: [id], onDelete: SetNull)
+  task Task? @relation(fields: [taskId], references: [id], onDelete: SetNull)
+  inquiry Inquiry? @relation(fields: [inquiryId], references: [id], onDelete: SetNull)
+  comment Comment? @relation(fields: [commentId], references: [id], onDelete: SetNull)
+
+  @@index([agencyId, membershipId, isRead, createdAt])
+  @@index([agencyId, membershipId, createdAt])
+}
+
+model Comment {
+  id        String @id @default(uuid())
+  agencyId  String
+  targetType CommentTargetType
+  targetId   String
+
+  leadId String?
+  listingId String?
+  taskId String?
+
+  body String @db.Text
+  mentionedMembershipIds Json?
+
+  createdByMembershipId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  createdByMembership AgencyMembership? @relation("CommentCreatedBy", fields: [createdByMembershipId], references: [id], onDelete: SetNull)
+
+  lead Lead? @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  listing Listing? @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  task Task? @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  notifications Notification[]
+
+  @@index([agencyId, targetType, targetId, createdAt])
+  @@index([agencyId, leadId, createdAt])
+  @@index([agencyId, listingId, createdAt])
+  @@index([agencyId, taskId, createdAt])
+}
+
+model Attachment {
+  id        String @id @default(uuid())
+  agencyId  String
+
+  targetType AttachmentTargetType
+  targetId   String
+
+  leadId String?
+  listingId String?
+  taskId String?
+
+  uploadStatus MediaUploadStatus @default(UPLOADING)
+  storageKey String
+  fileName   String
+  mimeType   String
+  sizeBytes  Int
+
+  createdByMembershipId String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  agency Agency @relation(fields: [agencyId], references: [id], onDelete: Cascade)
+  createdByMembership AgencyMembership? @relation("AttachmentCreatedBy", fields: [createdByMembershipId], references: [id], onDelete: SetNull)
+
+  lead Lead? @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  listing Listing? @relation(fields: [listingId], references: [id], onDelete: Cascade)
+  task Task? @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@index([agencyId, targetType, targetId, createdAt])
+  @@index([agencyId, uploadStatus])
+}
+
 model PublicationChannel {
   id            String @id @default(uuid())
   agencyId      String
@@ -1075,6 +1274,7 @@ model ListingPublication {
 
   channelId String
   listingId String
+  languageCode String @default("en") @db.VarChar(8)
   mappingVersion Int
 
   status ListingPublicationStatus @default(QUEUED)
@@ -1098,7 +1298,7 @@ model ListingPublication {
 
   logs PublicationLog[]
 
-  @@unique([agencyId, channelId, listingId])
+  @@unique([agencyId, channelId, listingId, languageCode])
   @@index([agencyId, channelId, status])
   @@index([agencyId, channelId, requestedAt])
   @@index([agencyId, listingId])

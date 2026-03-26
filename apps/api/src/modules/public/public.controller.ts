@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Query } from "@nestjs/common";
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Query, Res } from "@nestjs/common";
+import type { Response } from "express";
 import { PublicService } from "./public.service";
 import { SearchListingsQueryDto } from "./dto/search-listings.query.dto";
 import { CreateInquiryDto } from "./dto/inquiry.dto";
@@ -19,8 +20,9 @@ export class PublicController {
   getListingDetail(
     @Param("agencySlug") agencySlug: string,
     @Param("listingSlug") listingSlug: string,
+    @Query("lang") lang?: string,
   ) {
-    return this.publicService.getListingDetail(agencySlug, listingSlug);
+    return this.publicService.getListingDetail(agencySlug, listingSlug, lang);
   }
 
   @Get(":agencySlug/listings/:listingSlug/similar")
@@ -28,8 +30,25 @@ export class PublicController {
     @Param("agencySlug") agencySlug: string,
     @Param("listingSlug") listingSlug: string,
     @Query("limit", new ParseIntPipe({ optional: true })) limit?: number,
+    @Query("lang") lang?: string,
   ) {
-    return this.publicService.getSimilarListings(agencySlug, listingSlug, limit ?? 6);
+    return this.publicService.getSimilarListings(agencySlug, listingSlug, limit ?? 6, lang);
+  }
+
+  @Get(":agencySlug/feeds/xml")
+  getXmlFeed(
+    @Param("agencySlug") agencySlug: string,
+    @Query("lang") lang?: string,
+    @Res() res?: Response,
+  ) {
+    return this.publicService.getXmlFeed(agencySlug, lang).then((payload) => {
+      if (res) {
+        res.setHeader("content-type", payload.contentType);
+        res.send(payload.xml);
+        return;
+      }
+      return payload.xml;
+    });
   }
 
   @Post(":agencySlug/listings/:listingSlug/inquiries")

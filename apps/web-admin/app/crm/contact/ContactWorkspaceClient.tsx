@@ -168,7 +168,7 @@ export function ContactWorkspaceClient() {
 
   if (!contactId) {
     return (
-      <div className="admin-card" style={{ padding: "1rem" }}>
+      <div className="admin-card" style={{ padding: "1rem", maxWidth: "none" }}>
         <h2 style={{ margin: 0, fontSize: "1rem" }}>Open a contact</h2>
         <p className="admin-lead" style={{ marginBottom: 0 }}>
           This admin app is a static export. Use links from the contacts list, or open:{" "}
@@ -230,7 +230,7 @@ export function ContactWorkspaceClient() {
         <h3 style={{ margin: 0, fontSize: "1rem" }}>Contact details</h3>
         {isViewer(role) ? <p className="admin-lead" style={{ marginTop: "0.35rem" }}>You have read-only access.</p> : null}
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.5rem", marginTop: "0.6rem" }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(15rem, 1fr))", gap: "0.5rem", marginTop: "0.6rem" }}>
           <input className="admin-input" placeholder="First name" value={form.firstName} onChange={(e) => setForm((s) => ({ ...s, firstName: e.target.value }))} disabled={!canEdit(role)} />
           <input className="admin-input" placeholder="Last name" value={form.lastName} onChange={(e) => setForm((s) => ({ ...s, lastName: e.target.value }))} disabled={!canEdit(role)} />
           <input className="admin-input" placeholder="Organization" value={form.organizationName} onChange={(e) => setForm((s) => ({ ...s, organizationName: e.target.value }))} disabled={!canEdit(role)} />
@@ -497,10 +497,15 @@ export function ContactWorkspaceClient() {
         {canCreate(role) ? (
           <div style={{ marginTop: "0.85rem", borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: "0.85rem" }}>
             <h4 style={{ margin: 0, fontSize: "0.95rem" }}>Add task</h4>
-            <div style={{ marginTop: "0.5rem", display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: "0.5rem" }}>
+            <div style={{ marginTop: "0.5rem", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(12rem, 1fr))", gap: "0.5rem" }}>
               <input className="admin-input" placeholder="Task title…" value={taskDraft.title} onChange={(e) => setTaskDraft((s) => ({ ...s, title: e.target.value }))} />
               <input className="admin-input" type="date" value={taskDraft.dueAt} onChange={(e) => setTaskDraft((s) => ({ ...s, dueAt: e.target.value }))} />
-              <select className="admin-input" value={taskDraft.leadId} onChange={(e) => setTaskDraft((s) => ({ ...s, leadId: e.target.value }))}>
+              <select
+                className="admin-input"
+                value={taskDraft.leadId}
+                onChange={(e) => setTaskDraft((s) => ({ ...s, leadId: e.target.value }))}
+                style={{ width: "100%", minWidth: 0 }}
+              >
                 <option value="">Lead (optional)</option>
                 {leads.status === "ok"
                   ? leads.items.map((l) => (
@@ -589,6 +594,8 @@ export function ContactWorkspaceClient() {
           leads: leads.status === "ok" ? leads.items : null,
         }}
       />
+
+      {/* Contact-scoped collaboration can be added later; MVP focuses on leads/listings/tasks */}
 
       <section className="admin-card" style={{ padding: "1rem" }}>
         <h3 style={{ margin: 0, fontSize: "1rem" }}>Recent activity</h3>

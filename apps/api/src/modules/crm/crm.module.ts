@@ -11,8 +11,10 @@ import { ActivityController } from "./timeline/activity.controller";
 import { ActivityService } from "./timeline/activity.service";
 import { InquiriesController } from "./inquiries/inquiries.controller";
 import { InquiriesService } from "./inquiries/inquiries.service";
+import { CollaborationModule } from "../collaboration/collaboration.module";
 
 @Module({
+  imports: [CollaborationModule],
   controllers: [
     ContactsController,
     LeadsController,

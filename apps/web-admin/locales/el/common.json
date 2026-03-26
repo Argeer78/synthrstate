@@ -1,0 +1,32 @@
+{
+  "common": {
+    "home": "Αρχική",
+    "crm": "CRM",
+    "listings": "Καταχωρίσεις",
+    "billing": "Χρέωση",
+    "ai": "ΤΝ",
+    "userManagement": "Διαχείριση χρηστών",
+    "apiFeeds": "API και Ροές",
+    "userManual": "Εγχειρίδιο χρήστη",
+    "feedback": "Ανατροφοδότηση",
+    "close": "Κλείσιμο",
+    "back": "Πίσω",
+    "save": "Αποθήκευση",
+    "cancel": "Ακύρωση",
+    "refresh": "Ανανέωση",
+    "loading": "Φόρτωση...",
+    "signOut": "Αποσύνδεση",
+    "signingOut": "Αποσύνδεση..."
+  },
+  "language": {
+    "label": "Γλώσσα",
+    "english": "Αγγλικά",
+    "spanish": "Ισπανικά",
+    "french": "Γαλλικά",
+    "german": "Γερμανικά",
+    "italian": "Ιταλικά",
+    "portuguese": "Πορτογαλικά",
+    "greek": "Ελληνικά"
+  }
+}
+

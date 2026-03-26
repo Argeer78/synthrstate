@@ -1,8 +1,11 @@
 "use client";
 
+import { useTranslation } from "react-i18next";
+
 export type Flash = { type: "success" | "error" | "info"; message: string } | null;
 
 export function FlashMessage(props: { flash: Flash; onDismiss?: () => void }) {
+  const { t } = useTranslation();
   if (!props.flash) return null;
   const color =
     props.flash.type === "success"
@@ -25,7 +28,7 @@ export function FlashMessage(props: { flash: Flash; onDismiss?: () => void }) {
         <p style={{ margin: 0, color, fontSize: "0.9rem", lineHeight: 1.4 }}>{props.flash.message}</p>
         {props.onDismiss ? (
           <button className="admin-btn admin-btn-ghost" type="button" onClick={props.onDismiss} style={{ minHeight: "2rem", padding: "0 0.6rem" }}>
-            OK
+            {t("common.close")}
           </button>
         ) : null}
       </div>

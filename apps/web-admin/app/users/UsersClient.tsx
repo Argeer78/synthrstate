@@ -110,7 +110,7 @@ export function UsersClient() {
         </button>
       </div>
 
-      <div style={{ overflowX: "auto", marginTop: "0.75rem" }}>
+      <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch", marginTop: "0.75rem" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.875rem" }}>
           <thead>
             <tr style={{ textAlign: "left", borderBottom: "1px solid var(--admin-border)" }}>

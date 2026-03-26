@@ -5,12 +5,15 @@ import { ActivityService } from "../timeline/activity.service";
 import type { ActorScope } from "../../auth/rbac-query.util";
 import { contactScopeWhere, leadScopeWhere } from "../../auth/rbac-query.util";
 import { assertAgentAssignsSelfOnly } from "../../auth/rbac-assign.util";
+import { NotificationsService } from "../../collaboration/notifications.service";
+import { NotificationType } from "@prisma/client";
 
 @Injectable()
 export class LeadsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly activity: ActivityService,
+    private readonly notifications: NotificationsService,
   ) {}
 
   async create(params: {
@@ -186,6 +189,18 @@ export class LeadsService {
         message: "Lead assigned",
         metadata: { from: existing.assignedToMembershipId, to: params.data.assignedToMembershipId },
       });
+
+      // Notify the new assignee (MVP).
+      if (params.data.assignedToMembershipId && params.data.assignedToMembershipId !== params.actorMembershipId) {
+        await this.notifications.create({
+          agencyId: params.agencyId,
+          membershipId: params.data.assignedToMembershipId,
+          type: NotificationType.LEAD_ASSIGNED,
+          title: "Lead assigned to you",
+          body: updated.title ?? "A lead was assigned to you",
+          leadId: updated.id,
+        });
+      }
     }
 
     return this.get({ agencyId: params.agencyId, actor: params.actor, id: updated.id });

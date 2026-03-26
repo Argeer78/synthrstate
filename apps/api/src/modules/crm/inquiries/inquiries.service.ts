@@ -2,11 +2,15 @@ import { BadRequestException, Injectable, NotFoundException } from "@nestjs/comm
 import { PrismaService } from "../../../prisma/prisma.service";
 import type { ActorScope } from "../../auth/rbac-query.util";
 import { contactScopeWhere, inquiryScopeWhere } from "../../auth/rbac-query.util";
-import { ActivityAction, ActivityEntityType, InquiryStatus, LeadStatus, UserRole } from "@prisma/client";
+import { ActivityAction, ActivityEntityType, InquiryStatus, LeadStatus, NotificationType, UserRole } from "@prisma/client";
+import { NotificationsService } from "../../collaboration/notifications.service";
 
 @Injectable()
 export class InquiriesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notifications: NotificationsService,
+  ) {}
 
   async list(params: { agencyId: string; actor: ActorScope; skip: number; take: number; leadId?: string }) {
     const where = {
@@ -162,6 +166,30 @@ export class InquiriesService {
         metadata: { inquiryId: inquiry.id },
       },
     });
+
+    // Notify owners/managers + assignee (if any).
+    const recipients = await this.prisma.agencyMembership.findMany({
+      where: { agencyId: params.agencyId, role: { in: [UserRole.OWNER, UserRole.MANAGER] } },
+      select: { id: true },
+      take: 50,
+    });
+    const ids = new Set(recipients.map((r) => r.id));
+    if (lead.assignedToMembershipId) ids.add(lead.assignedToMembershipId);
+    ids.delete(params.actorMembershipId);
+    await Promise.all(
+      Array.from(ids).map((membershipId) =>
+        this.notifications.create({
+          agencyId: params.agencyId,
+          membershipId,
+          type: NotificationType.INQUIRY_CONVERTED,
+          title: "Inquiry converted",
+          body: inquiry.listing?.title ? `Converted into lead for ${inquiry.listing.title}` : "Converted into lead",
+          inquiryId: inquiry.id,
+          leadId: lead.id,
+          listingId: inquiry.listing?.id ?? undefined,
+        }),
+      ),
+    );
 
     return {
       ok: true,

@@ -9,6 +9,8 @@ import { FlashMessage, type Flash } from "../../components/Flash";
 import { createLeadNote, createTask, deleteNote, getLead, listInquiries, listNotes, listTasks, updateLead, updateNote, updateTask, type Inquiry, type Lead, type Note, type Task } from "../../../lib/api/crm";
 import { listActivity, type ActivityEvent } from "../../../lib/api/activity";
 import { EmailPanel } from "../components/EmailPanel";
+import { CommentsSection } from "../components/CommentsSection";
+import { AttachmentsSection } from "../components/AttachmentsSection";
 
 function Badge(props: { label: string }) {
   return (
@@ -119,7 +121,7 @@ export function LeadWorkspaceClient() {
 
   if (!leadId) {
     return (
-      <div className="admin-card" style={{ padding: "1rem" }}>
+      <div className="admin-card" style={{ padding: "1rem", maxWidth: "none" }}>
         <h2 style={{ margin: 0, fontSize: "1rem" }}>Open a lead</h2>
         <p className="admin-lead" style={{ marginBottom: 0 }}>
           This admin app is currently deployed as a static export. Use links from the CRM list, or open:{" "}
@@ -177,7 +179,7 @@ export function LeadWorkspaceClient() {
           </div>
         </div>
 
-        <div style={{ marginTop: "0.9rem", display: "grid", gridTemplateColumns: "repeat(3, minmax(0, 1fr))", gap: "0.75rem" }}>
+        <div style={{ marginTop: "0.9rem", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(16rem, 1fr))", gap: "0.75rem" }}>
           <div style={{ border: "1px solid var(--admin-border)", borderRadius: "0.75rem", padding: "0.75rem" }}>
             <p className="admin-lead" style={{ margin: 0 }}>
               <strong style={{ color: "var(--admin-text)" }}>Contact</strong>
@@ -596,6 +598,9 @@ export function LeadWorkspaceClient() {
           contact: state.status === "ok" ? (state.lead as any)?.contact ?? null : null,
         }}
       />
+
+      <CommentsSection targetType="LEAD" targetId={leadId} />
+      <AttachmentsSection targetType="LEAD" targetId={leadId} />
 
       <section className="admin-card" style={{ padding: "1rem" }}>
         <h3 style={{ margin: 0, fontSize: "1rem" }}>Recent activity</h3>

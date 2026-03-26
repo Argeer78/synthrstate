@@ -6,8 +6,19 @@ export type ListingRow = {
   title: string;
   status: string;
   slug: string;
+  originalLanguageCode?: string;
   description?: string;
   descriptionEl?: string | null;
+  translations?: Array<{
+    id: string;
+    languageCode: string;
+    title: string;
+    description: string;
+    shortDescription?: string | null;
+    translatedBy?: "AI" | "HUMAN";
+    translatedAt?: string | null;
+    reviewStatus?: "DRAFT" | "REVIEWED" | "APPROVED";
+  }>;
   price?: number | null;
   currency?: string | null;
   listingType?: string;
@@ -122,6 +133,61 @@ export async function createListing(dto: {
   });
   if (!res.ok) throw new Error(await readApiError(res));
   return (await res.json()) as ListingRow;
+}
+
+export type ListingTranslationRow = {
+  id: string;
+  languageCode: string;
+  title: string;
+  description: string;
+  shortDescription?: string | null;
+  translatedBy: "AI" | "HUMAN";
+  translatedAt?: string | null;
+  reviewStatus: "DRAFT" | "REVIEWED" | "APPROVED";
+  reviewedAt?: string | null;
+};
+
+export async function listListingTranslations(listingId: string) {
+  const res = await apiFetch(`/catalog/listings/${encodeURIComponent(listingId)}/translations`);
+  if (!res.ok) throw new Error(await readApiError(res));
+  return (await res.json()) as {
+    original: { languageCode: string; title: string; description: string };
+    items: ListingTranslationRow[];
+  };
+}
+
+export async function saveListingTranslation(
+  listingId: string,
+  languageCode: string,
+  dto: { title: string; description: string; shortDescription?: string; reviewStatus?: "DRAFT" | "REVIEWED" | "APPROVED" },
+) {
+  const res = await apiFetch(`/catalog/listings/${encodeURIComponent(listingId)}/translations/${encodeURIComponent(languageCode)}`, {
+    method: "PATCH",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ languageCode, ...dto }),
+  });
+  if (!res.ok) throw new Error(await readApiError(res));
+  return (await res.json()) as ListingTranslationRow;
+}
+
+export async function aiTranslateListing(listingId: string, targetLanguage: string, overwrite = false) {
+  const res = await apiFetch(`/ai/listings/${encodeURIComponent(listingId)}/translate`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ targetLanguage, overwrite }),
+  });
+  if (!res.ok) throw new Error(await readApiError(res));
+  return await res.json();
+}
+
+export async function aiBulkTranslateListings(dto: { listingIds?: string[]; allEligible?: boolean; targetLanguage: string; overwrite?: boolean }) {
+  const res = await apiFetch(`/ai/listings/bulk-translate`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(dto),
+  });
+  if (!res.ok) throw new Error(await readApiError(res));
+  return await res.json();
 }
 
 export type ListingInternalNote = {

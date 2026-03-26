@@ -1,7 +1,7 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
 import { OpenAiProvider } from "./providers/openai.provider";
-import { AiGenerationStatus, AiGenerationType, AiTone, ListingStatus, UserRole } from "@prisma/client";
+import { AiGenerationStatus, AiGenerationType, AiTone, ListingStatus, TranslationReviewStatus, TranslationSource, UserRole } from "@prisma/client";
 import type { ActorScope } from "../auth/rbac-query.util";
 import { leadScopeWhere, listingScopeWhere, noteScopeWhere, taskScopeWhere } from "../auth/rbac-query.util";
 import type { ApplyGeneratedDescriptionDto } from "./dto/apply-generated-description.dto";
@@ -769,6 +769,238 @@ export class AiService {
     });
     if (!generation) throw new NotFoundException("Generation not found");
     return generation;
+  }
+
+  private async translateListingText(params: {
+    sourceLanguage: string;
+    targetLanguage: string;
+    title: string;
+    description: string;
+    shortDescription?: string | null;
+  }) {
+    const systemPrompt =
+      "You translate real-estate listing copy. Keep facts/numbers unchanged. Return JSON with keys: title, description, shortDescription.";
+    const userPrompt = [
+      `Source language: ${params.sourceLanguage}`,
+      `Target language: ${params.targetLanguage}`,
+      `Title: ${params.title}`,
+      `Description: ${params.description}`,
+      `ShortDescription: ${params.shortDescription ?? ""}`,
+    ].join("\n");
+
+    const result = await this.openAiProvider.generateJson({
+      systemPrompt,
+      userPrompt,
+      providerHint: "openai.chat.completions",
+    });
+    const raw = result.json ?? {};
+    if (typeof raw.title !== "string" || typeof raw.description !== "string") {
+      throw new BadRequestException("AI translation output missing required fields");
+    }
+    return {
+      title: raw.title.trim(),
+      description: raw.description.trim(),
+      shortDescription: typeof raw.shortDescription === "string" ? raw.shortDescription.trim() : null,
+    };
+  }
+
+  async translateListingContent(params: {
+    agencyId: string;
+    listingId: string;
+    membershipId: string;
+    actor: ActorScope;
+    targetLanguage: string;
+    overwrite: boolean;
+  }) {
+    const targetLanguage = params.targetLanguage.trim().toLowerCase();
+    if (!/^[a-z]{2}(-[a-z]{2})?$/.test(targetLanguage)) throw new BadRequestException("Invalid target language");
+
+    const listing = await this.prisma.listing.findFirst({
+      where: {
+        id: params.listingId,
+        agencyId: params.agencyId,
+        deletedAt: null,
+        property: { deletedAt: null },
+        ...listingScopeWhere(params.actor),
+      },
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        originalLanguageCode: true,
+        translations: {
+          where: { languageCode: targetLanguage },
+          select: { id: true, translatedBy: true },
+          take: 1,
+        },
+      },
+    });
+    if (!listing) throw new NotFoundException("Listing not found");
+
+    const sourceLanguage = listing.originalLanguageCode || "en";
+    if (targetLanguage === sourceLanguage) throw new BadRequestException("Target language equals original language");
+
+    const existing = listing.translations[0];
+    if (existing && !params.overwrite && existing.translatedBy === TranslationSource.HUMAN) {
+      throw new ForbiddenException("Manual translation exists. Use overwrite to replace it.");
+    }
+    if (existing && !params.overwrite) {
+      return { skipped: true, reason: "Translation already exists", targetLanguage };
+    }
+
+    const translated = await this.translateListingText({
+      sourceLanguage,
+      targetLanguage,
+      title: listing.title,
+      description: listing.description,
+      shortDescription: null,
+    });
+
+    const saved = await this.prisma.listingContentTranslation.upsert({
+      where: {
+        agencyId_listingId_languageCode: {
+          agencyId: params.agencyId,
+          listingId: listing.id,
+          languageCode: targetLanguage,
+        },
+      },
+      create: {
+        agencyId: params.agencyId,
+        listingId: listing.id,
+        languageCode: targetLanguage,
+        title: translated.title,
+        description: translated.description,
+        shortDescription: translated.shortDescription,
+        translatedBy: TranslationSource.AI,
+        translatedAt: new Date(),
+        reviewStatus: TranslationReviewStatus.DRAFT,
+        createdByMembershipId: params.membershipId,
+      },
+      update: {
+        title: translated.title,
+        description: translated.description,
+        shortDescription: translated.shortDescription,
+        translatedBy: TranslationSource.AI,
+        translatedAt: new Date(),
+        reviewStatus: TranslationReviewStatus.DRAFT,
+        reviewedAt: null,
+        reviewedByMembershipId: null,
+      },
+    });
+
+    return { skipped: false, item: saved };
+  }
+
+  async bulkTranslateListings(params: {
+    agencyId: string;
+    membershipId: string;
+    actor: ActorScope;
+    listingIds?: string[];
+    allEligible: boolean;
+    targetLanguage: string;
+    overwrite: boolean;
+  }) {
+    const whereBase: any = {
+      agencyId: params.agencyId,
+      deletedAt: null,
+      property: { deletedAt: null },
+      ...listingScopeWhere(params.actor),
+    };
+    if (!params.allEligible) {
+      if (!params.listingIds || params.listingIds.length === 0) throw new BadRequestException("listingIds required when allEligible is false");
+      whereBase.id = { in: params.listingIds };
+    }
+
+    const candidates = await this.prisma.listing.findMany({
+      where: whereBase,
+      select: { id: true },
+      take: params.allEligible ? 200 : undefined,
+    });
+
+    let translated = 0;
+    let skipped = 0;
+    const errors: Array<{ listingId: string; error: string }> = [];
+
+    for (const c of candidates) {
+      try {
+        const result = await this.translateListingContent({
+          agencyId: params.agencyId,
+          listingId: c.id,
+          membershipId: params.membershipId,
+          actor: params.actor,
+          targetLanguage: params.targetLanguage,
+          overwrite: params.overwrite,
+        });
+        if (result.skipped) skipped += 1;
+        else translated += 1;
+      } catch (e: any) {
+        skipped += 1;
+        errors.push({ listingId: c.id, error: typeof e?.message === "string" ? e.message : "Translation failed" });
+      }
+    }
+
+    return {
+      targetLanguage: params.targetLanguage,
+      total: candidates.length,
+      translated,
+      skipped,
+      errors: errors.slice(0, 50),
+    };
+  }
+
+  async generateHelpAssistantAnswer(params: {
+    agencyId: string;
+    membershipId: string;
+    role: UserRole;
+    question: string;
+    pageHint?: string;
+  }) {
+    const safeQuestion = truncate(params.question, 1200);
+    if (!safeQuestion || safeQuestion.trim().length < 2) {
+      throw new BadRequestException("Question is required");
+    }
+
+    const roleText = params.role === UserRole.STAFF ? "VIEWER (STAFF)" : params.role;
+    const systemPrompt =
+      "You are Synthr Admin Assistant. Reply with concise, practical instructions for using the product. " +
+      "Do not provide legal/financial claims. Do not invent unavailable features. " +
+      "Return JSON with keys: answer, suggestedActions (array of <=3 short strings), relatedPages (array of <=4 route strings).";
+
+    const userPrompt = [
+      `Role: ${roleText}`,
+      `AgencyId: ${params.agencyId}`,
+      params.pageHint ? `Page: ${params.pageHint}` : "",
+      "Question:",
+      safeQuestion,
+      "",
+      "Context: Synthr admin includes Home, Listings, CRM, AI, Users, Billing, Integrations/API & Feeds, User Manual, Feedback.",
+      "Permissions summary: OWNER full; MANAGER manages AGENT/STAFF and publishes; AGENT works scoped CRM/listings drafts; STAFF is read-only.",
+    ]
+      .filter(Boolean)
+      .join("\n");
+
+    const result = await this.openAiProvider.generateJson({
+      systemPrompt,
+      userPrompt,
+      providerHint: "openai.chat.completions",
+    });
+
+    const raw = result.json ?? {};
+    const answer = typeof raw.answer === "string" ? raw.answer.trim() : "";
+    if (!answer) throw new BadRequestException("AI output missing answer");
+
+    const suggestedActions = Array.isArray(raw.suggestedActions)
+      ? raw.suggestedActions.map((x: any) => String(x)).filter(Boolean).slice(0, 3)
+      : [];
+    const relatedPages = Array.isArray(raw.relatedPages)
+      ? raw.relatedPages.map((x: any) => String(x)).filter((x: string) => x.startsWith("/")).slice(0, 4)
+      : [];
+
+    return {
+      answer,
+      suggestedActions,
+      relatedPages,
+    };
   }
 }
 

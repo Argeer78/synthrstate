@@ -3,8 +3,10 @@
 import { useState } from "react";
 import type { FormEvent } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 
 export function LoginForm() {
+  const { t } = useTranslation();
   const router = useRouter();
   const apiBase = process.env.NEXT_PUBLIC_API_URL;
 
@@ -16,7 +18,7 @@ export function LoginForm() {
 
     setError(null);
     if (!apiBase) {
-      setError("API URL is not configured.");
+      setError(t("login.apiMissing"));
       return;
     }
 
@@ -26,7 +28,7 @@ export function LoginForm() {
     const password = String(formData.get("password") ?? "");
 
     if (!email || !password) {
-      setError("Please enter your email and password.");
+      setError(t("login.missingCredentials"));
       return;
     }
 
@@ -57,7 +59,7 @@ export function LoginForm() {
 
       router.push("/");
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Login failed.";
+      const msg = err instanceof Error ? err.message : t("login.failed");
       setError(msg);
     } finally {
       setIsLoading(false);
@@ -67,7 +69,7 @@ export function LoginForm() {
   return (
     <form className="admin-form" onSubmit={handleSubmit} noValidate>
       <div className="admin-field">
-        <label htmlFor="email">Work email</label>
+        <label htmlFor="email">{t("login.email")}</label>
         <input
           id="email"
           name="email"
@@ -77,7 +79,7 @@ export function LoginForm() {
         />
       </div>
       <div className="admin-field">
-        <label htmlFor="password">Password</label>
+        <label htmlFor="password">{t("login.password")}</label>
         <input
           id="password"
           name="password"
@@ -87,7 +89,7 @@ export function LoginForm() {
         />
       </div>
       <button type="submit" className="admin-btn admin-btn-primary">
-        {isLoading ? "Signing in..." : "Continue"}
+        {isLoading ? t("login.signingIn") : t("login.continue")}
       </button>
       {error ? (
         <p style={{ margin: 0, color: "#ffb4b4", fontSize: "0.85rem", lineHeight: 1.4 }}>

@@ -13,6 +13,7 @@ import { CreateListingDto } from "./dto/create-listing.dto";
 import { ListingListQueryDto } from "./dto/listing-query.dto";
 import { InternalNotesListQueryDto } from "./dto/internal-notes.query.dto";
 import { UpdateListingDto } from "./dto/update-listing.dto";
+import { UpsertListingTranslationDto } from "./dto/translations.dto";
 import { ListingsService } from "./listings.service";
 
 @Controller("catalog/listings")
@@ -119,6 +120,34 @@ export class ListingsController {
   async deleteInternalNote(@Req() req: Request, @Param("id") id: string, @Param("noteId") noteId: string) {
     const { agencyId, role, membershipId } = getAuthContext(req);
     return this.listings.deleteInternalNote({ agencyId, actor: { role, membershipId }, listingId: id, noteId });
+  }
+
+  @Get(":id/translations")
+  async listTranslations(@Req() req: Request, @Param("id") id: string) {
+    const { agencyId, role, membershipId } = getAuthContext(req);
+    return this.listings.listTranslations({ agencyId, actor: { role, membershipId }, listingId: id });
+  }
+
+  @Patch(":id/translations/:languageCode")
+  @Roles(...ROLES_MUTATE)
+  async upsertTranslation(
+    @Req() req: Request,
+    @Param("id") id: string,
+    @Param("languageCode") languageCode: string,
+    @Body() dto: UpsertListingTranslationDto,
+  ) {
+    const { agencyId, role, membershipId } = getAuthContext(req);
+    return this.listings.upsertTranslation({
+      agencyId,
+      actor: { role, membershipId },
+      actorMembershipId: membershipId,
+      listingId: id,
+      languageCode,
+      title: dto.title,
+      description: dto.description,
+      shortDescription: dto.shortDescription,
+      reviewStatus: dto.reviewStatus,
+    });
   }
 }
 

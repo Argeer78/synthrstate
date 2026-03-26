@@ -14,6 +14,8 @@ import { DashboardModule } from "./modules/dashboard/dashboard.module";
 import { AdminUsersModule } from "./modules/admin-users/admin-users.module";
 import { BillingModule } from "./modules/billing/billing.module";
 import { GmailModule } from "./modules/gmail/gmail.module";
+import { CollaborationModule } from "./modules/collaboration/collaboration.module";
+import { OnboardingModule } from "./modules/onboarding/onboarding.module";
 
 @Module({
   imports: [
@@ -31,6 +33,8 @@ import { GmailModule } from "./modules/gmail/gmail.module";
     AdminUsersModule,
     BillingModule,
     GmailModule,
+    CollaborationModule,
+    OnboardingModule,
   ],
   providers: [RolesGuard],
 })

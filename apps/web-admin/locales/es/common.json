@@ -1,0 +1,121 @@
+{
+  "common": {
+    "home": "Inicio",
+    "crm": "CRM",
+    "listings": "Propiedades",
+    "billing": "Facturación",
+    "ai": "IA",
+    "userManagement": "Gestión de usuarios",
+    "apiFeeds": "API y Feeds",
+    "userManual": "Manual de usuario",
+    "feedback": "Comentarios",
+    "close": "Cerrar",
+    "back": "Atrás",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "refresh": "Actualizar",
+    "loading": "Cargando...",
+    "signOut": "Cerrar sesión",
+    "signingOut": "Cerrando sesión..."
+  },
+  "theme": {
+    "label": "Tema",
+    "system": "Sistema",
+    "dark": "Oscuro",
+    "light": "Claro"
+  },
+  "language": {
+    "label": "Idioma",
+    "english": "Inglés",
+    "spanish": "Español",
+    "french": "Francés",
+    "german": "Alemán",
+    "italian": "Italiano",
+    "portuguese": "Portugués",
+    "greek": "Griego"
+  },
+  "shell": {
+    "openNavigation": "Abrir navegación",
+    "menu": "Menú",
+    "closeNavigation": "Cerrar navegación"
+  },
+  "sidebar": {
+    "workspace": "Espacio de trabajo",
+    "checkingSession": "Comprobando sesión...",
+    "notSignedIn": "Sin iniciar sesión"
+  },
+  "help": {
+    "button": "Ayuda",
+    "title": "Asistente de Synthr",
+    "subtitle": "Haz una pregunta de flujo de trabajo o abre la guía completa.",
+    "placeholder": "Escribe una pregunta...",
+    "ask": "Preguntar al asistente",
+    "thinking": "Pensando...",
+    "openManual": "Abrir manual de usuario",
+    "sendFeedback": "Enviar comentarios",
+    "s1": "¿Cómo proceso una nueva consulta?",
+    "s2": "¿Cómo publico una propiedad?",
+    "s3": "¿Dónde conecto Gmail?",
+    "s4": "¿Cómo funcionan los permisos por rol?"
+  },
+  "login": {
+    "title": "Iniciar sesión",
+    "subtitle": "Ingresa tu correo laboral y contraseña para abrir el espacio de tu agencia.",
+    "back": "Atrás",
+    "email": "Correo laboral",
+    "password": "Contraseña",
+    "continue": "Continuar",
+    "signingIn": "Iniciando sesión...",
+    "support": "¿Problemas para iniciar sesión? Contacta al propietario de tu agencia o al soporte de Synthr.",
+    "apiMissing": "La URL de la API no está configurada.",
+    "missingCredentials": "Ingresa tu correo y contraseña.",
+    "failed": "Error de inicio de sesión."
+  },
+  "dashboard": {
+    "title": "Panel",
+    "subtitle": "Resumen operativo de hoy para tu agencia.",
+    "overview": "Resumen",
+    "agencyOverview": "Resumen de agencia",
+    "myOverview": "Mi resumen",
+    "readOnlyOverview": "Resumen de solo lectura",
+    "readOnlyAccess": "Tienes acceso de solo lectura.",
+    "signInPrompt": "Inicia sesión para ver tu panel.",
+    "signIn": "Iniciar sesión",
+    "viewInquiries": "Ver consultas",
+    "viewListings": "Ver propiedades",
+    "newContact": "Nuevo contacto",
+    "newLead": "Nuevo lead",
+    "newListing": "Nueva propiedad",
+    "loading": "Cargando panel...",
+    "loadFailed": "No se pudo cargar el panel.",
+    "contacts": "Contactos",
+    "leads": "Leads",
+    "newInquiries": "Consultas nuevas",
+    "activeListings": "Propiedades activas",
+    "tasksDueSoon": "Tareas próximas",
+    "recentActivity": "Actividad reciente",
+    "recentActivitySubtitle": "Eventos recientes de tu espacio de trabajo (según rol).",
+    "noRecentActivity": "Todavía no hay actividad reciente."
+  },
+  "manual": {
+    "title": "Manual de usuario",
+    "subtitle": "Guía por rol para los flujos diarios de Synthr admin."
+  },
+  "feedback": {
+    "title": "Comentarios",
+    "subtitle": "Reporta problemas, ideas y solicitudes de funciones.",
+    "intro": "Comparte problemas del producto y solicitudes. En MVP, los comentarios se envían por correo.",
+    "send": "Enviar comentarios",
+    "clear": "Limpiar",
+    "sentHint": "Tu aplicación de correo debería abrirse ahora. Si no, envía comentarios manualmente a support@synthrstate.com.",
+    "types": {
+      "bug": "Error",
+      "feature": "Solicitud de función",
+      "uiux": "UI/UX",
+      "performance": "Rendimiento",
+      "other": "Otro"
+    },
+    "placeholder": "Describe qué pasó, dónde ocurrió y qué resultado esperabas..."
+  }
+}
+

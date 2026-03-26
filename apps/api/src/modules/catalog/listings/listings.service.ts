@@ -1,5 +1,5 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
-import { ListingStatus, ListingType, Prisma } from "@prisma/client";
+import { ListingStatus, ListingType, Prisma, TranslationReviewStatus, TranslationSource } from "@prisma/client";
 import { PrismaService } from "../../../prisma/prisma.service";
 import { hasFullAgencyDataScope } from "../../auth/rbac.constants";
 import type { ActorScope } from "../../auth/rbac-query.util";
@@ -70,6 +70,7 @@ export class ListingsService {
         slug,
         description: params.data.description,
         descriptionEl: params.data.descriptionEl ?? undefined,
+        originalLanguageCode: "en",
         price: params.data.price ?? undefined,
         currency: params.data.currency ?? undefined,
         bedrooms: params.data.bedrooms ?? undefined,
@@ -146,6 +147,9 @@ export class ListingsService {
               },
             },
           },
+          translations: {
+            select: { languageCode: true, reviewStatus: true, translatedAt: true },
+          },
         },
       }),
       this.prisma.listing.count({ where }),
@@ -168,6 +172,20 @@ export class ListingsService {
           include: {
             ownerContact: { select: { id: true, firstName: true, lastName: true, organizationName: true, email: true } },
           },
+        },
+        translations: {
+          select: {
+            id: true,
+            languageCode: true,
+            title: true,
+            description: true,
+            shortDescription: true,
+            translatedBy: true,
+            translatedAt: true,
+            reviewStatus: true,
+            reviewedAt: true,
+          },
+          orderBy: { languageCode: "asc" },
         },
       },
     });
@@ -309,6 +327,84 @@ export class ListingsService {
 
     await this.prisma.listingInternalNote.delete({ where: { id: existing.id } });
     return { ok: true };
+  }
+
+  async listTranslations(params: { agencyId: string; actor: ActorScope; listingId: string }) {
+    const listing = await this.prisma.listing.findFirst({
+      where: { id: params.listingId, agencyId: params.agencyId, deletedAt: null, ...listingScopeWhere(params.actor) },
+      select: { id: true, title: true, description: true, originalLanguageCode: true },
+    });
+    if (!listing) throw new NotFoundException("Listing not found");
+
+    const items = await this.prisma.listingContentTranslation.findMany({
+      where: { agencyId: params.agencyId, listingId: params.listingId },
+      orderBy: { languageCode: "asc" },
+    });
+
+    return {
+      original: {
+        languageCode: listing.originalLanguageCode || "en",
+        title: listing.title,
+        description: listing.description,
+      },
+      items,
+    };
+  }
+
+  async upsertTranslation(params: {
+    agencyId: string;
+    actor: ActorScope;
+    actorMembershipId?: string;
+    listingId: string;
+    languageCode: string;
+    title: string;
+    description: string;
+    shortDescription?: string;
+    reviewStatus?: TranslationReviewStatus;
+  }) {
+    const listing = await this.prisma.listing.findFirst({
+      where: { id: params.listingId, agencyId: params.agencyId, deletedAt: null, ...listingScopeWhere(params.actor) },
+      select: { id: true, originalLanguageCode: true },
+    });
+    if (!listing) throw new NotFoundException("Listing not found");
+
+    const code = params.languageCode.trim().toLowerCase();
+    if (!/^[a-z]{2}(-[a-z]{2})?$/.test(code)) throw new BadRequestException("Invalid language code");
+    if (code === (listing.originalLanguageCode || "en")) throw new BadRequestException("Use listing base fields for original language");
+
+    return this.prisma.listingContentTranslation.upsert({
+      where: {
+        agencyId_listingId_languageCode: {
+          agencyId: params.agencyId,
+          listingId: params.listingId,
+          languageCode: code,
+        },
+      },
+      create: {
+        agencyId: params.agencyId,
+        listingId: params.listingId,
+        languageCode: code,
+        title: params.title.trim(),
+        description: params.description.trim(),
+        shortDescription: params.shortDescription?.trim() || null,
+        translatedBy: TranslationSource.HUMAN,
+        translatedAt: new Date(),
+        reviewStatus: params.reviewStatus ?? TranslationReviewStatus.REVIEWED,
+        reviewedAt: params.reviewStatus ? new Date() : null,
+        reviewedByMembershipId: params.reviewStatus ? params.actorMembershipId ?? null : null,
+        createdByMembershipId: params.actorMembershipId ?? null,
+      },
+      update: {
+        title: params.title.trim(),
+        description: params.description.trim(),
+        shortDescription: params.shortDescription?.trim() || null,
+        translatedBy: TranslationSource.HUMAN,
+        translatedAt: new Date(),
+        reviewStatus: params.reviewStatus ?? TranslationReviewStatus.REVIEWED,
+        reviewedAt: params.reviewStatus ? new Date() : null,
+        reviewedByMembershipId: params.reviewStatus ? params.actorMembershipId ?? null : null,
+      },
+    });
   }
 }
 

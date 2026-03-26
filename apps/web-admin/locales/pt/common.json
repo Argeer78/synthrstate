@@ -1,0 +1,32 @@
+{
+  "common": {
+    "home": "Início",
+    "crm": "CRM",
+    "listings": "Anúncios",
+    "billing": "Faturação",
+    "ai": "IA",
+    "userManagement": "Gestão de utilizadores",
+    "apiFeeds": "API e feeds",
+    "userManual": "Manual do utilizador",
+    "feedback": "Feedback",
+    "close": "Fechar",
+    "back": "Voltar",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "refresh": "Atualizar",
+    "loading": "A carregar...",
+    "signOut": "Terminar sessão",
+    "signingOut": "A terminar sessão..."
+  },
+  "language": {
+    "label": "Idioma",
+    "english": "Inglês",
+    "spanish": "Espanhol",
+    "french": "Francês",
+    "german": "Alemão",
+    "italian": "Italiano",
+    "portuguese": "Português",
+    "greek": "Grego"
+  }
+}
+

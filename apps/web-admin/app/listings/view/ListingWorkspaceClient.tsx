@@ -7,16 +7,23 @@ import { useMe } from "../../../lib/use-me";
 import { canAccessAi, canCreate, canEdit, canPublish, canUploadMedia } from "../../../utils/permissions";
 import { FlashMessage, type Flash } from "../../components/Flash";
 import {
+  aiTranslateListing,
   createListingInternalNote,
   getListing,
+  listListingTranslations,
   listListingInternalNotes,
+  saveListingTranslation,
   updateListingDetails,
   type ListingInternalNote,
+  type ListingTranslationRow,
   type ListingRow,
 } from "../../../lib/api/listings";
 import { listListingMedia } from "../../../lib/api/media";
 import { ListingMediaModal } from "../ListingMediaModal";
 import { ListingAiModal } from "../ListingAiModal";
+import { Modal } from "../../components/Modal";
+import { CommentsSection } from "../../crm/components/CommentsSection";
+import { AttachmentsSection } from "../../crm/components/AttachmentsSection";
 import {
   type PublicationChannelCode,
   getListingPublicationLogs,
@@ -36,7 +43,7 @@ function Badge(props: { label: string }) {
 
 export function ListingWorkspaceClient() {
   const params = useSearchParams();
-  const { role } = useMe();
+  const { role, state: meState } = useMe();
   const [flash, setFlash] = useState<Flash>(null);
   const [listingId, setListingId] = useState("");
   const [state, setState] = useState<
@@ -69,6 +76,11 @@ export function ListingWorkspaceClient() {
     | { status: "ok"; items: Awaited<ReturnType<typeof getListingPublicationLogs>>["items"] }
   >({ status: "loading" });
   const [selectedChannelCodes, setSelectedChannelCodes] = useState<PublicationChannelCode[]>([]);
+  const [translations, setTranslations] = useState<ListingTranslationRow[]>([]);
+  const [targetLanguage, setTargetLanguage] = useState("el");
+  const [previewLanguage, setPreviewLanguage] = useState("en");
+  const [translationBusy, setTranslationBusy] = useState(false);
+  const [selectedTranslation, setSelectedTranslation] = useState<ListingTranslationRow | null>(null);
 
   async function refresh(id: string) {
     const listing = await getListing(id);
@@ -105,6 +117,12 @@ export function ListingWorkspaceClient() {
       setPublications({ status: "error", message: e instanceof Error ? e.message : "Failed to load publications." });
       setPublicationLogs({ status: "error", message: e instanceof Error ? e.message : "Failed to load publication logs." });
     }
+    try {
+      const tr = await listListingTranslations(id);
+      setTranslations(tr.items);
+    } catch {
+      setTranslations([]);
+    }
   }
 
   useEffect(() => {
@@ -136,6 +154,11 @@ export function ListingWorkspaceClient() {
   if (state.status !== "ok") return null;
 
   const listing = state.listing;
+  const apiBase = (process.env.NEXT_PUBLIC_API_URL ?? "").replace(/\/$/, "");
+  const agencySlug = meState.status === "ok" ? meState.me.agency?.slug ?? "demo-agency" : "demo-agency";
+  const publicDetailUrl = `${apiBase}/public/${encodeURIComponent(agencySlug)}/listings/${encodeURIComponent(listing.slug)}?lang=${encodeURIComponent(previewLanguage)}`;
+  const publicSimilarUrl = `${apiBase}/public/${encodeURIComponent(agencySlug)}/listings/${encodeURIComponent(listing.slug)}/similar?lang=${encodeURIComponent(previewLanguage)}`;
+  const xmlFeedUrl = `${apiBase}/public/${encodeURIComponent(agencySlug)}/feeds/xml?lang=${encodeURIComponent(previewLanguage)}`;
   const agentLocked = role === "AGENT" && listing.status !== "DRAFT";
   const canMutateDetails = canEdit(role) && !agentLocked;
 
@@ -255,10 +278,130 @@ export function ListingWorkspaceClient() {
       </section>
 
       <section className="admin-card" style={{ maxWidth: "none", padding: "1rem" }}>
+        <h3 style={{ margin: 0, fontSize: "1rem" }}>Translations</h3>
+        <p className="admin-lead" style={{ marginTop: "0.35rem" }}>
+          Original content language: <code>{listing.originalLanguageCode ?? "en"}</code>. Translate and review before publication/export.
+        </p>
+        <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", alignItems: "center" }}>
+          <select className="admin-input" value={targetLanguage} onChange={(e) => setTargetLanguage(e.target.value)} style={{ maxWidth: "12rem" }}>
+            <option value="el">Greek (el)</option>
+            <option value="en">English (en)</option>
+            <option value="es">Spanish (es)</option>
+            <option value="fr">French (fr)</option>
+          </select>
+          <button
+            className="admin-btn admin-btn-ghost"
+            type="button"
+            disabled={translationBusy}
+            onClick={async () => {
+              try {
+                setTranslationBusy(true);
+                await aiTranslateListing(listing.id, targetLanguage, false);
+                await refresh(listingId);
+                setFlash({ type: "success", message: "AI translation created." });
+              } catch (e) {
+                setFlash({ type: "error", message: e instanceof Error ? e.message : "AI translation failed." });
+              } finally {
+                setTranslationBusy(false);
+              }
+            }}
+          >
+            Translate
+          </button>
+          <button
+            className="admin-btn admin-btn-ghost"
+            type="button"
+            disabled={translationBusy}
+            onClick={async () => {
+              try {
+                setTranslationBusy(true);
+                await aiTranslateListing(listing.id, targetLanguage, true);
+                await refresh(listingId);
+                setFlash({ type: "success", message: "AI translation replaced." });
+              } catch (e) {
+                setFlash({ type: "error", message: e instanceof Error ? e.message : "AI re-translation failed." });
+              } finally {
+                setTranslationBusy(false);
+              }
+            }}
+          >
+            Re-translate
+          </button>
+        </div>
+        <div style={{ overflowX: "auto", marginTop: "0.6rem" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.875rem" }}>
+            <thead>
+              <tr style={{ textAlign: "left", borderBottom: "1px solid var(--admin-border)" }}>
+                <th style={{ padding: "0.5rem 0.35rem" }}>Language</th>
+                <th style={{ padding: "0.5rem 0.35rem" }}>Status</th>
+                <th style={{ padding: "0.5rem 0.35rem" }}>Source</th>
+                <th style={{ padding: "0.5rem 0.35rem" }}>Updated</th>
+                <th style={{ padding: "0.5rem 0.35rem" }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {translations.length === 0 ? (
+                <tr>
+                  <td colSpan={5} style={{ padding: "0.7rem 0.35rem", color: "var(--admin-muted)" }}>
+                    No translations yet.
+                  </td>
+                </tr>
+              ) : null}
+              {translations.map((tr) => (
+                <tr key={tr.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                  <td style={{ padding: "0.55rem 0.35rem" }}>
+                    <code>{tr.languageCode}</code>
+                  </td>
+                  <td style={{ padding: "0.55rem 0.35rem" }}>{tr.reviewStatus}</td>
+                  <td style={{ padding: "0.55rem 0.35rem" }}>{tr.translatedBy}</td>
+                  <td style={{ padding: "0.55rem 0.35rem", color: "var(--admin-muted)" }}>
+                    {tr.translatedAt ? String(tr.translatedAt).slice(0, 19).replace("T", " ") : "—"}
+                  </td>
+                  <td style={{ padding: "0.55rem 0.35rem" }}>
+                    <button className="admin-btn admin-btn-ghost" type="button" style={{ minHeight: "2rem", padding: "0 0.6rem" }} onClick={() => setSelectedTranslation(tr)}>
+                      Review translation
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="admin-card" style={{ maxWidth: "none", padding: "1rem" }}>
         <h3 style={{ margin: 0, fontSize: "1rem" }}>Publishing</h3>
         <p className="admin-lead" style={{ marginTop: "0.35rem" }}>
           Website publish is reflected by listing status <code>{listing.status}</code>. Channel exports below provide operational traceability.
         </p>
+
+        <div style={{ border: "1px solid var(--admin-border)", borderRadius: "0.75rem", padding: "0.7rem 0.8rem", marginBottom: "0.7rem" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", gap: "0.75rem", flexWrap: "wrap", alignItems: "center" }}>
+            <div>
+              <p style={{ margin: 0, fontWeight: 700 }}>Language preview</p>
+              <p className="admin-lead" style={{ margin: "0.25rem 0 0" }}>
+                Validate public detail and XML output for a selected language before publish.
+              </p>
+            </div>
+            <select className="admin-input" value={previewLanguage} onChange={(e) => setPreviewLanguage(e.target.value)} style={{ maxWidth: "10rem" }}>
+              <option value="en">English (en)</option>
+              <option value="el">Greek (el)</option>
+              <option value="es">Spanish (es)</option>
+              <option value="fr">French (fr)</option>
+            </select>
+          </div>
+          <div style={{ marginTop: "0.5rem", display: "grid", gap: "0.35rem" }}>
+            <a href={publicDetailUrl} target="_blank" rel="noreferrer" className="admin-link">
+              Public detail JSON ({previewLanguage})
+            </a>
+            <a href={publicSimilarUrl} target="_blank" rel="noreferrer" className="admin-link">
+              Similar listings JSON ({previewLanguage})
+            </a>
+            <a href={xmlFeedUrl} target="_blank" rel="noreferrer" className="admin-link">
+              XML feed ({previewLanguage})
+            </a>
+          </div>
+        </div>
 
         {publications.status === "loading" ? <p className="admin-lead">Loading publication state…</p> : null}
         {publications.status === "error" ? (
@@ -482,6 +625,9 @@ export function ListingWorkspaceClient() {
         ) : null}
       </section>
 
+      <CommentsSection targetType="LISTING" targetId={listingId} />
+      <AttachmentsSection targetType="LISTING" targetId={listingId} />
+
       <ListingMediaModal
         open={mediaOpen}
         listingId={listing.id}
@@ -504,6 +650,68 @@ export function ListingWorkspaceClient() {
           setFlash({ type: "success", message: "AI output applied to listing." });
         }}
       />
+
+      <Modal
+        title="Review translation"
+        open={selectedTranslation != null}
+        onClose={() => setSelectedTranslation(null)}
+        footer={
+          <div style={{ display: "flex", justifyContent: "space-between", gap: "0.5rem" }}>
+            <button className="admin-btn admin-btn-ghost" type="button" onClick={() => setSelectedTranslation(null)}>
+              Cancel
+            </button>
+            <button
+              className="admin-btn admin-btn-primary"
+              type="button"
+              disabled={!selectedTranslation}
+              onClick={async () => {
+                if (!selectedTranslation) return;
+                try {
+                  await saveListingTranslation(listing.id, selectedTranslation.languageCode, {
+                    title: selectedTranslation.title,
+                    description: selectedTranslation.description,
+                    shortDescription: selectedTranslation.shortDescription ?? undefined,
+                    reviewStatus: "APPROVED",
+                  });
+                  setSelectedTranslation(null);
+                  await refresh(listingId);
+                  setFlash({ type: "success", message: "Translation reviewed and saved." });
+                } catch (e) {
+                  setFlash({ type: "error", message: e instanceof Error ? e.message : "Failed to save translation." });
+                }
+              }}
+            >
+              Save review
+            </button>
+          </div>
+        }
+      >
+        {selectedTranslation ? (
+          <div style={{ display: "grid", gap: "0.5rem" }}>
+            <p className="admin-lead" style={{ margin: 0 }}>
+              Editing <code>{selectedTranslation.languageCode}</code> translation ({selectedTranslation.translatedBy}).
+            </p>
+            <input
+              className="admin-input"
+              value={selectedTranslation.title}
+              onChange={(e) => setSelectedTranslation({ ...selectedTranslation, title: e.target.value })}
+            />
+            <textarea
+              className="admin-input"
+              rows={8}
+              style={{ width: "100%", padding: "0.7rem 0.75rem", resize: "vertical" }}
+              value={selectedTranslation.description}
+              onChange={(e) => setSelectedTranslation({ ...selectedTranslation, description: e.target.value })}
+            />
+            <input
+              className="admin-input"
+              placeholder="Short description (optional)"
+              value={selectedTranslation.shortDescription ?? ""}
+              onChange={(e) => setSelectedTranslation({ ...selectedTranslation, shortDescription: e.target.value })}
+            />
+          </div>
+        ) : null}
+      </Modal>
     </div>
   );
 }

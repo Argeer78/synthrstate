@@ -6,11 +6,17 @@ import {
   IsPositive,
   IsString,
   Max,
+  MaxLength,
   Min,
 } from "class-validator";
 import { ListingType } from "@prisma/client";
 
 export class SearchListingsQueryDto {
+  @IsOptional()
+  @IsString()
+  @MaxLength(8)
+  lang?: string;
+
   @IsOptional()
   @IsString()
   @Min(1)

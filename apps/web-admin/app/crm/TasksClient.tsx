@@ -82,7 +82,7 @@ export function TasksClient() {
         </div>
       ) : null}
 
-      <div style={{ overflowX: "auto" }}>
+      <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.875rem" }}>
           <thead>
             <tr style={{ textAlign: "left", borderBottom: "1px solid var(--admin-border)" }}>

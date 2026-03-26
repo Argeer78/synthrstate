@@ -110,10 +110,10 @@ export function ContactsClient() {
   }
 
   return (
-    <div style={{ overflowX: "auto" }}>
+    <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
       <FlashMessage flash={flash} onDismiss={() => setFlash(null)} />
       {canCreate(role) ? (
-        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "0.75rem" }}>
+        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "0.75rem", flexWrap: "wrap", gap: "0.5rem" }}>
           <button
             className="admin-btn admin-btn-primary"
             type="button"

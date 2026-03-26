@@ -1,0 +1,121 @@
+{
+  "common": {
+    "home": "Home",
+    "crm": "CRM",
+    "listings": "Listings",
+    "billing": "Billing",
+    "ai": "AI",
+    "userManagement": "User management",
+    "apiFeeds": "API & Feeds",
+    "userManual": "User manual",
+    "feedback": "Feedback",
+    "close": "Close",
+    "back": "Back",
+    "save": "Save",
+    "cancel": "Cancel",
+    "refresh": "Refresh",
+    "loading": "Loading...",
+    "signOut": "Sign out",
+    "signingOut": "Signing out..."
+  },
+  "theme": {
+    "label": "Theme",
+    "system": "System",
+    "dark": "Dark",
+    "light": "Light"
+  },
+  "language": {
+    "label": "Language",
+    "english": "English",
+    "spanish": "Spanish",
+    "french": "French",
+    "german": "German",
+    "italian": "Italian",
+    "portuguese": "Portuguese",
+    "greek": "Greek"
+  },
+  "shell": {
+    "openNavigation": "Open navigation",
+    "menu": "Menu",
+    "closeNavigation": "Close navigation"
+  },
+  "sidebar": {
+    "workspace": "Workspace",
+    "checkingSession": "Checking session...",
+    "notSignedIn": "Not signed in"
+  },
+  "help": {
+    "button": "Help",
+    "title": "Synthr Assistant",
+    "subtitle": "Ask a workflow question, or open the full guide.",
+    "placeholder": "Type a question...",
+    "ask": "Ask assistant",
+    "thinking": "Thinking...",
+    "openManual": "Open user manual",
+    "sendFeedback": "Send feedback",
+    "s1": "How do I process a new inquiry?",
+    "s2": "How do I publish a listing?",
+    "s3": "Where can I connect Gmail?",
+    "s4": "How do role permissions work?"
+  },
+  "login": {
+    "title": "Sign in",
+    "subtitle": "Enter your work email and password to open your agency workspace.",
+    "back": "Back",
+    "email": "Work email",
+    "password": "Password",
+    "continue": "Continue",
+    "signingIn": "Signing in...",
+    "support": "Trouble signing in? Ask your agency owner or reach out to Synthr support.",
+    "apiMissing": "API URL is not configured.",
+    "missingCredentials": "Please enter your email and password.",
+    "failed": "Login failed."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Today's operational overview for your agency.",
+    "overview": "Overview",
+    "agencyOverview": "Agency overview",
+    "myOverview": "My overview",
+    "readOnlyOverview": "Read-only overview",
+    "readOnlyAccess": "You have read-only access.",
+    "signInPrompt": "Sign in to see your dashboard.",
+    "signIn": "Sign in",
+    "viewInquiries": "View inquiries",
+    "viewListings": "View listings",
+    "newContact": "New contact",
+    "newLead": "New lead",
+    "newListing": "New listing",
+    "loading": "Loading dashboard...",
+    "loadFailed": "Failed to load dashboard.",
+    "contacts": "Contacts",
+    "leads": "Leads",
+    "newInquiries": "New inquiries",
+    "activeListings": "Active listings",
+    "tasksDueSoon": "Tasks due soon",
+    "recentActivity": "Recent activity",
+    "recentActivitySubtitle": "Latest events across your workspace (role-scoped).",
+    "noRecentActivity": "No recent activity yet."
+  },
+  "manual": {
+    "title": "User Manual",
+    "subtitle": "Role-based guide for daily Synthr admin workflows."
+  },
+  "feedback": {
+    "title": "Feedback",
+    "subtitle": "Report issues, ideas, and feature requests.",
+    "intro": "Share product issues and requests. For MVP, feedback is sent by email.",
+    "send": "Send feedback",
+    "clear": "Clear",
+    "sentHint": "Your email app should open now. If it does not, send feedback manually to support@synthrstate.com.",
+    "types": {
+      "bug": "Bug",
+      "feature": "Feature request",
+      "uiux": "UI/UX",
+      "performance": "Performance",
+      "other": "Other"
+    },
+    "placeholder": "Describe what happened, where it happened, and what result you expected..."
+  }
+}
+

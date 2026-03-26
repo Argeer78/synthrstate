@@ -7,8 +7,10 @@ import { MediaController } from "./media/media.controller";
 import { MediaService } from "./media/media.service";
 import { PublicationsController } from "./publications/publications.controller";
 import { PublicationsService } from "./publications/publications.service";
+import { CollaborationModule } from "../collaboration/collaboration.module";
 
 @Module({
+  imports: [CollaborationModule],
   controllers: [PropertiesController, ListingsController, MediaController, PublicationsController],
   providers: [PropertiesService, ListingsService, MediaService, PublicationsService],
 })

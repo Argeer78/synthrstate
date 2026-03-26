@@ -5,13 +5,22 @@ import { ActivityService } from "../timeline/activity.service";
 import type { ActorScope } from "../../auth/rbac-query.util";
 import { leadScopeWhere, taskScopeWhere } from "../../auth/rbac-query.util";
 import { assertAgentAssignsSelfOnly } from "../../auth/rbac-assign.util";
+import { NotificationsService } from "../../collaboration/notifications.service";
+import { NotificationType } from "@prisma/client";
 
 @Injectable()
 export class TasksService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly activity: ActivityService,
+    private readonly notifications: NotificationsService,
   ) {}
+
+  private isDueSoon(dueAt: Date | null | undefined) {
+    if (!dueAt) return false;
+    const ms = dueAt.getTime() - Date.now();
+    return ms > 0 && ms <= 24 * 60 * 60 * 1000;
+  }
 
   async create(params: {
     agencyId: string;
@@ -76,6 +85,18 @@ export class TasksService {
         message: "Task assigned",
         metadata: { to: task.assignedToMembershipId },
       });
+
+      if (this.isDueSoon(task.dueAt)) {
+        await this.notifications.create({
+          agencyId: params.agencyId,
+          membershipId: task.assignedToMembershipId,
+          type: NotificationType.TASK_DUE_SOON,
+          title: "Task due soon",
+          body: task.title,
+          taskId: task.id,
+          leadId: task.leadId ?? undefined,
+        });
+      }
     }
 
     return task;
@@ -213,6 +234,18 @@ export class TasksService {
         message: "Task assigned",
         metadata: { from: existing.assignedToMembershipId, to: params.data.assignedToMembershipId },
       });
+
+      if (updated.assignedToMembershipId && this.isDueSoon(updated.dueAt)) {
+        await this.notifications.create({
+          agencyId: params.agencyId,
+          membershipId: updated.assignedToMembershipId,
+          type: NotificationType.TASK_DUE_SOON,
+          title: "Task due soon",
+          body: updated.title,
+          taskId: updated.id,
+          leadId: updated.leadId ?? undefined,
+        });
+      }
     }
 
     return this.get({ agencyId: params.agencyId, actor: params.actor, id: updated.id });

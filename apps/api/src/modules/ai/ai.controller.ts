@@ -11,6 +11,8 @@ import { GenerateListingDescriptionDto } from "./dto/generate-listing-descriptio
 import { ApplyGeneratedDescriptionDto } from "./dto/apply-generated-description.dto";
 import { GenerateLeadSummaryDto } from "./dto/generate-lead-summary.dto";
 import { GenerateBuyerMatchDto } from "./dto/buyer-match.dto";
+import { HelpAssistantDto } from "./dto/help-assistant.dto";
+import { BulkTranslateListingsDto, TranslateListingDto } from "./dto/listing-translation.dto";
 
 @Controller("ai")
 @UseGuards(JwtAuthGuard, TenantGuard, RolesGuard)
@@ -114,6 +116,51 @@ export class AiController {
   ) {
     const { agencyId, role, membershipId } = getAuthContext(req);
     return this.ai.getBuyerMatchGeneration({ agencyId, generationId, actor: { role, membershipId } });
+  }
+
+  @Post("help-assistant")
+  async helpAssistant(@Req() req: Request, @Body() dto: HelpAssistantDto) {
+    const { agencyId, membershipId, role } = getAuthContext(req);
+    return this.ai.generateHelpAssistantAnswer({
+      agencyId,
+      membershipId,
+      role,
+      question: dto.question,
+      pageHint: dto.pageHint,
+    });
+  }
+
+  @Post("listings/:listingId/translate")
+  @Roles(...ROLES_MUTATE)
+  async translateListing(
+    @Req() req: Request,
+    @Param("listingId", new ParseUUIDPipe({ version: "4" })) listingId: string,
+    @Body() dto: TranslateListingDto,
+  ) {
+    const { agencyId, membershipId, role } = getAuthContext(req);
+    return this.ai.translateListingContent({
+      agencyId,
+      listingId,
+      membershipId,
+      actor: { role, membershipId },
+      targetLanguage: dto.targetLanguage,
+      overwrite: dto.overwrite ?? false,
+    });
+  }
+
+  @Post("listings/bulk-translate")
+  @Roles(...ROLES_MUTATE)
+  async bulkTranslateListings(@Req() req: Request, @Body() dto: BulkTranslateListingsDto) {
+    const { agencyId, membershipId, role } = getAuthContext(req);
+    return this.ai.bulkTranslateListings({
+      agencyId,
+      membershipId,
+      actor: { role, membershipId },
+      listingIds: dto.listingIds,
+      allEligible: dto.allEligible ?? false,
+      targetLanguage: dto.targetLanguage,
+      overwrite: dto.overwrite ?? false,
+    });
   }
 }
 

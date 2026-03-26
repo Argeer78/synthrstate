@@ -1,13 +1,17 @@
+"use client";
+
 import { AdminShell } from "./AdminShell";
 import { DashboardClient } from "./DashboardClient";
+import { useTranslation } from "react-i18next";
 
 export default function AdminHomePage() {
+  const { t } = useTranslation();
   return (
     <AdminShell
-      title="Dashboard"
+      title={t("dashboard.title")}
       subtitle={
         <>
-          Today’s operational overview for your agency.
+          {t("dashboard.subtitle")}
         </>
       }
     >

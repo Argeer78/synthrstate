@@ -6,6 +6,7 @@ import { useMe } from "../lib/use-me";
 import { fetchDashboard } from "../lib/api/dashboard";
 import { FlashMessage, type Flash } from "./components/Flash";
 import { canCreate, canEdit, canPublish, isViewer } from "../utils/permissions";
+import { useTranslation } from "react-i18next";
 
 function Card(props: { label: string; value: number | string; href: string }) {
   return (
@@ -31,6 +32,7 @@ function Card(props: { label: string; value: number | string; href: string }) {
 }
 
 export function DashboardClient() {
+  const { t } = useTranslation();
   const { state: meState, role } = useMe();
   const [flash, setFlash] = useState<Flash>(null);
   const [state, setState] = useState<
@@ -46,7 +48,7 @@ export function DashboardClient() {
         const data = await fetchDashboard();
         if (!cancelled) setState({ status: "ok", data });
       } catch (e) {
-        const message = e instanceof Error ? e.message : "Failed to load dashboard.";
+        const message = e instanceof Error ? e.message : t("dashboard.loadFailed");
         if (!cancelled) setState({ status: "error", message });
       }
     })();
@@ -56,18 +58,18 @@ export function DashboardClient() {
   }, []);
 
   const scopeLabel = useMemo(() => {
-    if (!role) return "Overview";
-    if (role === "OWNER" || role === "MANAGER") return "Agency overview";
-    if (role === "AGENT") return "My overview";
-    return "Read-only overview";
-  }, [role]);
+    if (!role) return t("dashboard.overview");
+    if (role === "OWNER" || role === "MANAGER") return t("dashboard.agencyOverview");
+    if (role === "AGENT") return t("dashboard.myOverview");
+    return t("dashboard.readOnlyOverview");
+  }, [role, t]);
 
   if (meState.status !== "ok") {
     return (
       <div>
-        <p className="admin-lead">Sign in to see your dashboard.</p>
+        <p className="admin-lead">{t("dashboard.signInPrompt")}</p>
         <Link href="/login/" className="admin-btn admin-btn-primary">
-          Sign in
+          {t("dashboard.signIn")}
         </Link>
       </div>
     );
@@ -84,36 +86,36 @@ export function DashboardClient() {
           </p>
           {isViewer(role) ? (
             <p className="admin-lead" style={{ margin: "0.35rem 0 0" }}>
-              You have read-only access.
+              {t("dashboard.readOnlyAccess")}
             </p>
           ) : null}
         </div>
         <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap", justifyContent: "flex-end" }}>
           <Link href="/crm/" className="admin-btn admin-btn-ghost" style={{ minHeight: "2.5rem" }}>
-            View inquiries
+            {t("dashboard.viewInquiries")}
           </Link>
           <Link href="/listings/" className="admin-btn admin-btn-ghost" style={{ minHeight: "2.5rem" }}>
-            View listings
+            {t("dashboard.viewListings")}
           </Link>
           {canCreate(role) ? (
             <Link href="/crm/?new=contact" className="admin-btn admin-btn-primary" style={{ minHeight: "2.5rem" }}>
-              New contact
+              {t("dashboard.newContact")}
             </Link>
           ) : null}
           {canCreate(role) ? (
             <Link href="/crm/?new=lead" className="admin-btn admin-btn-ghost" style={{ minHeight: "2.5rem" }}>
-              New lead
+              {t("dashboard.newLead")}
             </Link>
           ) : null}
           {canCreate(role) ? (
             <Link href="/listings/?new=listing" className="admin-btn admin-btn-ghost" style={{ minHeight: "2.5rem" }}>
-              New listing
+              {t("dashboard.newListing")}
             </Link>
           ) : null}
         </div>
       </div>
 
-      {state.status === "loading" ? <p className="admin-lead">Loading dashboard…</p> : null}
+      {state.status === "loading" ? <p className="admin-lead">{t("dashboard.loading")}</p> : null}
       {state.status === "error" ? (
         <p className="admin-lead" style={{ color: "#ffb4b4" }}>
           {state.message}
@@ -123,22 +125,22 @@ export function DashboardClient() {
       {state.status === "ok" ? (
         <>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(5, minmax(0, 1fr))", gap: "0.75rem" }}>
-            <Card label="Contacts" value={state.data.counts.totalContacts} href="/crm/" />
-            <Card label="Leads" value={state.data.counts.totalLeads} href="/crm/" />
-            <Card label="New inquiries" value={state.data.counts.newInquiries} href="/crm/" />
-            <Card label="Active listings" value={state.data.counts.activeListings} href="/listings/" />
-            <Card label="Tasks due soon" value={state.data.counts.tasksDueSoon} href="/crm/" />
+            <Card label={t("dashboard.contacts")} value={state.data.counts.totalContacts} href="/crm/" />
+            <Card label={t("dashboard.leads")} value={state.data.counts.totalLeads} href="/crm/" />
+            <Card label={t("dashboard.newInquiries")} value={state.data.counts.newInquiries} href="/crm/" />
+            <Card label={t("dashboard.activeListings")} value={state.data.counts.activeListings} href="/listings/" />
+            <Card label={t("dashboard.tasksDueSoon")} value={state.data.counts.tasksDueSoon} href="/crm/" />
           </div>
 
           <section style={{ marginTop: "0.5rem" }}>
-            <h2 style={{ margin: "0 0 0.5rem", fontSize: "1rem" }}>Recent activity</h2>
+            <h2 style={{ margin: "0 0 0.5rem", fontSize: "1rem" }}>{t("dashboard.recentActivity")}</h2>
             <p className="admin-lead" style={{ marginTop: 0 }}>
-              Latest events across your workspace (role-scoped).
+              {t("dashboard.recentActivitySubtitle")}
             </p>
             <div style={{ border: "1px solid var(--admin-border)", borderRadius: "0.9rem", overflow: "hidden" }}>
               {state.data.recent.length === 0 ? (
                 <p className="admin-lead" style={{ margin: 0, padding: "0.9rem 1rem" }}>
-                  No recent activity yet.
+                  {t("dashboard.noRecentActivity")}
                 </p>
               ) : (
                 <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>

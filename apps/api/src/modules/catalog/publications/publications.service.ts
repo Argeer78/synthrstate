@@ -6,16 +6,21 @@ import {
   ListingStatus,
   ListingPublicationStatus,
   PublicationAttemptStatus,
+  NotificationType,
   UserRole,
 } from "@prisma/client";
 import type { PublicationChannelCode } from "./publications.constants";
 import { getPublicationChannelConfig, PUBLICATION_CHANNELS } from "./publications.constants";
 import { PublicationLog, ListingPublication } from "@prisma/client";
+import { NotificationsService } from "../../collaboration/notifications.service";
 
 // Note: We simulate publication adapter processing (queue-friendly for later).
 @Injectable()
 export class PublicationsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notifications: NotificationsService,
+  ) {}
 
   async getListingPublications(params: {
     agencyId: string;
@@ -369,6 +374,26 @@ export class PublicationsService {
         where: { id: publication.id },
         data: { status: ListingPublicationStatus.FAILED },
       });
+
+      // Notify owners/managers of publish failure (MVP).
+      const recipients = await this.prisma.agencyMembership.findMany({
+        where: { agencyId: params.agencyId, role: { in: [UserRole.OWNER, UserRole.MANAGER] } },
+        select: { id: true },
+        take: 50,
+      });
+      await Promise.all(
+        recipients.map((m) =>
+          this.notifications.create({
+            agencyId: params.agencyId,
+            membershipId: m.id,
+            type: NotificationType.LISTING_PUBLISH_FAILED,
+            title: "Listing publish failed",
+            body: errorMessage,
+            listingId: params.listingId,
+            metadata: { channel: params.code, action: params.action },
+          }),
+        ),
+      );
     } else {
       await this.prisma.publicationLog.updateMany({
         where: { agencyId: params.agencyId, listingPublicationId: publication.id, attemptNo, status: PublicationAttemptStatus.STARTED },

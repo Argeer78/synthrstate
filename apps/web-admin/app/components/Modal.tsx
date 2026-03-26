@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 export function Modal(props: {
   title: string;
@@ -9,6 +10,7 @@ export function Modal(props: {
   children: React.ReactNode;
   footer?: React.ReactNode;
 }) {
+  const { t } = useTranslation();
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") props.onClose();
@@ -40,7 +42,7 @@ export function Modal(props: {
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "1rem" }}>
           <h1 style={{ margin: 0, fontSize: "1.05rem" }}>{props.title}</h1>
           <button className="admin-btn admin-btn-ghost" type="button" onClick={props.onClose} style={{ minHeight: "2.25rem" }}>
-            Close
+            {t("common.close")}
           </button>
         </div>
         <div style={{ marginTop: "1rem" }}>{props.children}</div>

@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useMe } from "../../lib/use-me";
 import { canAccessAi, canCreate, canDelete, canEdit, canPublish, canUploadMedia } from "../../utils/permissions";
 import { FlashMessage, type Flash } from "../components/Flash";
-import { createListing, createProperty, deleteListing, listListings, type ListingRow } from "../../lib/api/listings";
+import { aiBulkTranslateListings, createListing, createProperty, deleteListing, listListings, type ListingRow } from "../../lib/api/listings";
 import { publishListingChannels, type PublicationChannelCode } from "../../lib/api/publications";
 import { ListingEditModal } from "./ListingEditModal";
 import { ListingMediaModal } from "./ListingMediaModal";
@@ -30,6 +30,10 @@ export function ListingsClient() {
   const [createOpen, setCreateOpen] = useState(false);
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [creating, setCreating] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [bulkLanguage, setBulkLanguage] = useState("el");
+  const [bulkOverwrite, setBulkOverwrite] = useState(false);
+  const [bulkBusy, setBulkBusy] = useState(false);
   const [createForm, setCreateForm] = useState({
     ownerContactId: "",
     address: "",
@@ -49,6 +53,7 @@ export function ListingsClient() {
   async function refresh() {
     const { items, total } = await listListings();
     setState({ status: "ok", rows: items, total });
+    setSelectedIds((prev) => prev.filter((id) => items.some((x) => x.id === id)));
   }
 
   useEffect(() => {
@@ -131,10 +136,71 @@ export function ListingsClient() {
   }
 
   return (
-    <div style={{ overflowX: "auto" }}>
+    <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
       <FlashMessage flash={flash} onDismiss={() => setFlash(null)} />
       {canCreate(role) ? (
-        <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: "0.75rem" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.75rem", gap: "0.75rem", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>
+            <span style={{ fontSize: "0.82rem", color: "var(--admin-muted)" }}>Bulk translate</span>
+            <select className="admin-input" value={bulkLanguage} onChange={(e) => setBulkLanguage(e.target.value)} style={{ maxWidth: "10rem" }}>
+              <option value="el">Greek (el)</option>
+              <option value="en">English (en)</option>
+              <option value="es">Spanish (es)</option>
+              <option value="fr">French (fr)</option>
+            </select>
+            <label style={{ display: "inline-flex", alignItems: "center", gap: "0.35rem", color: "var(--admin-muted)", fontSize: "0.82rem" }}>
+              <input type="checkbox" checked={bulkOverwrite} onChange={(e) => setBulkOverwrite(e.target.checked)} /> overwrite
+            </label>
+            <button
+              className="admin-btn admin-btn-ghost"
+              type="button"
+              disabled={bulkBusy || selectedIds.length === 0}
+              style={{ minHeight: "2.25rem" }}
+              onClick={async () => {
+                try {
+                  setBulkBusy(true);
+                  const result = await aiBulkTranslateListings({
+                    listingIds: selectedIds,
+                    targetLanguage: bulkLanguage,
+                    overwrite: bulkOverwrite,
+                    allEligible: false,
+                  });
+                  await refresh();
+                  setFlash({ type: "success", message: `Bulk translation done. Translated ${result.translated}, skipped ${result.skipped}.` });
+                } catch (e) {
+                  setFlash({ type: "error", message: e instanceof Error ? e.message : "Bulk translation failed." });
+                } finally {
+                  setBulkBusy(false);
+                }
+              }}
+            >
+              Translate selected
+            </button>
+            <button
+              className="admin-btn admin-btn-ghost"
+              type="button"
+              disabled={bulkBusy}
+              style={{ minHeight: "2.25rem" }}
+              onClick={async () => {
+                try {
+                  setBulkBusy(true);
+                  const result = await aiBulkTranslateListings({
+                    targetLanguage: bulkLanguage,
+                    overwrite: bulkOverwrite,
+                    allEligible: true,
+                  });
+                  await refresh();
+                  setFlash({ type: "success", message: `Bulk-all translation done. Translated ${result.translated}, skipped ${result.skipped}.` });
+                } catch (e) {
+                  setFlash({ type: "error", message: e instanceof Error ? e.message : "Bulk-all translation failed." });
+                } finally {
+                  setBulkBusy(false);
+                }
+              }}
+            >
+              Translate all eligible
+            </button>
+          </div>
           <button
             className="admin-btn admin-btn-primary"
             type="button"
@@ -157,16 +223,33 @@ export function ListingsClient() {
       >
         <thead>
           <tr style={{ textAlign: "left", borderBottom: "1px solid var(--admin-border)" }}>
+            <th style={{ padding: "0.5rem 0.35rem" }}>
+              <input
+                type="checkbox"
+                checked={state.rows.length > 0 && selectedIds.length === state.rows.length}
+                onChange={(e) => setSelectedIds(e.target.checked ? state.rows.map((r) => r.id) : [])}
+              />
+            </th>
             <th style={{ padding: "0.5rem 0.35rem" }}>Title</th>
             <th style={{ padding: "0.5rem 0.35rem" }}>Status</th>
             <th style={{ padding: "0.5rem 0.35rem" }}>Slug</th>
             <th style={{ padding: "0.5rem 0.35rem" }}>Price</th>
+            <th style={{ padding: "0.5rem 0.35rem" }}>Translations</th>
             <th style={{ padding: "0.5rem 0.35rem" }}>Actions</th>
           </tr>
         </thead>
         <tbody>
           {state.rows.map((row) => (
             <tr key={row.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+              <td style={{ padding: "0.55rem 0.35rem" }}>
+                <input
+                  type="checkbox"
+                  checked={selectedIds.includes(row.id)}
+                  onChange={(e) =>
+                    setSelectedIds((prev) => (e.target.checked ? [...prev, row.id] : prev.filter((x) => x !== row.id)))
+                  }
+                />
+              </td>
               <td style={{ padding: "0.55rem 0.35rem", maxWidth: "14rem" }}>
                 <Link href={`/listings/view/?id=${encodeURIComponent(row.id)}`} className="admin-link">
                   {row.title}
@@ -178,6 +261,9 @@ export function ListingsClient() {
               </td>
               <td style={{ padding: "0.55rem 0.35rem" }}>
                 {row.price != null ? `${row.price} ${row.currency ?? "EUR"}` : "—"}
+              </td>
+              <td style={{ padding: "0.55rem 0.35rem", color: "var(--admin-muted)" }}>
+                {row.translations?.length ? row.translations.map((t) => t.languageCode).join(", ") : "none"}
               </td>
               <td style={{ padding: "0.55rem 0.35rem" }}>
                 <div style={{ display: "flex", flexWrap: "wrap", gap: "0.35rem" }}>

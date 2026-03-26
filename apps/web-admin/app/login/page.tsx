@@ -1,7 +1,11 @@
+"use client";
+
 import Link from "next/link";
 import { LoginForm } from "./LoginForm";
+import { useTranslation } from "react-i18next";
 
 export default function LoginPage() {
+  const { t } = useTranslation();
   return (
     <div className="admin-shell">
       <header className="admin-top">
@@ -16,16 +20,15 @@ export default function LoginPage() {
       <main className="admin-main">
         <div className="admin-card">
           <Link href="/" className="admin-back">
-            ← Back
+            ← {t("login.back")}
           </Link>
-          <h1>Sign in</h1>
+          <h1>{t("login.title")}</h1>
           <p className="admin-lead">
-            Enter your work email and password to open your agency workspace.
+            {t("login.subtitle")}
           </p>
           <LoginForm />
           <p className="admin-foot">
-            Trouble signing in? Ask your agency owner or reach out to Synthr
-            support.
+            {t("login.support")}
           </p>
         </div>
       </main>

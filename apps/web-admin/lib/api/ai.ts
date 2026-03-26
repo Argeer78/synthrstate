@@ -36,3 +36,17 @@ export async function applyGeneratedDescription(generationId: string, dto: { des
   return (await res.json()) as { ok: boolean };
 }
 
+export async function askHelpAssistant(question: string, pageHint?: string) {
+  const res = await apiFetch(`/ai/help-assistant`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ question, pageHint }),
+  });
+  if (!res.ok) throw new Error(await readApiError(res));
+  return (await res.json()) as {
+    answer: string;
+    suggestedActions?: string[];
+    relatedPages?: string[];
+  };
+}
+

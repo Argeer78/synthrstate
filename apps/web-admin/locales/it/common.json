@@ -1,0 +1,32 @@
+{
+  "common": {
+    "home": "Home",
+    "crm": "CRM",
+    "listings": "Annunci",
+    "billing": "Fatturazione",
+    "ai": "IA",
+    "userManagement": "Gestione utenti",
+    "apiFeeds": "API e feed",
+    "userManual": "Manuale utente",
+    "feedback": "Feedback",
+    "close": "Chiudi",
+    "back": "Indietro",
+    "save": "Salva",
+    "cancel": "Annulla",
+    "refresh": "Aggiorna",
+    "loading": "Caricamento...",
+    "signOut": "Disconnetti",
+    "signingOut": "Disconnessione..."
+  },
+  "language": {
+    "label": "Lingua",
+    "english": "Inglese",
+    "spanish": "Spagnolo",
+    "french": "Francese",
+    "german": "Tedesco",
+    "italian": "Italiano",
+    "portuguese": "Portoghese",
+    "greek": "Greco"
+  }
+}
+
