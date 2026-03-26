@@ -2,12 +2,20 @@
   "name": "synthr",
   "private": true,
   "scripts": {
+    "postinstall": "npm ci --prefix apps/web-public",
     "dev": "pnpm -r --parallel dev",
-    "build": "pnpm -r build",
+    "build": "npm run build --prefix apps/web-public",
+    "build:all": "pnpm -r build",
+    "start": "npm run start --prefix apps/web-public",
     "lint": "pnpm -r lint",
     "test": "pnpm -r test",
     "db:migrate": "pnpm --filter @synthr/api db:migrate",
-    "db:seed": "pnpm --filter @synthr/api db:seed"
+    "db:seed": "pnpm --filter @synthr/api db:seed",
+    "web-public:install": "npm ci --prefix apps/web-public",
+    "web-public:build": "npm run build --prefix apps/web-public",
+    "web-public:start": "npm run start --prefix apps/web-public",
+    "hostinger:build": "npm run web-public:build",
+    "hostinger:start": "npm run web-public:start"
   },
   "devDependencies": {
     "typescript": "^5.8.0",

@@ -1,0 +1,56 @@
+Hostinger Node.js + Git: public marketing site (Next.js)
+========================================================
+
+The Next.js app is NOT at the repository root. It lives in:
+
+  apps/web-public/
+
+If Root directory is locked to ./ (repo root), the root package.json delegates install/build/start to apps/web-public (postinstall + build + start scripts). Set Output directory to: apps/web-public/.next
+
+Full monorepo build locally: pnpm run build:all
+
+---
+
+Hostinger’s auto-detector expects package.json + app/ at the repo root, so a monorepo often shows:
+  "Unsupported framework or invalid project structure"
+
+Fix (pick one):
+
+--------------------------------------------------------------------
+A) Set "root / base / application directory" to apps/web-public
+--------------------------------------------------------------------
+In the Node.js app or Git deploy settings, if you see a field like:
+  Root directory | Base directory | Application path | Project subdirectory
+set it to exactly:
+
+  apps/web-public
+
+Then use the default or recommended commands, e.g.:
+  Install:  npm ci   (or npm install)
+  Build:    npm run build
+  Start:    npm run start -- -p $PORT
+
+--------------------------------------------------------------------
+B) No subdirectory field — override install / build / start
+--------------------------------------------------------------------
+Use these commands (repo root is still the clone root):
+
+  Install:  npm ci --prefix apps/web-public
+  Build:    npm run build --prefix apps/web-public
+  Start:    npm run start --prefix apps/web-public -- -p $PORT
+
+(Equivalent npm scripts on the root package.json: web-public:* and hostinger:*)
+
+If the UI still blocks you before custom commands, use C or D.
+
+--------------------------------------------------------------------
+C) Deploy from a ZIP of only apps/web-public
+--------------------------------------------------------------------
+Zip the *contents* of apps/web-public (package.json, app/, next.config.mjs, …
+at the top level of the zip). Upload that in "Upload your website files".
+
+--------------------------------------------------------------------
+D) Separate GitHub repo for the marketing site only
+--------------------------------------------------------------------
+Split or mirror apps/web-public into its own repository with the app at the
+root (last resort).
