@@ -85,7 +85,7 @@ const tiers = [
 
 export default function MarketingPricing() {
   const adminBase = (process.env.NEXT_PUBLIC_ADMIN_APP_URL ?? "https://app.synthrstate.com").replace(/\/$/, "");
-  const supportEmail = process.env.NEXT_PUBLIC_BILLING_SUPPORT_EMAIL ?? "hello@synthrstate.com";
+  const supportEmail = process.env.NEXT_PUBLIC_BILLING_SUPPORT_EMAIL ?? "sypport@synthrstate.com";
 
   return (
     <section
