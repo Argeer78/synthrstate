@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { formatListingType, formatPrice } from "../lib/public-api";
+import { formatListingType, formatPrice, getDemoListingFallbackImage } from "../lib/public-api";
 
 /**
  * @param {{ listing: Record<string, any> }} props
@@ -21,13 +21,14 @@ export default function PublicListingCard({ listing }) {
   const area = property?.area;
   const location =
     [city, area].filter(Boolean).join(" · ") || property?.address || "—";
+  const coverUrl = cover?.url || getDemoListingFallbackImage(slug);
 
   return (
     <Link href={`/listings/${slug}`} className="listing-card">
       <div className="listing-card__media">
-        {cover?.url ? (
+        {coverUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={cover.url} alt="" className="listing-card__img" />
+          <img src={coverUrl} alt={title || "Listing photo"} className="listing-card__img" />
         ) : (
           <div className="listing-card__placeholder">No photo</div>
         )}
