@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import PublicSiteFooter from "../../../components/PublicSiteFooter";
 import ListingDetailMedia from "../../../components/ListingDetailMedia";
 import ListingInquirySection from "../../../components/ListingInquirySection";
 import {
@@ -8,6 +9,8 @@ import {
   formatListingType,
   formatPrice,
 } from "../../../lib/public-api";
+import { getMessages } from "../../../lib/i18n";
+import { getRequestLocale } from "../../../lib/i18n.server";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +25,8 @@ function SpecRow({ label, value }) {
 }
 
 export default async function ListingDetailPage({ params }) {
+  const locale = await getRequestLocale();
+  const m = getMessages(locale);
   const { slug } = await params;
   let listing;
   let errorMessage = null;
@@ -29,19 +34,20 @@ export default async function ListingDetailPage({ params }) {
   try {
     listing = await fetchPublicListingDetail(slug);
   } catch (e) {
-    errorMessage = e instanceof Error ? e.message : "Something went wrong";
+    errorMessage = e instanceof Error ? e.message : null;
   }
 
   if (errorMessage) {
     return (
       <div className="shell">
         <Link href="/listings" className="detail-back">
-          ← Back to listings
+          ← {m.listings.backToListings}
         </Link>
         <div className="state-block state-block--error" role="alert">
-          <p className="state-block__title">Could not load this listing</p>
+          <p className="state-block__title">{m.listings.detailError}</p>
           <p style={{ margin: 0 }}>{errorMessage}</p>
         </div>
+        <PublicSiteFooter />
       </div>
     );
   }
@@ -64,7 +70,7 @@ export default async function ListingDetailPage({ params }) {
   return (
     <div className="shell shell--detail">
       <Link href="/listings" className="detail-back">
-        ← Back to listings
+        ← {m.listings.backToListings}
       </Link>
 
       <article className="detail-page">
@@ -72,47 +78,49 @@ export default async function ListingDetailPage({ params }) {
           <h1 className="detail-page__title">{title}</h1>
           <div className="detail-page__price-row">
             <span className="detail-page__price">{formatPrice(listing.price, listing.currency)}</span>
-            <span className="detail-page__badge">{formatListingType(listing.listingType)}</span>
+            <span className="detail-page__badge">{formatListingType(listing.listingType, m.card)}</span>
           </div>
         </header>
 
         <div className="detail-page__layout">
-          <ListingDetailMedia images={images} title={title} />
+          <ListingDetailMedia images={images} title={title} m={m} />
 
           <aside className="detail-specs" aria-labelledby="specs-heading">
             <h2 id="specs-heading" className="detail-specs__title">
-              Property details
+              {m.listings.detailsTitle}
             </h2>
             <dl className="detail-specs__list">
               <SpecRow
-                label="Bedrooms"
+                label={m.listings.bedrooms}
                 value={listing.bedrooms != null ? String(listing.bedrooms) : null}
               />
               <SpecRow
-                label="Bathrooms"
+                label={m.listings.bathrooms}
                 value={listing.bathrooms != null ? String(listing.bathrooms) : null}
               />
-              <SpecRow label="Internal area" value={listing.sqm != null ? `${listing.sqm} m²` : null} />
-              <SpecRow label="City" value={city || null} />
-              <SpecRow label="Area" value={area || null} />
-              <SpecRow label="Address" value={address || null} />
+              <SpecRow label={m.listings.internalArea} value={listing.sqm != null ? `${listing.sqm} m²` : null} />
+              <SpecRow label={m.listings.city} value={city || null} />
+              <SpecRow label={m.listings.area} value={area || null} />
+              <SpecRow label={m.listings.address} value={address || null} />
             </dl>
           </aside>
         </div>
 
         <section className="detail-description" aria-labelledby="desc-heading">
           <h2 id="desc-heading" className="detail-description__title">
-            Description
+            {m.listings.description}
           </h2>
           {description ? (
             <div className="detail-description__body">{description}</div>
           ) : (
-            <p className="detail-description__empty">No description has been published for this listing.</p>
+            <p className="detail-description__empty">{m.listings.noDescription}</p>
           )}
         </section>
 
-        <ListingInquirySection listingTitle={title} listingSlug={slug} />
+        <ListingInquirySection listingTitle={title} listingSlug={slug} m={m} />
       </article>
+
+      <PublicSiteFooter />
     </div>
   );
 }

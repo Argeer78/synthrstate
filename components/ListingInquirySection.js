@@ -4,9 +4,10 @@ import { useMemo, useState } from "react";
 import { createPublicInquiry } from "../lib/public-api";
 
 /**
- * @param {{ listingTitle?: string; listingSlug: string }} props
+ * @param {{ listingTitle?: string; listingSlug: string; m: Record<string, any> }} props
  */
-export default function ListingInquirySection({ listingTitle, listingSlug }) {
+export default function ListingInquirySection({ listingTitle, listingSlug, m }) {
+  const L = m.listings;
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
   const [status, setStatus] = useState("idle"); // idle | sending | success | error
   const [message, setMessage] = useState("");
@@ -23,12 +24,12 @@ export default function ListingInquirySection({ listingTitle, listingSlug }) {
 
     if (!form.name.trim()) {
       setStatus("error");
-      setMessage("Please enter your full name.");
+      setMessage(L.errName);
       return;
     }
     if (!form.email.trim() && !form.phone.trim()) {
       setStatus("error");
-      setMessage("Please provide at least an email or phone number.");
+      setMessage(L.errContact);
       return;
     }
 
@@ -41,28 +42,30 @@ export default function ListingInquirySection({ listingTitle, listingSlug }) {
         message: form.message.trim() || undefined,
       });
       setStatus("success");
-      setMessage("Thank you — your inquiry was sent. An agent will contact you soon.");
+      setMessage(L.successMsg);
       setForm({ name: "", email: "", phone: "", message: "" });
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Inquiry failed.";
+      const msg = err instanceof Error ? err.message : L.failMsg;
       setStatus("error");
       setMessage(msg);
     }
   }
 
+  const opt = `(${L.optional})`;
+
   return (
     <section className="inquiry-section" aria-labelledby="inquiry-heading">
       <div className="inquiry-section__inner">
         <h2 id="inquiry-heading" className="inquiry-section__title">
-          Inquire about this property
+          {L.inquiryTitle}
         </h2>
         <p className="inquiry-section__lead">
           {listingTitle ? (
             <>
-              Interested in <strong>{listingTitle}</strong>? Leave your details and we’ll get back to you.
+              {L.inquiryLeadInterested} <strong>{listingTitle}</strong>? {L.inquiryLeadSuffix}
             </>
           ) : (
-            <>Leave your details and we’ll get back to you.</>
+            <>{L.inquiryLeadAlone}</>
           )}
         </p>
 
@@ -73,7 +76,7 @@ export default function ListingInquirySection({ listingTitle, listingSlug }) {
             style={{ padding: "16px 18px", textAlign: "left", marginBottom: "16px" }}
           >
             <p className="state-block__title" style={{ marginBottom: 4 }}>
-              {status === "success" ? "Inquiry sent" : status === "error" ? "Could not send inquiry" : "Status"}
+              {status === "success" ? L.statusSent : status === "error" ? L.statusError : L.statusGeneric}
             </p>
             <p style={{ margin: 0 }}>{message}</p>
           </div>
@@ -81,17 +84,17 @@ export default function ListingInquirySection({ listingTitle, listingSlug }) {
 
         <form className="inquiry-form" onSubmit={onSubmit}>
           <fieldset className="inquiry-form__fieldset" disabled={status === "sending" || status === "success"}>
-            <legend className="visually-hidden">Contact form</legend>
+            <legend className="visually-hidden">{L.legendContact}</legend>
             <div className="inquiry-form__row">
               <label className="inquiry-form__label" htmlFor="inq-name">
-                Full name
+                {L.fullName}
               </label>
               <input
                 id="inq-name"
                 className="inquiry-form__input"
                 type="text"
                 name="name"
-                placeholder="Your name"
+                placeholder={L.placeholderName}
                 autoComplete="name"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
@@ -99,14 +102,14 @@ export default function ListingInquirySection({ listingTitle, listingSlug }) {
             </div>
             <div className="inquiry-form__row">
               <label className="inquiry-form__label" htmlFor="inq-email">
-                Email <span className="inquiry-form__optional">(optional)</span>
+                {L.email} <span className="inquiry-form__optional">{opt}</span>
               </label>
               <input
                 id="inq-email"
                 className="inquiry-form__input"
                 type="email"
                 name="email"
-                placeholder="you@example.com"
+                placeholder={L.placeholderEmail}
                 autoComplete="email"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
@@ -114,14 +117,14 @@ export default function ListingInquirySection({ listingTitle, listingSlug }) {
             </div>
             <div className="inquiry-form__row">
               <label className="inquiry-form__label" htmlFor="inq-phone">
-                Phone <span className="inquiry-form__optional">(optional)</span>
+                {L.phone} <span className="inquiry-form__optional">{opt}</span>
               </label>
               <input
                 id="inq-phone"
                 className="inquiry-form__input"
                 type="tel"
                 name="phone"
-                placeholder="+30 …"
+                placeholder={L.placeholderPhone}
                 autoComplete="tel"
                 value={form.phone}
                 onChange={(e) => setForm({ ...form, phone: e.target.value })}
@@ -129,23 +132,23 @@ export default function ListingInquirySection({ listingTitle, listingSlug }) {
             </div>
             <div className="inquiry-form__row">
               <label className="inquiry-form__label" htmlFor="inq-message">
-                Message <span className="inquiry-form__optional">(optional)</span>
+                {L.message} <span className="inquiry-form__optional">{opt}</span>
               </label>
               <textarea
                 id="inq-message"
                 className="inquiry-form__textarea"
                 name="message"
                 rows={4}
-                placeholder="Tell us what you are looking for…"
+                placeholder={L.placeholderMessage}
                 value={form.message}
                 onChange={(e) => setForm({ ...form, message: e.target.value })}
               />
             </div>
             <button type="submit" className="inquiry-form__submit" disabled={!canSubmit}>
-              {status === "sending" ? "Sending…" : "Send inquiry"}
+              {status === "sending" ? L.sending : L.sendInquiry}
             </button>
             <p className="inquiry-form__note" style={{ marginTop: 10 }}>
-              Tip: add either an email or phone number so the agency can reach you.
+              {L.tip}
             </p>
           </fieldset>
         </form>

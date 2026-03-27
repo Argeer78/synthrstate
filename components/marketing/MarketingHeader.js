@@ -8,7 +8,14 @@ const nav = [
   { href: "#social-proof", label: "Trust" },
 ];
 
-export default function MarketingHeader() {
+export default function MarketingHeader({ m }) {
+  const navItems = [
+    { href: "#features", label: m?.nav?.why ?? nav[0].label },
+    { href: "#product", label: m?.nav?.product ?? nav[1].label },
+    { href: "#how-it-works", label: m?.nav?.how ?? nav[2].label },
+    { href: "#pricing", label: m?.nav?.pricing ?? nav[3].label },
+    { href: "#social-proof", label: m?.nav?.trust ?? nav[4].label },
+  ];
   return (
     <header className="mk-header">
       <div className="mk-header__inner shell">
@@ -17,7 +24,7 @@ export default function MarketingHeader() {
         </Link>
         <nav className="mk-nav" aria-label="Primary">
           <ul className="mk-nav__list">
-            {nav.map((item) => (
+            {navItems.map((item) => (
               <li key={item.href}>
                 <a href={item.href} className="mk-nav__link">
                   {item.label}
@@ -26,13 +33,13 @@ export default function MarketingHeader() {
             ))}
             <li>
               <Link href="/listings" className="mk-nav__link mk-nav__link--muted">
-                Demo listings
+                {m?.nav?.demoListings ?? "Demo listings"}
               </Link>
             </li>
           </ul>
         </nav>
         <a href="https://app.synthrstate.com/login/" className="mk-btn mk-btn--header">
-          Start free
+          {m?.nav?.startFree ?? "Start free"}
         </a>
       </div>
     </header>

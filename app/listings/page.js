@@ -1,6 +1,9 @@
 import Link from "next/link";
+import PublicSiteFooter from "../../components/PublicSiteFooter";
 import PublicListingCard from "../../components/PublicListingCard";
 import { fetchPublicListings } from "../../lib/public-api";
+import { getMessages } from "../../lib/i18n";
+import { getRequestLocale } from "../../lib/i18n.server";
 
 export const metadata = {
   title: "Demo listings — Synthr",
@@ -11,31 +14,32 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function ListingsIndexPage() {
+  const locale = await getRequestLocale();
+  const m = getMessages(locale);
   let data;
   let errorMessage = null;
 
   try {
     data = await fetchPublicListings();
   } catch (e) {
-    errorMessage = e instanceof Error ? e.message : "Something went wrong";
+    errorMessage = e instanceof Error ? e.message : m.listings.genericError;
   }
 
   return (
     <div className="shell listings-page">
       <header className="listings-page__header">
         <Link href="/" className="listings-page__back">
-          ← Synthr
+          ← {m.listings.backBrand}
         </Link>
-        <h1 className="listings-page__title">Demo listings</h1>
+        <h1 className="listings-page__title">{m.listings.demoTitle}</h1>
         <p className="listings-page__lead">
-          Live data from the Synthr public API (<code>demo-agency</code>). This page is for product preview, not
-          the marketing homepage.
+          {m.listings.lead.split("(demo-agency)")[0]}(<code>demo-agency</code>){m.listings.lead.split("(demo-agency)")[1]}
         </p>
       </header>
 
       {errorMessage ? (
         <div className="state-block state-block--error" role="alert">
-          <p className="state-block__title">Could not load listings</p>
+          <p className="state-block__title">{m.listings.loadError}</p>
           <p style={{ margin: 0 }}>{errorMessage}</p>
         </div>
       ) : null}
@@ -46,9 +50,9 @@ export default async function ListingsIndexPage() {
           if (items.length === 0) {
             return (
               <div className="state-block">
-                <p className="state-block__title">No published listings</p>
+                <p className="state-block__title">{m.listings.emptyTitle}</p>
                 <p style={{ margin: 0 }}>
-                  When your agency publishes active listings in Synthr, they will appear here.
+                  {m.listings.emptyBody}
                 </p>
               </div>
             );
@@ -56,12 +60,14 @@ export default async function ListingsIndexPage() {
           return (
             <div className="listings-grid">
               {items.map((listing) => (
-                <PublicListingCard key={listing.id} listing={listing} />
+                <PublicListingCard key={listing.id} listing={listing} m={m} />
               ))}
             </div>
           );
         })()
       ) : null}
+
+      <PublicSiteFooter />
     </div>
   );
 }

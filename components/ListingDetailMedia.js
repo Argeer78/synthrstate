@@ -1,11 +1,11 @@
 /**
- * @param {{ images: string[]; title: string }} props
+ * @param {{ images: string[]; title: string; m?: Record<string, any> }} props
  */
-export default function ListingDetailMedia({ images, title }) {
+export default function ListingDetailMedia({ images, title, m }) {
   if (!images.length) {
     return (
       <div className="detail-media detail-media--empty" aria-label="Property photos">
-        <p>No photos available for this listing.</p>
+        <p>{m?.listings?.noPhotos ?? "No photos available for this listing."}</p>
       </div>
     );
   }

@@ -6,6 +6,11 @@ const nextConfig = {
   env: {
     NEXT_PUBLIC_API_URL:
       process.env.NEXT_PUBLIC_API_URL || "https://api.synthrstate.com",
+    NEXT_PUBLIC_SUPPORT_EMAIL:
+      process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "support@synthrstate.com",
+    // GA4 (gtag.js); equivalent to Google’s snippet — loaded only after cookie consent (see GoogleAnalyticsClient.js).
+    NEXT_PUBLIC_GA_MEASUREMENT_ID:
+      process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-RJ417X6FEG",
   },
 };
 

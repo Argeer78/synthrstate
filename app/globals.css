@@ -1272,3 +1272,171 @@ a {
   padding: 2px 6px;
   border-radius: 4px;
 }
+
+/* Cookie banner */
+.cookie-banner {
+  position: fixed;
+  z-index: 9999;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 16px;
+  background: rgba(23, 23, 23, 0.96);
+  color: #fafafa;
+  border-top: 1px solid #404040;
+  box-shadow: 0 -4px 24px rgb(0 0 0 / 15%);
+}
+
+.cookie-banner__inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  display: grid;
+  gap: 12px;
+}
+
+@media (min-width: 640px) {
+  .cookie-banner__inner {
+    grid-template-columns: 1fr auto;
+    align-items: center;
+  }
+}
+
+.cookie-banner__title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 650;
+}
+
+.cookie-banner__text {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: #d4d4d4;
+  max-width: 52rem;
+}
+
+.cookie-banner__link {
+  color: #93c5fd;
+  text-decoration: underline;
+}
+
+.cookie-banner__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.cookie-banner__btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid #525252;
+  background: transparent;
+  color: #fafafa;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.cookie-banner__btn:hover {
+  background: #262626;
+}
+
+.cookie-banner__btn--primary {
+  background: #2563eb;
+  border-color: #2563eb;
+}
+
+.cookie-banner__btn--primary:hover {
+  background: #1d4ed8;
+}
+
+/* Legal */
+.legal-doc {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+}
+
+.legal-doc h1 {
+  margin: 0 0 8px;
+  font-size: 1.75rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+.legal-doc .legal-updated {
+  margin: 0 0 1.5rem;
+  font-size: 0.875rem;
+  color: var(--muted);
+}
+
+.legal-doc h2 {
+  margin: 2rem 0 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 650;
+}
+
+.legal-doc p,
+.legal-doc li {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  color: #262626;
+}
+
+.legal-doc ul {
+  padding-left: 1.25rem;
+}
+
+.legal-doc .legal-placeholder {
+  background: #fef9c3;
+  color: #713f12;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.85em;
+}
+
+.legal-back {
+  display: inline-block;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+/* Slim footer on listings & legal */
+.public-site-footer {
+  margin-top: 3rem;
+  padding: 1.5rem 1.25rem 2rem;
+  border-top: 1px solid var(--border);
+  border-radius: 0;
+  background: #fafafa;
+}
+
+.public-site-footer__inner {
+  max-width: 1120px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}
+
+.public-site-footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.public-site-footer__links a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.public-site-footer__links a:hover {
+  text-decoration: underline;
+}

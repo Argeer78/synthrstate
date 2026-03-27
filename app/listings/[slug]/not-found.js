@@ -1,13 +1,20 @@
 import Link from "next/link";
+import PublicSiteFooter from "../../../components/PublicSiteFooter";
+import { getMessages } from "../../../lib/i18n";
+import { getRequestLocale } from "../../../lib/i18n.server";
 
-export default function ListingNotFound() {
+export default async function ListingNotFound() {
+  const locale = await getRequestLocale();
+  const m = getMessages(locale);
   return (
     <div className="shell">
       <div className="state-block">
-        <p className="state-block__title">Listing not found</p>
-        <p style={{ margin: "0 0 16px" }}>This property is not available or the link is wrong.</p>
-        <Link href="/listings">← Back to demo listings</Link>
+        <p className="state-block__title">{m.listings.notFoundTitle}</p>
+        <p style={{ margin: "0 0 16px" }}>{m.listings.notFoundBody}</p>
+        <Link href="/listings">← {m.listings.backToDemo}</Link>
       </div>
+
+      <PublicSiteFooter />
     </div>
   );
 }
