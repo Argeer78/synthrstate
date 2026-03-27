@@ -40,11 +40,11 @@ export default async function MarketingHomePage() {
       <MarketingHeader m={m} />
       <main>
         <MarketingHero m={m} />
-        <MarketingFeatures />
-        <MarketingProductPreview />
-        <MarketingHowItWorks />
-        <MarketingPricing />
-        <MarketingSocialProof />
+        <MarketingFeatures m={m} />
+        <MarketingProductPreview m={m} />
+        <MarketingHowItWorks m={m} />
+        <MarketingPricing m={m} />
+        <MarketingSocialProof m={m} />
         <section className="mk-section mk-section--alt" style={{ paddingTop: "1.25rem", paddingBottom: "1.25rem" }}>
           <div className="shell" style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
             <strong>{m.share.title}:</strong>
