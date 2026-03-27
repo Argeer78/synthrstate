@@ -23,6 +23,13 @@ export default function MarketingHero() {
             View demo
           </Link>
         </div>
+        <p className="mk-hero__lead" style={{ marginTop: "1rem", fontSize: "0.98rem" }}>
+          Click here:{" "}
+          <a href={`${adminBase}/login/`} target="_blank" rel="noopener noreferrer">
+            app.synthrstate.com
+          </a>{" "}
+          (new tab). Login with username: <strong>demo@synthrstate.com</strong> and password: <strong>demosynthr1</strong> to see how it works.
+        </p>
       </div>
     </section>
   );
