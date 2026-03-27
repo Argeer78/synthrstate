@@ -1,28 +1,23 @@
 {
-  "name": "synthr",
+  "name": "synthr-web-public",
   "private": true,
+  "version": "0.0.0",
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
-    "postinstall": "npm ci --prefix apps/web-public",
-    "dev": "pnpm -r --parallel dev",
-    "build": "npm run build --prefix apps/web-public && node scripts/sync-web-public-next.mjs",
-    "build:all": "pnpm -r build",
-    "start": "npm run start --prefix apps/web-public",
-    "lint": "pnpm -r lint",
-    "test": "pnpm -r test",
-    "db:migrate": "pnpm --filter @synthr/api db:migrate",
-    "db:seed": "pnpm --filter @synthr/api db:seed",
-    "web-public:install": "npm ci --prefix apps/web-public",
-    "web-public:build": "npm run build --prefix apps/web-public",
-    "web-public:start": "npm run start --prefix apps/web-public",
-    "hostinger:build": "npm run web-public:build",
-    "hostinger:start": "npm run web-public:start"
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start"
+  },
+  "dependencies": {
+    "next": "16.2.1",
+    "react": "19.2.4",
+    "react-dom": "19.2.4"
   },
   "devDependencies": {
-    "typescript": "^5.8.0",
-    "prisma": "^6.0.0",
-    "@prisma/client": "^6.0.0",
-    "bcryptjs": "^2.4.3",
-    "@types/bcryptjs": "^2.4.6",
-    "ts-node": "^10.9.2"
+    "@tailwindcss/postcss": "^4.1.4",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^4.1.4"
   }
 }
