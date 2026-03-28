@@ -1,7 +1,10 @@
 import Link from "next/link";
+import { getRequestLocale } from "../lib/i18n.server";
 import PublicSiteFooter from "./PublicSiteFooter";
 
-export default function LegalDocumentShell({ title, updated, children }) {
+export default async function LegalDocumentShell({ title, updated, children }) {
+  const locale = await getRequestLocale();
+
   return (
     <>
       <div className="shell">
@@ -14,7 +17,7 @@ export default function LegalDocumentShell({ title, updated, children }) {
           {children}
         </article>
       </div>
-      <PublicSiteFooter />
+      <PublicSiteFooter locale={locale} />
     </>
   );
 }

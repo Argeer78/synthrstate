@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import PublicLanguageSwitcher from "../../../components/PublicLanguageSwitcher";
 import PublicSiteFooter from "../../../components/PublicSiteFooter";
 import ListingDetailMedia from "../../../components/ListingDetailMedia";
 import ListingInquirySection from "../../../components/ListingInquirySection";
@@ -40,14 +41,17 @@ export default async function ListingDetailPage({ params }) {
   if (errorMessage) {
     return (
       <div className="shell">
-        <Link href="/listings" className="detail-back">
-          ← {m.listings.backToListings}
-        </Link>
+        <div className="detail-page__top">
+          <Link href="/listings" className="detail-back">
+            ← {m.listings.backToListings}
+          </Link>
+          <PublicLanguageSwitcher locale={locale} />
+        </div>
         <div className="state-block state-block--error" role="alert">
           <p className="state-block__title">{m.listings.detailError}</p>
           <p style={{ margin: 0 }}>{errorMessage}</p>
         </div>
-        <PublicSiteFooter />
+        <PublicSiteFooter locale={locale} />
       </div>
     );
   }
@@ -120,7 +124,7 @@ export default async function ListingDetailPage({ params }) {
         <ListingInquirySection listingTitle={title} listingSlug={slug} m={m} />
       </article>
 
-      <PublicSiteFooter />
+      <PublicSiteFooter locale={locale} />
     </div>
   );
 }

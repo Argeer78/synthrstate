@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PublicLanguageSwitcher from "../../components/PublicLanguageSwitcher";
 import PublicSiteFooter from "../../components/PublicSiteFooter";
 import PublicListingCard from "../../components/PublicListingCard";
 import { fetchPublicListings } from "../../lib/public-api";
@@ -67,7 +68,7 @@ export default async function ListingsIndexPage() {
         })()
       ) : null}
 
-      <PublicSiteFooter />
+      <PublicSiteFooter locale={locale} />
     </div>
   );
 }

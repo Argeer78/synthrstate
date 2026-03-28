@@ -37,7 +37,7 @@ export default async function MarketingHomePage() {
   const shareText = encodeURIComponent(m.meta.description);
   return (
     <>
-      <MarketingHeader m={m} />
+      <MarketingHeader m={m} locale={locale} />
       <main>
         <MarketingHero m={m} />
         <MarketingFeatures m={m} />

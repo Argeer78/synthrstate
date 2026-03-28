@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { DEFAULT_LOCALE, LOCALE_COOKIE, SUPPORTED_LOCALES, normalizeLocale } from "./lib/i18n";
+import { DEFAULT_LOCALE, LOCALE_COOKIE, LOCALE_COOKIE_MAX_AGE, SUPPORTED_LOCALES, normalizeLocale } from "./lib/i18n";
 
 export function proxy(request) {
   const response = NextResponse.next();
@@ -10,7 +10,7 @@ export function proxy(request) {
   const first = accept.split(",")[0] || DEFAULT_LOCALE;
   const locale = normalizeLocale(first);
   const finalLocale = SUPPORTED_LOCALES.includes(locale) ? locale : DEFAULT_LOCALE;
-  response.cookies.set(LOCALE_COOKIE, finalLocale, { path: "/", maxAge: 60 * 60 * 24 * 365 });
+  response.cookies.set(LOCALE_COOKIE, finalLocale, { path: "/", maxAge: LOCALE_COOKIE_MAX_AGE });
   return response;
 }
 

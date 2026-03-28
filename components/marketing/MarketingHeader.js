@@ -1,4 +1,5 @@
 import Link from "next/link";
+import PublicLanguageSwitcher from "../PublicLanguageSwitcher";
 
 const nav = [
   { href: "#features", label: "Why Synthr" },
@@ -8,7 +9,7 @@ const nav = [
   { href: "#social-proof", label: "Trust" },
 ];
 
-export default function MarketingHeader({ m }) {
+export default function MarketingHeader({ m, locale }) {
   const navItems = [
     { href: "#features", label: m?.nav?.why ?? nav[0].label },
     { href: "#product", label: m?.nav?.product ?? nav[1].label },
@@ -38,9 +39,12 @@ export default function MarketingHeader({ m }) {
             </li>
           </ul>
         </nav>
-        <a href="https://app.synthrstate.com/login/" className="mk-btn mk-btn--header">
-          {m?.nav?.startFree ?? "Start free"}
-        </a>
+        <div className="mk-header__tools">
+          <PublicLanguageSwitcher locale={locale} className="mk-lang-switch" />
+          <a href="https://app.synthrstate.com/login/" className="mk-btn mk-btn--header">
+            {m?.nav?.startFree ?? "Start free"}
+          </a>
+        </div>
       </div>
     </header>
   );
