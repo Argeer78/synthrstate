@@ -14,6 +14,7 @@ export function proxy(request) {
   return response;
 }
 
+// Exclude metadata and static assets so /sitemap.xml and /robots.txt reach Next (middleware on them can 404).
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico).*)"],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|favicon.svg|sitemap.xml|robots.txt).*)"],
 };

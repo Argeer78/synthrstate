@@ -15,6 +15,7 @@ const nextConfig = {
     // GA4 (gtag.js); equivalent to Google’s snippet — loaded only after cookie consent (see GoogleAnalyticsClient.js).
     NEXT_PUBLIC_GA_MEASUREMENT_ID:
       process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-RJ417X6FEG",
+    NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || "https://synthrstate.com",
   },
 };
 

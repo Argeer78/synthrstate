@@ -17,9 +17,8 @@ export class OnboardingService {
     return t.startsWith("#") ? t : `#${t}`;
   }
 
-  async getStatus(params: { agencyId: string; membershipId: string; role: UserRole }) {
-    this.assertRole(params.role);
-
+  /** Readable by any member so the admin shell can show onboarding state; mutations stay Owner/Manager-only. */
+  async getStatus(params: { agencyId: string; membershipId: string }) {
     const [agency, membership, checklist] = await Promise.all([
       this.prisma.agency.findUnique({
         where: { id: params.agencyId },

@@ -14,7 +14,7 @@ export class OnboardingController {
   @Get("status")
   async status(@Req() req: Request) {
     const ctx = getAuthContext(req);
-    return await this.onboarding.getStatus({ agencyId: ctx.agencyId, membershipId: ctx.membershipId, role: ctx.role });
+    return await this.onboarding.getStatus({ agencyId: ctx.agencyId, membershipId: ctx.membershipId });
   }
 
   @Patch("agency-basics")
