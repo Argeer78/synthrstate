@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { formatListingType, formatPrice, getDemoListingFallbackImage } from "../lib/public-api";
+import { formatListingType, formatPrice, formatPropertyType, getDemoListingFallbackImage } from "../lib/public-api";
 
 /**
  * @param {{ listing: Record<string, any>; m: Record<string, any> }} props
@@ -47,6 +47,7 @@ export default function PublicListingCard({ listing, m }) {
           <li>{bedLabel}</li>
           <li>{sqm != null ? `${sqm} ${card.m2}` : `${card.dash} ${card.m2}`}</li>
           <li>{formatListingType(listingType, card)}</li>
+          {propType ? <li>{propType}</li> : null}
         </ul>
       </div>
     </Link>
