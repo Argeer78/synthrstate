@@ -29,6 +29,8 @@ export default function PublicListingCard({ listing, m }) {
       ? `${bedrooms} ${bedrooms === 1 ? card.bed : card.beds}`
       : `${card.dash} ${card.beds}`;
 
+  const propType = formatPropertyType(property?.propertyType);
+
   return (
     <Link href={`/listings/${slug}`} className="listing-card">
       <div className="listing-card__media">
