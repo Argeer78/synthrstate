@@ -12,11 +12,19 @@ export default function ListingInquirySection({ listingTitle, listingSlug, m }) 
   const [status, setStatus] = useState("idle"); // idle | sending | success | error
   const [message, setMessage] = useState("");
 
-  const canSubmit = useMemo(() => {
+  const isFormValid = useMemo(() => {
     const nameOk = form.name.trim().length > 0;
     const hasEmailOrPhone = form.email.trim().length > 0 || form.phone.trim().length > 0;
-    return nameOk && hasEmailOrPhone && status !== "sending";
-  }, [form.email, form.name, form.phone, status]);
+    return nameOk && hasEmailOrPhone;
+  }, [form.email, form.name, form.phone]);
+
+  const isSubmitDisabled = !isFormValid || status === "sending" || status === "success";
+
+  const submitVariant =
+    status === "sending" ? "sending" : status === "success" ? "done" : isFormValid ? "ready" : "inactive";
+
+  const showRequirementHint =
+    !isFormValid && status !== "sending" && status !== "success" && L.inquiryFormHint;
 
   async function onSubmit(e) {
     e.preventDefault();
@@ -53,6 +61,9 @@ export default function ListingInquirySection({ listingTitle, listingSlug, m }) 
 
   const opt = `(${L.optional})`;
 
+  const submitLabel =
+    status === "sending" ? L.sending : status === "success" ? (L.sendInquiryDone ?? L.sendInquiry) : L.sendInquiry;
+
   return (
     <section className="inquiry-section" aria-labelledby="inquiry-heading">
       <div className="inquiry-section__inner">
@@ -71,18 +82,18 @@ export default function ListingInquirySection({ listingTitle, listingSlug, m }) 
 
         {message ? (
           <div
-            className={`state-block ${status === "error" ? "state-block--error" : ""}`}
+            className={`inquiry-feedback ${status === "error" ? "inquiry-feedback--error" : "inquiry-feedback--success"}`}
             role={status === "error" ? "alert" : "status"}
-            style={{ padding: "16px 18px", textAlign: "left", marginBottom: "16px" }}
+            aria-live="polite"
           >
-            <p className="state-block__title" style={{ marginBottom: 4 }}>
+            <p className="inquiry-feedback__title">
               {status === "success" ? L.statusSent : status === "error" ? L.statusError : L.statusGeneric}
             </p>
-            <p style={{ margin: 0 }}>{message}</p>
+            <p className="inquiry-feedback__body">{message}</p>
           </div>
         ) : null}
 
-        <form className="inquiry-form" onSubmit={onSubmit}>
+        <form className="inquiry-form" onSubmit={onSubmit} aria-busy={status === "sending"}>
           <fieldset className="inquiry-form__fieldset" disabled={status === "sending" || status === "success"}>
             <legend className="visually-hidden">{L.legendContact}</legend>
             <div className="inquiry-form__row">
@@ -144,12 +155,22 @@ export default function ListingInquirySection({ listingTitle, listingSlug, m }) 
                 onChange={(e) => setForm({ ...form, message: e.target.value })}
               />
             </div>
-            <button type="submit" className="inquiry-form__submit" disabled={!canSubmit}>
-              {status === "sending" ? L.sending : L.sendInquiry}
+
+            {showRequirementHint ? (
+              <p id="inq-submit-hint" className="inquiry-form__hint">
+                {L.inquiryFormHint}
+              </p>
+            ) : null}
+
+            <button
+              type="submit"
+              className={`inquiry-form__submit inquiry-form__submit--${submitVariant}`}
+              disabled={isSubmitDisabled}
+              aria-describedby={showRequirementHint ? "inq-submit-hint" : undefined}
+            >
+              {submitLabel}
             </button>
-            <p className="inquiry-form__note" style={{ marginTop: 10 }}>
-              {L.tip}
-            </p>
+            <p className="inquiry-form__note">{L.tip}</p>
           </fieldset>
         </form>
       </div>
