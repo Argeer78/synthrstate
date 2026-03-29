@@ -42,9 +42,17 @@ function BrowseForm({ m }) {
     <form className="listings-filters" onSubmit={onSubmit}>
       <p className="listings-filters__title">{f.title}</p>
       <div className="listings-filters__grid">
-        <label className="listings-filters__field">
+        <label className="listings-filters__field listings-filters__field--keywords">
           <span>{f.q}</span>
-          <input className="listings-filters__input" name="q" type="search" defaultValue={initial.q ?? ""} placeholder="City, title, area…" />
+          <input
+            className="listings-filters__input"
+            name="q"
+            type="search"
+            enterKeyHint="search"
+            autoComplete="off"
+            defaultValue={initial.q ?? ""}
+            placeholder={f.placeholderQ ?? "City, title, area…"}
+          />
         </label>
         <label className="listings-filters__field">
           <span>{f.listingType}</span>

@@ -1,4 +1,5 @@
 import MarketingCta from "../components/marketing/MarketingCta";
+import MarketingDemoCard from "../components/marketing/MarketingDemoCard";
 import MarketingFeatures from "../components/marketing/MarketingFeatures";
 import MarketingFooter from "../components/marketing/MarketingFooter";
 import MarketingHeader from "../components/marketing/MarketingHeader";
@@ -40,6 +41,7 @@ export default async function MarketingHomePage() {
       <MarketingHeader m={m} locale={locale} />
       <main>
         <MarketingHero m={m} />
+        <MarketingDemoCard m={m} />
         <MarketingFeatures m={m} />
         <MarketingProductPreview m={m} />
         <MarketingHowItWorks m={m} />
