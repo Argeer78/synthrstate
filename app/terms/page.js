@@ -7,7 +7,10 @@ export const metadata = {
 
 export default function TermsPage() {
   return (
-    <LegalDocumentShell title="Terms of Service" updated="Last updated: [PLACEHOLDER: DATE]. These terms are a starting point for your legal review — not legal advice.">
+    <LegalDocumentShell
+      title="Terms of Service"
+      updated="Last updated: March 30, 2026. These terms are a starting point for your legal review — not legal advice."
+    >
       <p>
         Welcome to Synthr. By accessing or using our services, you agree to these Terms of Service. If you do not agree,
         do not use the service.
@@ -16,8 +19,8 @@ export default function TermsPage() {
       <h2>1. Who we are</h2>
       <p>
         Synthr is a software-as-a-service (SaaS) platform that provides CRM, property listings, publishing, optional AI
-        features, and related tools for real estate agencies.{" "}
-        <span className="legal-placeholder">[PLACEHOLDER: LEGAL ENTITY NAME, ADDRESS, REGISTRATION NUMBER]</span>
+        features, and related tools for real estate agencies, operated by AlphaSynth AI (“AlphaSynth AI”, “we”, “us”).
+        Learn more at <a href="https://alphasynthai.com" target="_blank" rel="noopener noreferrer">alphasynthai.com</a>.
       </p>
 
       <h2>2. The service</h2>
@@ -31,9 +34,7 @@ export default function TermsPage() {
       <p>
         You are responsible for maintaining the confidentiality of login credentials, for all activity under your
         account, and for ensuring your team complies with these terms. Notify us promptly at{" "}
-        <a href="mailto:support@synthrstate.com">support@synthrstate.com</a>{" "}
-        <span className="legal-placeholder">[PLACEHOLDER: SUPPORT EMAIL IF DIFFERENT]</span> if you suspect unauthorized
-        access.
+        <a href="mailto:support@synthrstate.com">support@synthrstate.com</a> if you suspect unauthorized access.
       </p>
 
       <h2>4. Your data and CRM content</h2>
@@ -55,9 +56,20 @@ export default function TermsPage() {
       <p>
         Paid plans are billed via our payment processor, <strong>Stripe</strong>. By subscribing, you agree to Stripe’s
         terms and authorize us (via Stripe) to charge your payment method for fees, taxes, and renewals on the schedule
-        shown at checkout or in the billing portal. You can manage or cancel subscriptions through the in-app billing area
-        where available.{" "}
-        <span className="legal-placeholder">[PLACEHOLDER: REFUND / CANCELLATION POLICY]</span>
+        shown at checkout or in the billing portal. Paid plans are billed monthly in advance. You can manage or cancel
+        subscriptions through the in-app billing area where available.
+      </p>
+
+      <p>
+        <strong>Free trial.</strong> New agencies start with a 30-day free trial at the agency level. During the trial,
+        you have full access to Synthr. After the trial ends, access to productive features is restricted until you activate
+        an active subscription. The trial automatically ends after 30 days.
+      </p>
+
+      <p>
+        <strong>Cancellation and refunds.</strong> You may cancel your subscription at any time through the billing portal.
+        Cancellation typically takes effect at the end of your current billing period. Fees are generally non-refundable for
+        unused portions of a billing period, except where required by applicable law.
       </p>
 
       <h2>7. AI features (OpenAI)</h2>
@@ -65,8 +77,7 @@ export default function TermsPage() {
         Optional AI features may send prompts or content to <strong>OpenAI</strong> (or similar providers we disclose) to
         generate text or summaries. You are responsible for reviewing outputs before use. Do not submit special-category
         or highly sensitive personal data to AI features unless you have a lawful basis and our product explicitly
-        supports it.{" "}
-        <span className="legal-placeholder">[PLACEHOLDER: AI-SPECIFIC RESTRICTIONS / DATA PROCESSING DETAILS]</span>
+        supports it.
       </p>
 
       <h2>8. Acceptable use</h2>
@@ -87,7 +98,7 @@ export default function TermsPage() {
       <h2>10. Limitation of liability</h2>
       <p>
         To the extent permitted by law, our total liability arising out of these terms or the service is limited to the
-        fees you paid us in the twelve (12) months before the claim, or <span className="legal-placeholder">[PLACEHOLDER: AMOUNT / JURISDICTION-SPECIFIC]</span>.
+        fees you paid us in the twelve (12) months before the claim.
         Some jurisdictions do not allow certain limitations; in those cases our liability is limited to the fullest
         extent permitted.
       </p>
@@ -101,14 +112,14 @@ export default function TermsPage() {
 
       <h2>12. Governing law</h2>
       <p>
-        <span className="legal-placeholder">[PLACEHOLDER: GOVERNING LAW AND VENUE — e.g. Greece / EU member state courts]</span>
+        These Terms are governed by the laws applicable to AlphaSynth AI, excluding conflict-of-law rules. Courts in the
+        applicable jurisdiction may have jurisdiction over disputes.
       </p>
 
       <h2>13. Contact</h2>
       <p>
         Questions about these terms:{" "}
-        <a href="mailto:legal@synthrstate.com">legal@synthrstate.com</a>{" "}
-        <span className="legal-placeholder">[PLACEHOLDER: LEGAL CONTACT EMAIL]</span>
+        <a href="mailto:legal@synthrstate.com">legal@synthrstate.com</a>
       </p>
     </LegalDocumentShell>
   );

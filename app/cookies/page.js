@@ -7,7 +7,10 @@ export const metadata = {
 
 export default function CookiesPage() {
   return (
-    <LegalDocumentShell title="Cookie Policy" updated="Last updated: [PLACEHOLDER: DATE]. Draft for review.">
+    <LegalDocumentShell
+      title="Cookie Policy"
+      updated="Last updated: March 30, 2026. Subject to legal review."
+    >
       <p>
         This Cookie Policy describes how Synthr uses cookies and similar technologies on our marketing website and, where
         applicable, in our web application. For personal data processing, see our{" "}
@@ -25,11 +28,12 @@ export default function CookiesPage() {
       <ul>
         <li>
           <strong>Locale / preferences (marketing site):</strong> we may store language or theme preferences.{" "}
-          <span className="legal-placeholder">[PLACEHOLDER: EXACT COOKIE NAMES]</span>
+          We store your cookie/analytics consent choice using <code>localStorage</code> under the key{" "}
+          <code>synthr_cookie_consent</code>.
         </li>
         <li>
           <strong>Authentication (admin app):</strong> session cookies set by our API for logged-in users (typically
-          httpOnly).
+          <code>httpOnly</code>). We use a session cookie named <code>synthr_token</code>.
         </li>
       </ul>
       <p>We do not ask for consent for strictly necessary cookies under the ePrivacy approach used in many EU implementations.</p>
@@ -56,8 +60,8 @@ export default function CookiesPage() {
       <h2>4. Admin application (app.synthrstate.com)</h2>
       <p>
         The admin app may show a similar consent banner for optional analytics. Essential cookies for login and security
-        apply without consent.{" "}
-        <span className="legal-placeholder">[PLACEHOLDER: ALIGN WITH ACTUAL ADMIN COOKIE BEHAVIOR]</span>
+        apply without consent. We use the same consent storage key (<code>synthr_cookie_consent</code>) for optional
+        analytics, and only load Google Analytics after consent is accepted.
       </p>
 
       <h2>5. Managing cookies</h2>
@@ -69,8 +73,7 @@ export default function CookiesPage() {
 
       <h2>6. Contact</h2>
       <p>
-        Questions: <a href="mailto:privacy@synthrstate.com">privacy@synthrstate.com</a>{" "}
-        <span className="legal-placeholder">[PLACEHOLDER: CONTACT]</span>
+        Questions: <a href="mailto:privacy@synthrstate.com">privacy@synthrstate.com</a>
       </p>
     </LegalDocumentShell>
   );
