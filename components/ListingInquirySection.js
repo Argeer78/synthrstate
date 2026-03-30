@@ -10,7 +10,7 @@ import TurnstileField from "./TurnstileField";
 export default function ListingInquirySection({ listingTitle, listingSlug, m }) {
   const L = m.listings;
   const siteKey =
-    process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || process.env.NEXT_PUBLIC_TURNSTILE_INQUIRY_SITE_KEY;
+    process.env.NEXT_PUBLIC_TURNSTILE_INQUIRY_SITE_KEY || process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
   const [turnstileToken, setTurnstileToken] = useState(null);
   const turnstileRef = useRef(null);
