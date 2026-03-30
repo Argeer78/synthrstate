@@ -7,6 +7,7 @@ const nextConfig = {
   },
   // NEXT_PUBLIC_* is baked in at `next build` (not read from Hostinger PHP env at request time).
   // Override when building: NEXT_PUBLIC_API_URL=https://… npm run build
+  // Turnstile: must be set when you run `next build` or the inquiry widget stays hidden (no token → API 400).
   env: {
     NEXT_PUBLIC_API_URL:
       process.env.NEXT_PUBLIC_API_URL || "https://api.synthrstate.com",
@@ -16,6 +17,9 @@ const nextConfig = {
     NEXT_PUBLIC_GA_MEASUREMENT_ID:
       process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-RJ417X6FEG",
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || "https://synthrstate.com",
+    NEXT_PUBLIC_TURNSTILE_INQUIRY_SITE_KEY:
+      process.env.NEXT_PUBLIC_TURNSTILE_INQUIRY_SITE_KEY || "",
+    NEXT_PUBLIC_TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "",
   },
 };
 
