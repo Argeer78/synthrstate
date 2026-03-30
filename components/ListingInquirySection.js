@@ -1,16 +1,26 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { createPublicInquiry } from "../lib/public-api";
+import TurnstileField from "./TurnstileField";
 
 /**
  * @param {{ listingTitle?: string; listingSlug: string; m: Record<string, any> }} props
  */
 export default function ListingInquirySection({ listingTitle, listingSlug, m }) {
   const L = m.listings;
+  const siteKey =
+    process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || process.env.NEXT_PUBLIC_TURNSTILE_INQUIRY_SITE_KEY;
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
+  const [turnstileToken, setTurnstileToken] = useState(null);
+  const turnstileRef = useRef(null);
   const [status, setStatus] = useState("idle"); // idle | sending | success | error
   const [message, setMessage] = useState("");
+
+  const onTurnstileToken = useCallback((token) => setTurnstileToken(token), []);
+
+  const needsTurnstile = Boolean(siteKey);
+  const turnstileOk = !needsTurnstile || Boolean(turnstileToken);
 
   const isFormValid = useMemo(() => {
     const nameOk = form.name.trim().length > 0;
@@ -18,10 +28,12 @@ export default function ListingInquirySection({ listingTitle, listingSlug, m }) 
     return nameOk && hasEmailOrPhone;
   }, [form.email, form.name, form.phone]);
 
-  const isSubmitDisabled = !isFormValid || status === "sending" || status === "success";
+  const isSubmitDisabled =
+    !isFormValid || !turnstileOk || status === "sending" || status === "success";
 
+  const canSend = isFormValid && turnstileOk;
   const submitVariant =
-    status === "sending" ? "sending" : status === "success" ? "done" : isFormValid ? "ready" : "inactive";
+    status === "sending" ? "sending" : status === "success" ? "done" : canSend ? "ready" : "inactive";
 
   const showRequirementHint =
     !isFormValid && status !== "sending" && status !== "success" && L.inquiryFormHint;
@@ -48,14 +60,19 @@ export default function ListingInquirySection({ listingTitle, listingSlug, m }) 
         email: form.email.trim() || undefined,
         phone: form.phone.trim() || undefined,
         message: form.message.trim() || undefined,
+        turnstileToken: turnstileToken || undefined,
       });
       setStatus("success");
       setMessage(L.successMsg);
       setForm({ name: "", email: "", phone: "", message: "" });
+      turnstileRef.current?.reset();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : L.failMsg;
+      const raw = err instanceof Error ? err.message : L.failMsg;
+      const msg =
+        /verification|security/i.test(raw) && L.turnstileVerifyFailed ? L.turnstileVerifyFailed : raw;
       setStatus("error");
       setMessage(msg);
+      turnstileRef.current?.reset();
     }
   }
 
@@ -156,6 +173,22 @@ export default function ListingInquirySection({ listingTitle, listingSlug, m }) 
               />
             </div>
 
+            {siteKey ? (
+              <div className="inquiry-form__turnstile-wrap">
+                <TurnstileField
+                  ref={turnstileRef}
+                  siteKey={siteKey}
+                  onTokenChange={onTurnstileToken}
+                  className="inquiry-form__turnstile"
+                />
+                {needsTurnstile && !turnstileToken && isFormValid && status !== "success" ? (
+                  <p className="inquiry-form__hint inquiry-form__hint--turnstile" id="inq-turnstile-hint">
+                    {L.turnstileRequired}
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
+
             {showRequirementHint ? (
               <p id="inq-submit-hint" className="inquiry-form__hint">
                 {L.inquiryFormHint}
@@ -166,7 +199,13 @@ export default function ListingInquirySection({ listingTitle, listingSlug, m }) 
               type="submit"
               className={`inquiry-form__submit inquiry-form__submit--${submitVariant}`}
               disabled={isSubmitDisabled}
-              aria-describedby={showRequirementHint ? "inq-submit-hint" : undefined}
+              aria-describedby={
+                showRequirementHint
+                  ? "inq-submit-hint"
+                  : siteKey && !turnstileToken && isFormValid
+                    ? "inq-turnstile-hint"
+                    : undefined
+              }
             >
               {submitLabel}
             </button>
