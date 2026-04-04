@@ -89,20 +89,25 @@ export class ListingsService {
     listingType?: ListingType;
     status?: ListingStatus;
     ownerContactId?: string;
+    city?: string;
+    area?: string;
     minPrice?: number;
     maxPrice?: number;
     q?: string;
     bedrooms?: number;
+    bathrooms?: number;
     skip: number;
     take: number;
   }) {
+    const propertyWhere: Prisma.PropertyWhereInput = {
+      deletedAt: null,
+      ...(params.ownerContactId ? { ownerContactId: params.ownerContactId } : {}),
+    };
+
     const where: Prisma.ListingWhereInput = {
       agencyId: params.agencyId,
       deletedAt: null,
-      property: {
-        deletedAt: null,
-        ...(params.ownerContactId ? { ownerContactId: params.ownerContactId } : {}),
-      },
+      property: { is: propertyWhere },
       ...listingScopeWhere(params.actor),
     };
 
@@ -115,6 +120,14 @@ export class ListingsService {
       };
     }
     if (typeof params.bedrooms === "number") where.bedrooms = params.bedrooms;
+    if (typeof params.bathrooms === "number") where.bathrooms = params.bathrooms;
+
+    if (params.city?.trim()) {
+      propertyWhere.city = { contains: params.city.trim(), mode: "insensitive" };
+    }
+    if (params.area?.trim()) {
+      propertyWhere.area = { contains: params.area.trim(), mode: "insensitive" };
+    }
 
     if (params.q) {
       const q = params.q.trim();
@@ -135,6 +148,8 @@ export class ListingsService {
             select: {
               id: true,
               address: true,
+              city: true,
+              area: true,
               ownerContactId: true,
               ownerContact: {
                 select: {

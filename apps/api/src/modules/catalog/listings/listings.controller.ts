@@ -43,10 +43,13 @@ export class ListingsController {
       listingType: query.listingType,
       status: query.status,
       ownerContactId: query.ownerContactId,
+      city: query.city,
+      area: query.area,
       minPrice: query.minPrice,
       maxPrice: query.maxPrice,
       q: query.q,
       bedrooms: query.bedrooms,
+      bathrooms: query.bathrooms,
       skip,
       take,
     });

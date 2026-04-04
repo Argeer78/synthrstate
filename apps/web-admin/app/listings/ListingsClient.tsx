@@ -7,7 +7,15 @@ import { useRouter } from "next/navigation";
 import { useMe } from "../../lib/use-me";
 import { canAccessAi, canCreate, canDelete, canEdit, canPublish, canUploadMedia } from "../../utils/permissions";
 import { FlashMessage, type Flash } from "../components/Flash";
-import { aiBulkTranslateListings, createListing, createProperty, deleteListing, listListings, type ListingRow } from "../../lib/api/listings";
+import {
+  aiBulkTranslateListings,
+  createListing,
+  createProperty,
+  deleteListing,
+  listListings,
+  type ListingListFilters,
+  type ListingRow,
+} from "../../lib/api/listings";
 import { publishListingChannels, type PublicationChannelCode } from "../../lib/api/publications";
 import { ListingEditModal } from "./ListingEditModal";
 import { ListingMediaModal } from "./ListingMediaModal";
@@ -34,6 +42,18 @@ export function ListingsClient() {
   const [bulkLanguage, setBulkLanguage] = useState("el");
   const [bulkOverwrite, setBulkOverwrite] = useState(false);
   const [bulkBusy, setBulkBusy] = useState(false);
+  const [filterForm, setFilterForm] = useState({
+    q: "",
+    listingType: "",
+    status: "",
+    city: "",
+    area: "",
+    minPrice: "",
+    maxPrice: "",
+    bedrooms: "",
+    bathrooms: "",
+  });
+  const [appliedFilters, setAppliedFilters] = useState<ListingListFilters>({});
   const [createForm, setCreateForm] = useState({
     ownerContactId: "",
     address: "",
@@ -50,8 +70,29 @@ export function ListingsClient() {
     sqm: "",
   });
 
+  function parseNumber(v: string) {
+    const t = v.trim();
+    if (!t) return undefined;
+    const n = Number(t);
+    return Number.isFinite(n) ? n : undefined;
+  }
+
+  function buildFilters(): ListingListFilters {
+    return {
+      q: filterForm.q,
+      listingType: (filterForm.listingType as ListingListFilters["listingType"]) || "",
+      status: (filterForm.status as ListingListFilters["status"]) || "",
+      city: filterForm.city,
+      area: filterForm.area,
+      minPrice: parseNumber(filterForm.minPrice),
+      maxPrice: parseNumber(filterForm.maxPrice),
+      bedrooms: parseNumber(filterForm.bedrooms),
+      bathrooms: parseNumber(filterForm.bathrooms),
+    };
+  }
+
   async function refresh() {
-    const { items, total } = await listListings();
+    const { items, total } = await listListings(appliedFilters);
     setState({ status: "ok", rows: items, total });
     setSelectedIds((prev) => prev.filter((id) => items.some((x) => x.id === id)));
   }
@@ -60,7 +101,7 @@ export function ListingsClient() {
     let cancelled = false;
     (async () => {
       try {
-        const { items, total } = await listListings();
+        const { items, total } = await listListings(appliedFilters);
         if (!cancelled) {
           setState({
             status: "ok",
@@ -76,7 +117,7 @@ export function ListingsClient() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [appliedFilters]);
 
   useEffect(() => {
     if (!canCreate(role)) return;
@@ -138,6 +179,54 @@ export function ListingsClient() {
   return (
     <div style={{ overflowX: "auto", WebkitOverflowScrolling: "touch" }}>
       <FlashMessage flash={flash} onDismiss={() => setFlash(null)} />
+      <div className="admin-card" style={{ maxWidth: "none", padding: "0.9rem", marginBottom: "0.75rem" }}>
+        <p style={{ margin: 0, fontWeight: 700, marginBottom: "0.55rem" }}>Search listings</p>
+        <div style={{ display: "grid", gap: "0.5rem", gridTemplateColumns: "2fr 1fr 1fr" }}>
+          <input
+            className="admin-input"
+            placeholder="Search title/description"
+            value={filterForm.q}
+            onChange={(e) => setFilterForm((s) => ({ ...s, q: e.target.value }))}
+          />
+          <select className="admin-input" value={filterForm.listingType} onChange={(e) => setFilterForm((s) => ({ ...s, listingType: e.target.value }))}>
+            <option value="">Property type (all)</option>
+            <option value="SALE">Sale</option>
+            <option value="RENT">Rent</option>
+          </select>
+          <select className="admin-input" value={filterForm.status} onChange={(e) => setFilterForm((s) => ({ ...s, status: e.target.value }))}>
+            <option value="">Status (all)</option>
+            <option value="DRAFT">DRAFT</option>
+            <option value="ACTIVE">ACTIVE</option>
+            <option value="ARCHIVED">ARCHIVED</option>
+            <option value="SOLD">SOLD</option>
+            <option value="RENTED">RENTED</option>
+          </select>
+        </div>
+        <div style={{ display: "grid", gap: "0.5rem", gridTemplateColumns: "repeat(6, minmax(0, 1fr))", marginTop: "0.5rem" }}>
+          <input className="admin-input" placeholder="City" value={filterForm.city} onChange={(e) => setFilterForm((s) => ({ ...s, city: e.target.value }))} />
+          <input className="admin-input" placeholder="Area" value={filterForm.area} onChange={(e) => setFilterForm((s) => ({ ...s, area: e.target.value }))} />
+          <input className="admin-input" placeholder="Min price" inputMode="decimal" value={filterForm.minPrice} onChange={(e) => setFilterForm((s) => ({ ...s, minPrice: e.target.value }))} />
+          <input className="admin-input" placeholder="Max price" inputMode="decimal" value={filterForm.maxPrice} onChange={(e) => setFilterForm((s) => ({ ...s, maxPrice: e.target.value }))} />
+          <input className="admin-input" placeholder="Bedrooms" inputMode="numeric" value={filterForm.bedrooms} onChange={(e) => setFilterForm((s) => ({ ...s, bedrooms: e.target.value }))} />
+          <input className="admin-input" placeholder="Bathrooms" inputMode="numeric" value={filterForm.bathrooms} onChange={(e) => setFilterForm((s) => ({ ...s, bathrooms: e.target.value }))} />
+        </div>
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.5rem", marginTop: "0.6rem" }}>
+          <button
+            className="admin-btn admin-btn-ghost"
+            type="button"
+            onClick={() => {
+              setFilterForm({ q: "", listingType: "", status: "", city: "", area: "", minPrice: "", maxPrice: "", bedrooms: "", bathrooms: "" });
+              setAppliedFilters({});
+            }}
+            style={{ minHeight: "2.25rem" }}
+          >
+            Reset
+          </button>
+          <button className="admin-btn admin-btn-primary" type="button" onClick={() => setAppliedFilters(buildFilters())} style={{ minHeight: "2.25rem" }}>
+            Apply filters
+          </button>
+        </div>
+      </div>
       {canCreate(role) ? (
         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.75rem", gap: "0.75rem", flexWrap: "wrap" }}>
           <div style={{ display: "flex", gap: "0.5rem", alignItems: "center", flexWrap: "wrap" }}>

@@ -17,6 +17,16 @@ export class ListingListQueryDto extends PaginationDto {
   ownerContactId?: string;
 
   @IsOptional()
+  @IsString()
+  @MaxLength(120)
+  city?: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(120)
+  area?: string;
+
+  @IsOptional()
   @IsNumber({ maxDecimalPlaces: 2 })
   @Min(0)
   @Transform(({ value }) => (value === undefined ? undefined : Number(value)))
@@ -37,5 +47,10 @@ export class ListingListQueryDto extends PaginationDto {
   @IsInt()
   @Min(0)
   bedrooms?: number;
+
+  @IsOptional()
+  @IsInt()
+  @Min(0)
+  bathrooms?: number;
 }
 

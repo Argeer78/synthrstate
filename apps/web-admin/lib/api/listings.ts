@@ -49,8 +49,31 @@ export type PropertyRow = {
   energyClass?: string | null;
 };
 
-export async function listListings() {
-  const res = await apiFetch("/catalog/listings?page=1&pageSize=50");
+export type ListingListFilters = {
+  q?: string;
+  listingType?: "SALE" | "RENT" | "";
+  status?: "DRAFT" | "ACTIVE" | "ARCHIVED" | "SOLD" | "RENTED" | "";
+  city?: string;
+  area?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  bedrooms?: number;
+  bathrooms?: number;
+};
+
+export async function listListings(filters: ListingListFilters = {}) {
+  const params = new URLSearchParams({ page: "1", pageSize: "50" });
+  if (filters.q?.trim()) params.set("q", filters.q.trim());
+  if (filters.listingType) params.set("listingType", filters.listingType);
+  if (filters.status) params.set("status", filters.status);
+  if (filters.city?.trim()) params.set("city", filters.city.trim());
+  if (filters.area?.trim()) params.set("area", filters.area.trim());
+  if (typeof filters.minPrice === "number" && Number.isFinite(filters.minPrice)) params.set("minPrice", String(filters.minPrice));
+  if (typeof filters.maxPrice === "number" && Number.isFinite(filters.maxPrice)) params.set("maxPrice", String(filters.maxPrice));
+  if (typeof filters.bedrooms === "number" && Number.isFinite(filters.bedrooms)) params.set("bedrooms", String(filters.bedrooms));
+  if (typeof filters.bathrooms === "number" && Number.isFinite(filters.bathrooms)) params.set("bathrooms", String(filters.bathrooms));
+
+  const res = await apiFetch(`/catalog/listings?${params.toString()}`);
   if (!res.ok) throw new Error(await readApiError(res));
   const data = (await res.json()) as { items: ListingRow[]; pageInfo?: { total?: number } };
   return { items: Array.isArray(data.items) ? data.items : [], total: data.pageInfo?.total ?? data.items?.length ?? 0 };
