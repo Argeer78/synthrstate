@@ -9,6 +9,21 @@ import MarketingProductPreview from "../components/marketing/MarketingProductPre
 import MarketingSocialProof from "../components/marketing/MarketingSocialProof";
 import { getMergedMessages } from "../lib/messages";
 
+function buildSafeMarketingMessages(raw) {
+  const base = {
+    nav: {},
+    hero: {},
+    features: {},
+    product: {},
+    howItWorks: {},
+    socialProof: {},
+    cta: {},
+    footer: {},
+  };
+  if (!raw || typeof raw !== "object") return base;
+  return { ...base, ...raw };
+}
+
 export const metadata = {
   title: "Synthr — CRM and listing distribution for agencies",
   description:
@@ -17,7 +32,7 @@ export const metadata = {
 
 export default async function MarketingHomePage() {
   const locale = "en";
-  const messages = getMergedMessages("en") || {};
+  const messages = buildSafeMarketingMessages(getMergedMessages("en"));
   return (
     <>
       <MarketingHeader m={messages} locale={locale} />
