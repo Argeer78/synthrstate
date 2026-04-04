@@ -1,5 +1,5 @@
 export default function MarketingCta({ m }) {
-  const c = m?.cta ?? {
+  const fallbackCta = {
     title: "Ready to run your agency on one system?",
     lead: "Start free to test your workflow with listings, inquiries, CRM, and team collaboration.",
     startFree: "Start free",
@@ -17,6 +17,8 @@ export default function MarketingCta({ m }) {
       note: "CRM migration, public site, portal feeds…",
     },
   };
+  const c = { ...fallbackCta, ...(m?.cta || {}) };
+  const placeholders = { ...fallbackCta.placeholders, ...(c.placeholders || {}) };
   const adminBase = (process.env.NEXT_PUBLIC_ADMIN_APP_URL ?? "https://app.synthrstate.com").replace(/\/$/, "");
   return (
     <section id="contact" className="mk-section mk-cta" aria-labelledby="cta-heading">
@@ -41,7 +43,7 @@ export default function MarketingCta({ m }) {
               <label className="mk-cta-form__label" htmlFor="cta-name">
                 {c.name}
               </label>
-              <input id="cta-name" className="mk-cta-form__input" name="name" type="text" autoComplete="name" required placeholder={c.placeholders.name} />
+              <input id="cta-name" className="mk-cta-form__input" name="name" type="text" autoComplete="name" required placeholder={placeholders.name} />
             </div>
             <div className="mk-cta-form__row">
               <label className="mk-cta-form__label" htmlFor="cta-email">
@@ -54,20 +56,20 @@ export default function MarketingCta({ m }) {
                 type="email"
                 autoComplete="email"
                 required
-                placeholder={c.placeholders.email}
+                placeholder={placeholders.email}
               />
             </div>
             <div className="mk-cta-form__row">
               <label className="mk-cta-form__label" htmlFor="cta-agency">
                 {c.agencyName}
               </label>
-              <input id="cta-agency" className="mk-cta-form__input" name="agency" type="text" placeholder={c.placeholders.agency} />
+              <input id="cta-agency" className="mk-cta-form__input" name="agency" type="text" placeholder={placeholders.agency} />
             </div>
             <div className="mk-cta-form__row">
               <label className="mk-cta-form__label" htmlFor="cta-note">
                 {c.noteLabel}
               </label>
-              <textarea id="cta-note" className="mk-cta-form__textarea" name="message" rows={4} placeholder={c.placeholders.note} />
+              <textarea id="cta-note" className="mk-cta-form__textarea" name="message" rows={4} placeholder={placeholders.note} />
             </div>
             <button type="submit" className="mk-btn mk-btn--primary mk-btn--block">
               {c.submit}

@@ -8,7 +8,6 @@ import MarketingPricing from "../components/marketing/MarketingPricing";
 import MarketingProductPreview from "../components/marketing/MarketingProductPreview";
 import MarketingSocialProof from "../components/marketing/MarketingSocialProof";
 import { getMergedMessages } from "../lib/messages";
-import { getRequestLocale } from "../lib/i18n.server";
 
 export const metadata = {
   title: "Synthr — CRM and listing distribution for agencies",
@@ -17,8 +16,8 @@ export const metadata = {
 };
 
 export default async function MarketingHomePage() {
-  const locale = await getRequestLocale();
-  const messages = getMergedMessages(locale) || getMergedMessages("en") || {};
+  const locale = "en";
+  const messages = getMergedMessages("en") || {};
   return (
     <>
       <MarketingHeader m={messages} locale={locale} />

@@ -1,6 +1,5 @@
 import "./globals.css";
 import AppProviders from "../components/AppProviders";
-import { getRequestLocale } from "../lib/i18n.server";
 
 /** @type {import("next").Metadata} */
 export const metadata = {
@@ -10,9 +9,8 @@ export const metadata = {
 };
 
 export default async function RootLayout({ children }) {
-  const locale = await getRequestLocale();
   return (
-    <html lang={locale}>
+    <html lang="en">
       <body>
         <AppProviders>{children}</AppProviders>
       </body>
