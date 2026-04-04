@@ -86,6 +86,7 @@ const tiers = [
 export default function MarketingPricing() {
   const adminBase = (process.env.NEXT_PUBLIC_ADMIN_APP_URL ?? "https://app.synthrstate.com").replace(/\/$/, "");
   const supportEmail = process.env.NEXT_PUBLIC_BILLING_SUPPORT_EMAIL ?? "support@synthrstate.com";
+  const safeTiers = Array.isArray(tiers) ? tiers.filter(Boolean) : [];
 
   return (
     <section
@@ -122,7 +123,7 @@ export default function MarketingPricing() {
         </div>
 
         <div className="mx-auto mt-14 grid max-w-5xl gap-6 lg:mt-16 lg:grid-cols-3 lg:gap-5 lg:items-stretch">
-          {tiers.map((tier) => (
+          {safeTiers.map((tier) => (
             <article
               key={tier.id}
               className={[
@@ -149,7 +150,7 @@ export default function MarketingPricing() {
                 <p className="mt-3 text-sm leading-relaxed text-neutral-600">{tier.description}</p>
 
                 <ul className="mt-8 flex flex-1 flex-col gap-3 text-sm text-neutral-700">
-                  {tier.features.map((line) => (
+                  {(Array.isArray(tier?.features) ? tier.features : []).map((line) => (
                     <li key={line} className="flex gap-3">
                       <CheckIcon
                         className={

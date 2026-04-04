@@ -1,5 +1,6 @@
-export default function MarketingFeatures({ m }) {
-  const s = m?.features ?? {};
+export default function MarketingFeatures({ m } = {}) {
+  const safeM = m && typeof m === "object" ? m : {};
+  const s = safeM.features && typeof safeM.features === "object" ? safeM.features : {};
   const title = s.title ?? "Why agencies choose Synthr";
   const subtitle = s.subtitle ?? "Real outcomes for real estate teams: faster execution, cleaner data, and better conversion from inquiry to deal.";
   const items = Array.isArray(s.items)
