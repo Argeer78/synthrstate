@@ -5,7 +5,16 @@ import { formatListingType, formatPrice, formatPropertyType, getDemoListingFallb
  * @param {{ listing: Record<string, any>; m: Record<string, any> }} props
  */
 export default function PublicListingCard({ listing, m }) {
-  const card = m.card;
+  const card = m?.card ?? {
+    noPhoto: "No photo",
+    untitled: "Untitled",
+    bed: "bed",
+    beds: "beds",
+    m2: "m²",
+    forSale: "For sale",
+    forRent: "For rent",
+    dash: "—",
+  };
   const {
     slug,
     title,

@@ -8,7 +8,36 @@ import TurnstileField from "./TurnstileField";
  * @param {{ listingTitle?: string; listingSlug: string; m: Record<string, any> }} props
  */
 export default function ListingInquirySection({ listingTitle, listingSlug, m }) {
-  const L = m.listings;
+  const L = m?.listings ?? {
+    inquiryTitle: "Inquire about this property",
+    inquiryLeadInterested: "Interested in",
+    inquiryLeadSuffix: "Leave your details and we'll get back to you.",
+    inquiryLeadAlone: "Leave your details and we'll get back to you.",
+    fullName: "Full name",
+    email: "Email",
+    phone: "Phone",
+    message: "Message",
+    optional: "optional",
+    sendInquiry: "Send inquiry",
+    sendInquiryDone: "Sent",
+    sending: "Sending…",
+    inquiryFormHint: "Please enter your name and either an email or phone number to send your inquiry.",
+    tip: "Tip: add either an email or phone number so the agency can reach you.",
+    placeholderName: "Your name",
+    placeholderEmail: "you@example.com",
+    placeholderPhone: "+30 …",
+    placeholderMessage: "Tell us what you are looking for…",
+    errName: "Please enter your full name.",
+    errContact: "Please provide at least an email or phone number.",
+    successMsg: "Thank you — your inquiry was sent. An agent will contact you soon.",
+    failMsg: "Inquiry failed.",
+    turnstileRequired: "Complete the security check below to send your inquiry.",
+    turnstileVerifyFailed: "Security verification failed. Please try again.",
+    statusSent: "Inquiry sent",
+    statusError: "Could not send inquiry",
+    statusGeneric: "Status",
+    legendContact: "Contact form",
+  };
   const siteKey =
     process.env.NEXT_PUBLIC_TURNSTILE_INQUIRY_SITE_KEY || process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
   const [form, setForm] = useState({ name: "", email: "", phone: "", message: "" });
