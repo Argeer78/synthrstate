@@ -1,8 +1,10 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Query, Res } from "@nestjs/common";
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Query, Req, Res } from "@nestjs/common";
+import type { Request } from "express";
 import type { Response } from "express";
 import { PublicService } from "./public.service";
 import { SearchListingsQueryDto } from "./dto/search-listings.query.dto";
 import { CreateInquiryDto } from "./dto/inquiry.dto";
+import { getClientIp } from "../../common/http/client-ip.util";
 
 @Controller("public")
 export class PublicController {
@@ -53,11 +55,12 @@ export class PublicController {
 
   @Post(":agencySlug/listings/:listingSlug/inquiries")
   createInquiry(
+    @Req() req: Request,
     @Param("agencySlug") agencySlug: string,
     @Param("listingSlug") listingSlug: string,
     @Body() dto: CreateInquiryDto,
   ) {
-    return this.publicService.createInquiry(agencySlug, listingSlug, dto);
+    return this.publicService.createInquiry(agencySlug, listingSlug, dto, getClientIp(req));
   }
 }
 

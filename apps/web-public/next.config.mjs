@@ -1,5 +1,14 @@
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Monorepo: pin Turbopack to this app so the parent pnpm-lock is not treated as the workspace root.
+  turbopack: {
+    root: __dirname,
+  },
   reactStrictMode: true,
   // Browsers/proxies that request /favicon.ico (SVG is at /favicon.svg + metadata.icons).
   async redirects() {
@@ -13,7 +22,7 @@ const nextConfig = {
       process.env.NEXT_PUBLIC_API_URL || "https://api.synthrstate.com",
     NEXT_PUBLIC_SUPPORT_EMAIL:
       process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "support@synthrstate.com",
-    // GA4 (gtag.js); equivalent to Google's snippet — loaded only after cookie consent (see GoogleAnalyticsClient.js).
+    // GA4 (gtag.js); loaded only after cookie consent when using GoogleAnalyticsLoader.
     NEXT_PUBLIC_GA_MEASUREMENT_ID:
       process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-RJ417X6FEG",
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || "https://synthrstate.com",

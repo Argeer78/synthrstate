@@ -24,5 +24,10 @@ export class CreateInquiryDto {
   @IsOptional()
   @IsEnum(InquiryPreferredContactMethod)
   preferredContactMethod?: InquiryPreferredContactMethod;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(2048)
+  turnstileToken?: string;
 }
 

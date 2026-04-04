@@ -6,3 +6,9 @@ out/
 .env.*.local
 npm-debug.log*
 .DS_Store
+
+# Accidental monorepo copies — do not commit
+/apps/
+/packages/
+/prisma/
+*.tgz

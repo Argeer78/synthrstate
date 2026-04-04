@@ -8,6 +8,7 @@ import type { CreateInquiryDto } from "./dto/inquiry.dto";
 import { InquirySource, InquiryStatus, InquiryPreferredContactMethod, ListingStatus, ListingType } from "@prisma/client";
 import { NotificationsService } from "../collaboration/notifications.service";
 import { NotificationType, UserRole } from "@prisma/client";
+import { TurnstileService } from "../../common/turnstile/turnstile.service";
 
 function limitInt(value: number | undefined, fallback: number) {
   if (typeof value !== "number" || Number.isNaN(value)) return fallback;
@@ -28,6 +29,7 @@ export class PublicService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notifications: NotificationsService,
+    private readonly turnstile: TurnstileService,
   ) {
     const endpoint = process.env.S3_ENDPOINT;
     const region = process.env.S3_REGION ?? "us-east-1";
@@ -440,6 +442,7 @@ export class PublicService {
     agencySlug: string,
     listingSlug: string,
     dto: CreateInquiryDto,
+    remoteIp?: string,
   ) {
     const agencyId = await this.getAgencyId(agencySlug);
 
@@ -451,6 +454,8 @@ export class PublicService {
       select: { id: true },
     });
     if (!listing) throw new NotFoundException("Listing not found");
+
+    await this.turnstile.assertValidResponse("inquiry", dto.turnstileToken, remoteIp);
 
     // Minimal validation: either email or phone should be present
     if (!dto.email && !dto.phone) {

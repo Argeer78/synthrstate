@@ -1,0 +1,131 @@
+{
+  "common": {
+    "home": "Početna",
+    "crm": "CRM",
+    "listings": "Oglasi",
+    "billing": "Naplata",
+    "ai": "AI",
+    "userManagement": "Upravljanje korisnicima",
+    "apiFeeds": "API i feedovi",
+    "userManual": "Korisnički priručnik",
+    "feedback": "Povratne informacije",
+    "close": "Zatvori",
+    "back": "Natrag",
+    "save": "Spremi",
+    "cancel": "Odustani",
+    "refresh": "Osvježi",
+    "loading": "Učitavanje…",
+    "signOut": "Odjava",
+    "signingOut": "Odjava…"
+  },
+  "theme": {
+    "label": "Tema",
+    "system": "Sustav",
+    "dark": "Tamna",
+    "light": "Svijetla"
+  },
+  "language": {
+    "label": "Jezik",
+    "english": "Engleski",
+    "spanish": "Španjolski",
+    "french": "Francuski",
+    "german": "Njemački",
+    "italian": "Talijanski",
+    "dutch": "Nizozemski",
+    "portuguese": "Portugalski",
+    "greek": "Grčki",
+    "swedish": "Švedski",
+    "danish": "Danski",
+    "finnish": "Finski",
+    "polish": "Poljski",
+    "czech": "Češki",
+    "hungarian": "Mađarski",
+    "romanian": "Rumunjski",
+    "croatian": "Hrvatski",
+    "turkish": "Turski"
+  },
+  "shell": {
+    "openNavigation": "Otvori navigaciju",
+    "menu": "Izbornik",
+    "closeNavigation": "Zatvori navigaciju"
+  },
+  "sidebar": {
+    "workspace": "Radni prostor",
+    "checkingSession": "Provjera sesije…",
+    "notSignedIn": "Niste prijavljeni"
+  },
+  "help": {
+    "button": "Pomoć",
+    "title": "Synthr asistent",
+    "subtitle": "Postavite pitanje o tijeku rada ili otvorite puni vodič.",
+    "placeholder": "Upišite pitanje…",
+    "ask": "Pitaj asistenta",
+    "thinking": "Razmišljam…",
+    "openManual": "Otvori priručnik",
+    "sendFeedback": "Pošalji povratne informacije",
+    "s1": "Kako obraditi novi upit?",
+    "s2": "Kako objaviti oglas?",
+    "s3": "Gdje mogu povezati Gmail?",
+    "s4": "Kako rade ovlasti po ulozi?"
+  },
+  "login": {
+    "title": "Prijava",
+    "subtitle": "Unesite poslovni e‑mail i lozinku kako biste otvorili radni prostor svoje agencije.",
+    "back": "Natrag",
+    "email": "Poslovni e‑mail",
+    "password": "Lozinka",
+    "continue": "Nastavi",
+    "signingIn": "Prijava…",
+    "support": "Problemi s prijavom? Pitajte vlasnika agencije ili kontaktirajte Synthr podršku.",
+    "apiMissing": "API URL nije konfiguriran.",
+    "missingCredentials": "Unesite e‑mail i lozinku.",
+    "failed": "Prijava nije uspjela."
+  },
+  "dashboard": {
+    "title": "Nadzorna ploča",
+    "subtitle": "Današnji operativni pregled za vašu agenciju.",
+    "overview": "Pregled",
+    "agencyOverview": "Pregled agencije",
+    "myOverview": "Moj pregled",
+    "readOnlyOverview": "Pregled samo za čitanje",
+    "readOnlyAccess": "Imate pristup samo za čitanje.",
+    "signInPrompt": "Prijavite se kako biste vidjeli nadzornu ploču.",
+    "signIn": "Prijava",
+    "viewInquiries": "Pogledaj upite",
+    "viewListings": "Pogledaj oglase",
+    "newContact": "Novi kontakt",
+    "newLead": "Novi lead",
+    "newListing": "Novi oglas",
+    "loading": "Učitavanje ploče…",
+    "loadFailed": "Nije moguće učitati ploču.",
+    "contacts": "Kontakti",
+    "leads": "Leadovi",
+    "newInquiries": "Novi upiti",
+    "activeListings": "Aktivni oglasi",
+    "tasksDueSoon": "Zadaci uskoro",
+    "recentActivity": "Nedavna aktivnost",
+    "recentActivitySubtitle": "Najnoviji događaji u radnom prostoru (po ulozi).",
+    "noRecentActivity": "Još nema nedavne aktivnosti."
+  },
+  "manual": {
+    "title": "Korisnički priručnik",
+    "subtitle": "Vodič po ulogama za dnevne tijekove rada u Synthr Admin."
+  },
+  "feedback": {
+    "title": "Povratne informacije",
+    "subtitle": "Prijavite probleme, ideje i zahtjeve za funkcionalnosti.",
+    "intro": "Podijelite probleme i zahtjeve. U MVP-u se povratne informacije šalju e‑mailom.",
+    "send": "Pošalji",
+    "clear": "Očisti",
+    "sentHint": "Vaša e‑mail aplikacija bi se trebala otvoriti sada. Ako ne, pošaljite ručno na support@synthrstate.com.",
+    "types": {
+      "bug": "Greška",
+      "feature": "Zahtjev za funkcionalnost",
+      "uiux": "UI/UX",
+      "performance": "Performanse",
+      "other": "Ostalo"
+    },
+    "placeholder": "Opišite što se dogodilo, gdje se dogodilo i koji ste rezultat očekivali…"
+  }
+}
+

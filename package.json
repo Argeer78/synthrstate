@@ -6,9 +6,13 @@
     "node": ">=20.0.0"
   },
   "scripts": {
-    "dev": "next dev",
-    "build": "next build --webpack",
-    "start": "next start"
+    "dev": "npm --prefix apps/web-public run dev",
+    "build": "npm --prefix apps/web-public run build",
+    "start": "npm --prefix apps/web-public run start",
+    "hostinger:build": "node scripts/hostinger-build-web-public.mjs",
+    "hostinger:start": "npm --prefix apps/web-public run start",
+    "web-admin:build": "npm --prefix apps/web-admin install && npm --prefix apps/web-admin run build",
+    "api:build": "pnpm --filter @synthr/api build"
   },
   "dependencies": {
     "@sentry/react": "^10.46.0",

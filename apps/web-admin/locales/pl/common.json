@@ -1,0 +1,131 @@
+{
+  "common": {
+    "home": "Strona główna",
+    "crm": "CRM",
+    "listings": "Oferty",
+    "billing": "Rozliczenia",
+    "ai": "AI",
+    "userManagement": "Zarządzanie użytkownikami",
+    "apiFeeds": "API i feedy",
+    "userManual": "Instrukcja użytkownika",
+    "feedback": "Opinie",
+    "close": "Zamknij",
+    "back": "Wstecz",
+    "save": "Zapisz",
+    "cancel": "Anuluj",
+    "refresh": "Odśwież",
+    "loading": "Ładowanie…",
+    "signOut": "Wyloguj się",
+    "signingOut": "Wylogowywanie…"
+  },
+  "theme": {
+    "label": "Motyw",
+    "system": "System",
+    "dark": "Ciemny",
+    "light": "Jasny"
+  },
+  "language": {
+    "label": "Język",
+    "english": "Angielski",
+    "spanish": "Hiszpański",
+    "french": "Francuski",
+    "german": "Niemiecki",
+    "italian": "Włoski",
+    "dutch": "Niderlandzki",
+    "portuguese": "Portugalski",
+    "greek": "Grecki",
+    "swedish": "Szwedzki",
+    "danish": "Duński",
+    "finnish": "Fiński",
+    "polish": "Polski",
+    "czech": "Czeski",
+    "hungarian": "Węgierski",
+    "romanian": "Rumuński",
+    "croatian": "Chorwacki",
+    "turkish": "Turecki"
+  },
+  "shell": {
+    "openNavigation": "Otwórz nawigację",
+    "menu": "Menu",
+    "closeNavigation": "Zamknij nawigację"
+  },
+  "sidebar": {
+    "workspace": "Przestrzeń robocza",
+    "checkingSession": "Sprawdzanie sesji…",
+    "notSignedIn": "Nie zalogowano"
+  },
+  "help": {
+    "button": "Pomoc",
+    "title": "Asystent Synthr",
+    "subtitle": "Zadaj pytanie o proces lub otwórz pełny przewodnik.",
+    "placeholder": "Wpisz pytanie…",
+    "ask": "Zapytaj asystenta",
+    "thinking": "Myślenie…",
+    "openManual": "Otwórz instrukcję użytkownika",
+    "sendFeedback": "Wyślij opinię",
+    "s1": "Jak obsłużyć nowe zapytanie?",
+    "s2": "Jak opublikować ofertę?",
+    "s3": "Gdzie mogę podłączyć Gmail?",
+    "s4": "Jak działają uprawnienia ról?"
+  },
+  "login": {
+    "title": "Zaloguj się",
+    "subtitle": "Wpisz służbowy e‑mail i hasło, aby otworzyć przestrzeń swojej agencji.",
+    "back": "Wstecz",
+    "email": "Służbowy e‑mail",
+    "password": "Hasło",
+    "continue": "Dalej",
+    "signingIn": "Logowanie…",
+    "support": "Problemy z logowaniem? Zapytaj właściciela agencji lub skontaktuj się z pomocą Synthr.",
+    "apiMissing": "Adres API nie jest skonfigurowany.",
+    "missingCredentials": "Wpisz e‑mail i hasło.",
+    "failed": "Logowanie nie powiodło się."
+  },
+  "dashboard": {
+    "title": "Panel",
+    "subtitle": "Dzisiejszy przegląd operacyjny dla Twojej agencji.",
+    "overview": "Przegląd",
+    "agencyOverview": "Przegląd agencji",
+    "myOverview": "Mój przegląd",
+    "readOnlyOverview": "Przegląd tylko do odczytu",
+    "readOnlyAccess": "Masz dostęp tylko do odczytu.",
+    "signInPrompt": "Zaloguj się, aby zobaczyć panel.",
+    "signIn": "Zaloguj się",
+    "viewInquiries": "Zobacz zapytania",
+    "viewListings": "Zobacz oferty",
+    "newContact": "Nowy kontakt",
+    "newLead": "Nowy lead",
+    "newListing": "Nowa oferta",
+    "loading": "Ładowanie panelu…",
+    "loadFailed": "Nie udało się załadować panelu.",
+    "contacts": "Kontakty",
+    "leads": "Leady",
+    "newInquiries": "Nowe zapytania",
+    "activeListings": "Aktywne oferty",
+    "tasksDueSoon": "Zadania wkrótce",
+    "recentActivity": "Ostatnia aktywność",
+    "recentActivitySubtitle": "Najnowsze zdarzenia w przestrzeni (wg roli).",
+    "noRecentActivity": "Brak ostatniej aktywności."
+  },
+  "manual": {
+    "title": "Instrukcja użytkownika",
+    "subtitle": "Przewodnik oparty o role dla codziennych działań w Synthr Admin."
+  },
+  "feedback": {
+    "title": "Opinie",
+    "subtitle": "Zgłaszaj problemy, pomysły i prośby o funkcje.",
+    "intro": "Podziel się problemami i prośbami. W MVP opinie są wysyłane e‑mailem.",
+    "send": "Wyślij",
+    "clear": "Wyczyść",
+    "sentHint": "Twoja aplikacja pocztowa powinna się teraz otworzyć. Jeśli nie, wyślij opinię ręcznie na support@synthrstate.com.",
+    "types": {
+      "bug": "Błąd",
+      "feature": "Prośba o funkcję",
+      "uiux": "UI/UX",
+      "performance": "Wydajność",
+      "other": "Inne"
+    },
+    "placeholder": "Opisz co się stało, gdzie to się stało i jakiego wyniku oczekiwałeś…"
+  }
+}
+

@@ -7,6 +7,7 @@ import MarketingHowItWorks from "../components/marketing/MarketingHowItWorks";
 import MarketingPricing from "../components/marketing/MarketingPricing";
 import MarketingProductPreview from "../components/marketing/MarketingProductPreview";
 import MarketingSocialProof from "../components/marketing/MarketingSocialProof";
+import { getMergedMessages } from "../lib/messages";
 
 export const metadata = {
   title: "Synthr — CRM and listing distribution for agencies",
@@ -15,11 +16,12 @@ export const metadata = {
 };
 
 export default function MarketingHomePage() {
+  const messages = getMergedMessages("en");
   return (
     <>
       <MarketingHeader />
       <main>
-        <MarketingHero />
+        <MarketingHero m={messages} />
         <MarketingFeatures />
         <MarketingProductPreview />
         <MarketingHowItWorks />

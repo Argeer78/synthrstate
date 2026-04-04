@@ -1,0 +1,131 @@
+{
+  "common": {
+    "home": "Hjem",
+    "crm": "CRM",
+    "listings": "Boliger",
+    "billing": "Fakturering",
+    "ai": "AI",
+    "userManagement": "Brugeradministration",
+    "apiFeeds": "API og feeds",
+    "userManual": "Brugermanual",
+    "feedback": "Feedback",
+    "close": "Luk",
+    "back": "Tilbage",
+    "save": "Gem",
+    "cancel": "Annuller",
+    "refresh": "Opdater",
+    "loading": "Indlæser…",
+    "signOut": "Log ud",
+    "signingOut": "Logger ud…"
+  },
+  "theme": {
+    "label": "Tema",
+    "system": "System",
+    "dark": "Mørkt",
+    "light": "Lyst"
+  },
+  "language": {
+    "label": "Sprog",
+    "english": "Engelsk",
+    "spanish": "Spansk",
+    "french": "Fransk",
+    "german": "Tysk",
+    "italian": "Italiensk",
+    "dutch": "Hollandsk",
+    "portuguese": "Portugisisk",
+    "greek": "Græsk",
+    "swedish": "Svensk",
+    "danish": "Dansk",
+    "finnish": "Finsk",
+    "polish": "Polsk",
+    "czech": "Tjekkisk",
+    "hungarian": "Ungarsk",
+    "romanian": "Rumænsk",
+    "croatian": "Kroatisk",
+    "turkish": "Tyrkisk"
+  },
+  "shell": {
+    "openNavigation": "Åbn navigation",
+    "menu": "Menu",
+    "closeNavigation": "Luk navigation"
+  },
+  "sidebar": {
+    "workspace": "Arbejdsområde",
+    "checkingSession": "Tjekker session…",
+    "notSignedIn": "Ikke logget ind"
+  },
+  "help": {
+    "button": "Hjælp",
+    "title": "Synthr-assistent",
+    "subtitle": "Stil et workflow-spørgsmål eller åbn den fulde guide.",
+    "placeholder": "Skriv et spørgsmål…",
+    "ask": "Spørg assistenten",
+    "thinking": "Tænker…",
+    "openManual": "Åbn brugermanual",
+    "sendFeedback": "Send feedback",
+    "s1": "Hvordan behandler jeg en ny henvendelse?",
+    "s2": "Hvordan publicerer jeg en bolig?",
+    "s3": "Hvor kan jeg forbinde Gmail?",
+    "s4": "Hvordan fungerer rolle-tilladelser?"
+  },
+  "login": {
+    "title": "Log ind",
+    "subtitle": "Indtast din arbejdsmail og adgangskode for at åbne din agencies arbejdsområde.",
+    "back": "Tilbage",
+    "email": "Arbejdsmail",
+    "password": "Adgangskode",
+    "continue": "Fortsæt",
+    "signingIn": "Logger ind…",
+    "support": "Problemer med at logge ind? Spørg agency-ejeren eller kontakt Synthr support.",
+    "apiMissing": "API-URL er ikke konfigureret.",
+    "missingCredentials": "Indtast din mail og adgangskode.",
+    "failed": "Login mislykkedes."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Dagens operationelle overblik for din agency.",
+    "overview": "Overblik",
+    "agencyOverview": "Agency-overblik",
+    "myOverview": "Mit overblik",
+    "readOnlyOverview": "Skrivebeskyttet overblik",
+    "readOnlyAccess": "Du har skrivebeskyttet adgang.",
+    "signInPrompt": "Log ind for at se dit dashboard.",
+    "signIn": "Log ind",
+    "viewInquiries": "Se henvendelser",
+    "viewListings": "Se boliger",
+    "newContact": "Ny kontakt",
+    "newLead": "Ny lead",
+    "newListing": "Ny bolig",
+    "loading": "Indlæser dashboard…",
+    "loadFailed": "Kunne ikke indlæse dashboard.",
+    "contacts": "Kontakter",
+    "leads": "Leads",
+    "newInquiries": "Nye henvendelser",
+    "activeListings": "Aktive boliger",
+    "tasksDueSoon": "Opgaver snart",
+    "recentActivity": "Seneste aktivitet",
+    "recentActivitySubtitle": "Seneste hændelser i dit arbejdsområde (rollebaseret).",
+    "noRecentActivity": "Ingen seneste aktivitet endnu."
+  },
+  "manual": {
+    "title": "Brugermanual",
+    "subtitle": "Rollebaseret guide til daglige workflows i Synthr Admin."
+  },
+  "feedback": {
+    "title": "Feedback",
+    "subtitle": "Rapportér problemer, idéer og feature-ønsker.",
+    "intro": "Del produktproblemer og ønsker. I MVP sendes feedback via e-mail.",
+    "send": "Send feedback",
+    "clear": "Ryd",
+    "sentHint": "Din mail-app burde åbne nu. Hvis ikke, send feedback manuelt til support@synthrstate.com.",
+    "types": {
+      "bug": "Fejl",
+      "feature": "Feature-ønske",
+      "uiux": "UI/UX",
+      "performance": "Ydelse",
+      "other": "Andet"
+    },
+    "placeholder": "Beskriv hvad der skete, hvor det skete, og hvad du forventede…"
+  }
+}
+

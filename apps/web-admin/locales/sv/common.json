@@ -1,0 +1,131 @@
+{
+  "common": {
+    "home": "Hem",
+    "crm": "CRM",
+    "listings": "Objekt",
+    "billing": "Fakturering",
+    "ai": "AI",
+    "userManagement": "Användarhantering",
+    "apiFeeds": "API och flöden",
+    "userManual": "Användarmanual",
+    "feedback": "Feedback",
+    "close": "Stäng",
+    "back": "Tillbaka",
+    "save": "Spara",
+    "cancel": "Avbryt",
+    "refresh": "Uppdatera",
+    "loading": "Laddar…",
+    "signOut": "Logga ut",
+    "signingOut": "Loggar ut…"
+  },
+  "theme": {
+    "label": "Tema",
+    "system": "System",
+    "dark": "Mörkt",
+    "light": "Ljust"
+  },
+  "language": {
+    "label": "Språk",
+    "english": "Engelska",
+    "spanish": "Spanska",
+    "french": "Franska",
+    "german": "Tyska",
+    "italian": "Italienska",
+    "dutch": "Nederländska",
+    "portuguese": "Portugisiska",
+    "greek": "Grekiska",
+    "swedish": "Svenska",
+    "danish": "Danska",
+    "finnish": "Finska",
+    "polish": "Polska",
+    "czech": "Tjeckiska",
+    "hungarian": "Ungerska",
+    "romanian": "Rumänska",
+    "croatian": "Kroatiska",
+    "turkish": "Turkiska"
+  },
+  "shell": {
+    "openNavigation": "Öppna navigering",
+    "menu": "Meny",
+    "closeNavigation": "Stäng navigering"
+  },
+  "sidebar": {
+    "workspace": "Arbetsyta",
+    "checkingSession": "Kontrollerar session…",
+    "notSignedIn": "Inte inloggad"
+  },
+  "help": {
+    "button": "Hjälp",
+    "title": "Synthr-assistent",
+    "subtitle": "Ställ en arbetsflödesfråga eller öppna hela guiden.",
+    "placeholder": "Skriv en fråga…",
+    "ask": "Fråga assistenten",
+    "thinking": "Tänker…",
+    "openManual": "Öppna användarmanual",
+    "sendFeedback": "Skicka feedback",
+    "s1": "Hur hanterar jag en ny förfrågan?",
+    "s2": "Hur publicerar jag ett objekt?",
+    "s3": "Var kan jag koppla Gmail?",
+    "s4": "Hur fungerar rollbehörigheter?"
+  },
+  "login": {
+    "title": "Logga in",
+    "subtitle": "Ange din jobbe‑post och ditt lösenord för att öppna din byrås arbetsyta.",
+    "back": "Tillbaka",
+    "email": "Jobb‑e‑post",
+    "password": "Lösenord",
+    "continue": "Fortsätt",
+    "signingIn": "Loggar in…",
+    "support": "Problem att logga in? Fråga byråägaren eller kontakta Synthr support.",
+    "apiMissing": "API‑URL är inte konfigurerad.",
+    "missingCredentials": "Ange e‑post och lösenord.",
+    "failed": "Inloggningen misslyckades."
+  },
+  "dashboard": {
+    "title": "Översikt",
+    "subtitle": "Dagens operativa översikt för din byrå.",
+    "overview": "Översikt",
+    "agencyOverview": "Byråöversikt",
+    "myOverview": "Min översikt",
+    "readOnlyOverview": "Skrivskyddad översikt",
+    "readOnlyAccess": "Du har skrivskyddad åtkomst.",
+    "signInPrompt": "Logga in för att se din översikt.",
+    "signIn": "Logga in",
+    "viewInquiries": "Visa förfrågningar",
+    "viewListings": "Visa objekt",
+    "newContact": "Ny kontakt",
+    "newLead": "Ny lead",
+    "newListing": "Nytt objekt",
+    "loading": "Laddar översikt…",
+    "loadFailed": "Kunde inte ladda översikten.",
+    "contacts": "Kontakter",
+    "leads": "Leads",
+    "newInquiries": "Nya förfrågningar",
+    "activeListings": "Aktiva objekt",
+    "tasksDueSoon": "Uppgifter snart",
+    "recentActivity": "Senaste aktivitet",
+    "recentActivitySubtitle": "Senaste händelserna i din arbetsyta (rollstyrt).",
+    "noRecentActivity": "Ingen senaste aktivitet ännu."
+  },
+  "manual": {
+    "title": "Användarmanual",
+    "subtitle": "Rollbaserad guide för dagliga arbetsflöden i Synthr Admin."
+  },
+  "feedback": {
+    "title": "Feedback",
+    "subtitle": "Rapportera problem, idéer och funktionsönskemål.",
+    "intro": "Dela produktproblem och önskemål. I MVP skickas feedback via e‑post.",
+    "send": "Skicka feedback",
+    "clear": "Rensa",
+    "sentHint": "Din e‑postapp bör öppnas nu. Om inte, skicka feedback manuellt till support@synthrstate.com.",
+    "types": {
+      "bug": "Bugg",
+      "feature": "Funktionsönskemål",
+      "uiux": "UI/UX",
+      "performance": "Prestanda",
+      "other": "Annat"
+    },
+    "placeholder": "Beskriv vad som hände, var det hände och vilket resultat du förväntade dig…"
+  }
+}
+

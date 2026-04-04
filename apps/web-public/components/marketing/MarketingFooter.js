@@ -1,7 +1,10 @@
 import Link from "next/link";
 
-export default function MarketingFooter() {
+const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_SUPPORT_EMAIL || "support@synthrstate.com";
+
+export default function MarketingFooter({ m }) {
   const year = new Date().getFullYear();
+  const f = m?.footer;
   return (
     <footer className="mk-footer">
       <div className="shell mk-footer__inner">
@@ -9,14 +12,14 @@ export default function MarketingFooter() {
           <Link href="/" className="mk-logo mk-logo--footer">
             Synthr
           </Link>
-          <p className="mk-footer__tagline">Real estate CRM, listings, and distribution in one workflow.</p>
+          <p className="mk-footer__tagline">{m?.footer?.tagline ?? "Real estate CRM, listings, and distribution in one workflow."}</p>
         </div>
         <div className="mk-footer__cols">
           <div>
-            <p className="mk-footer__col-title">Product</p>
+            <p className="mk-footer__col-title">{m?.footer?.product ?? "Product"}</p>
             <ul className="mk-footer__links">
               <li>
-                <a href="#features">Features</a>
+                <a href="#features">{m?.footer?.features ?? "Features"}</a>
               </li>
               <li>
                 <a href="#product">Product</a>
@@ -25,18 +28,34 @@ export default function MarketingFooter() {
                 <a href="#pricing">Pricing</a>
               </li>
               <li>
-                <Link href="/listings">Demo listings</Link>
+                <Link href="/listings">{m?.nav?.demoListings ?? "Demo listings"}</Link>
               </li>
             </ul>
           </div>
           <div>
-            <p className="mk-footer__col-title">Company</p>
+            <p className="mk-footer__col-title">{f?.company ?? "Company"}</p>
             <ul className="mk-footer__links">
               <li>
-                <a href="#contact">Contact</a>
+                <a href="#contact">{f?.contact ?? "Contact"}</a>
               </li>
               <li>
-                <a href="mailto:contact@synthrstate.com">contact@synthrstate.com</a>
+                <a href={`mailto:${SUPPORT_EMAIL}`}>
+                  {f?.supportLabel ?? "Support"}: {SUPPORT_EMAIL}
+                </a>
+              </li>
+            </ul>
+          </div>
+          <div>
+            <p className="mk-footer__col-title">{f?.legal ?? "Legal"}</p>
+            <ul className="mk-footer__links">
+              <li>
+                <Link href="/terms/">{f?.terms ?? "Terms of Service"}</Link>
+              </li>
+              <li>
+                <Link href="/privacy/">{f?.privacy ?? "Privacy Policy"}</Link>
+              </li>
+              <li>
+                <Link href="/cookies/">{f?.cookies ?? "Cookie Policy"}</Link>
               </li>
             </ul>
           </div>
@@ -44,7 +63,7 @@ export default function MarketingFooter() {
       </div>
       <div className="mk-footer__bar">
         <div className="shell mk-footer__bar-inner">
-          <p className="mk-footer__legal">© {year} Synthr. All rights reserved.</p>
+          <p className="mk-footer__legal">© {year} Synthr. {m?.footer?.rights ?? "All rights reserved."}</p>
           <a
             href="https://alphasynthai.com"
             target="_blank"
@@ -59,7 +78,7 @@ export default function MarketingFooter() {
               height={28}
               className="mk-footer__powered-logo"
             />
-            <span className="mk-footer__powered-text">Powered by AlphaSynth AI</span>
+            <span className="mk-footer__powered-text">{m?.footer?.powered ?? "Powered by AlphaSynth AI"}</span>
           </a>
         </div>
       </div>

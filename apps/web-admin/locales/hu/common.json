@@ -1,0 +1,131 @@
+{
+  "common": {
+    "home": "Kezdőlap",
+    "crm": "CRM",
+    "listings": "Hirdetések",
+    "billing": "Számlázás",
+    "ai": "AI",
+    "userManagement": "Felhasználókezelés",
+    "apiFeeds": "API és feedek",
+    "userManual": "Felhasználói kézikönyv",
+    "feedback": "Visszajelzés",
+    "close": "Bezárás",
+    "back": "Vissza",
+    "save": "Mentés",
+    "cancel": "Mégse",
+    "refresh": "Frissítés",
+    "loading": "Betöltés…",
+    "signOut": "Kijelentkezés",
+    "signingOut": "Kijelentkezés…"
+  },
+  "theme": {
+    "label": "Téma",
+    "system": "Rendszer",
+    "dark": "Sötét",
+    "light": "Világos"
+  },
+  "language": {
+    "label": "Nyelv",
+    "english": "Angol",
+    "spanish": "Spanyol",
+    "french": "Francia",
+    "german": "Német",
+    "italian": "Olasz",
+    "dutch": "Holland",
+    "portuguese": "Portugál",
+    "greek": "Görög",
+    "swedish": "Svéd",
+    "danish": "Dán",
+    "finnish": "Finn",
+    "polish": "Lengyel",
+    "czech": "Cseh",
+    "hungarian": "Magyar",
+    "romanian": "Román",
+    "croatian": "Horvát",
+    "turkish": "Török"
+  },
+  "shell": {
+    "openNavigation": "Navigáció megnyitása",
+    "menu": "Menü",
+    "closeNavigation": "Navigáció bezárása"
+  },
+  "sidebar": {
+    "workspace": "Munkaterület",
+    "checkingSession": "Munkamenet ellenőrzése…",
+    "notSignedIn": "Nincs bejelentkezve"
+  },
+  "help": {
+    "button": "Súgó",
+    "title": "Synthr asszisztens",
+    "subtitle": "Tegyen fel egy munkafolyamat‑kérdést, vagy nyissa meg a teljes útmutatót.",
+    "placeholder": "Írjon be egy kérdést…",
+    "ask": "Kérdezze az asszisztenst",
+    "thinking": "Gondolkodik…",
+    "openManual": "Felhasználói kézikönyv megnyitása",
+    "sendFeedback": "Visszajelzés küldése",
+    "s1": "Hogyan kezelek egy új érdeklődést?",
+    "s2": "Hogyan publikálok egy hirdetést?",
+    "s3": "Hol tudom csatlakoztatni a Gmailt?",
+    "s4": "Hogyan működnek a szerepkör‑jogosultságok?"
+  },
+  "login": {
+    "title": "Bejelentkezés",
+    "subtitle": "Adja meg a munkahelyi e‑mail címét és jelszavát az ügynökségi munkaterület megnyitásához.",
+    "back": "Vissza",
+    "email": "Munkahelyi e‑mail",
+    "password": "Jelszó",
+    "continue": "Folytatás",
+    "signingIn": "Bejelentkezés…",
+    "support": "Gond van a bejelentkezéssel? Kérdezze az ügynökség tulajdonosát, vagy írjon a Synthr támogatásnak.",
+    "apiMissing": "Az API URL nincs beállítva.",
+    "missingCredentials": "Adja meg az e‑mailt és a jelszót.",
+    "failed": "Sikertelen bejelentkezés."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "A mai operatív áttekintés az ügynökségének.",
+    "overview": "Áttekintés",
+    "agencyOverview": "Ügynökségi áttekintés",
+    "myOverview": "Saját áttekintés",
+    "readOnlyOverview": "Csak olvasható áttekintés",
+    "readOnlyAccess": "Csak olvasható hozzáférése van.",
+    "signInPrompt": "Jelentkezzen be a dashboard megtekintéséhez.",
+    "signIn": "Bejelentkezés",
+    "viewInquiries": "Érdeklődések megtekintése",
+    "viewListings": "Hirdetések megtekintése",
+    "newContact": "Új kapcsolat",
+    "newLead": "Új lead",
+    "newListing": "Új hirdetés",
+    "loading": "Dashboard betöltése…",
+    "loadFailed": "Nem sikerült betölteni a dashboardot.",
+    "contacts": "Kapcsolatok",
+    "leads": "Leads",
+    "newInquiries": "Új érdeklődések",
+    "activeListings": "Aktív hirdetések",
+    "tasksDueSoon": "Hamarosan esedékes feladatok",
+    "recentActivity": "Legutóbbi aktivitás",
+    "recentActivitySubtitle": "Legfrissebb események a munkaterületen (szerepkör szerint).",
+    "noRecentActivity": "Még nincs legutóbbi aktivitás."
+  },
+  "manual": {
+    "title": "Felhasználói kézikönyv",
+    "subtitle": "Szerepkör‑alapú útmutató a napi munkafolyamatokhoz a Synthr Adminban."
+  },
+  "feedback": {
+    "title": "Visszajelzés",
+    "subtitle": "Jelentse a problémákat, ötleteket és funkciókéréseket.",
+    "intro": "Ossza meg a termékproblémákat és kéréseket. MVP-ben a visszajelzés e‑mailben kerül elküldésre.",
+    "send": "Küldés",
+    "clear": "Törlés",
+    "sentHint": "Az e‑mail alkalmazásának most meg kell nyílnia. Ha nem, küldje el manuálisan a support@synthrstate.com címre.",
+    "types": {
+      "bug": "Hiba",
+      "feature": "Funkciókérés",
+      "uiux": "UI/UX",
+      "performance": "Teljesítmény",
+      "other": "Egyéb"
+    },
+    "placeholder": "Írja le, mi történt, hol történt, és milyen eredményt várt…"
+  }
+}
+

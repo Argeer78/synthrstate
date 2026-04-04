@@ -32,3 +32,7 @@ coverage/
 # Local deploy archives (do not commit)
 *.zip
 *.tar.gz
+*.tgz
+
+# Local reference copy (not part of this repo)
+synthrstate-main/

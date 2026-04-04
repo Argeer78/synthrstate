@@ -32,7 +32,17 @@
     "german": "German",
     "italian": "Italian",
     "portuguese": "Portuguese",
-    "greek": "Greek"
+    "greek": "Greek",
+    "dutch": "Dutch",
+    "danish": "Danish",
+    "finnish": "Finnish",
+    "swedish": "Swedish",
+    "polish": "Polish",
+    "czech": "Czech",
+    "hungarian": "Hungarian",
+    "romanian": "Romanian",
+    "croatian": "Croatian",
+    "turkish": "Turkish"
   },
   "shell": {
     "openNavigation": "Open navigation",

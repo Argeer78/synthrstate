@@ -1,0 +1,131 @@
+{
+  "common": {
+    "home": "Etusivu",
+    "crm": "CRM",
+    "listings": "Ilmoitukset",
+    "billing": "Laskutus",
+    "ai": "AI",
+    "userManagement": "Käyttäjähallinta",
+    "apiFeeds": "API ja syötteet",
+    "userManual": "Käyttöopas",
+    "feedback": "Palaute",
+    "close": "Sulje",
+    "back": "Takaisin",
+    "save": "Tallenna",
+    "cancel": "Peruuta",
+    "refresh": "Päivitä",
+    "loading": "Ladataan…",
+    "signOut": "Kirjaudu ulos",
+    "signingOut": "Kirjaudutaan ulos…"
+  },
+  "theme": {
+    "label": "Teema",
+    "system": "Järjestelmä",
+    "dark": "Tumma",
+    "light": "Vaalea"
+  },
+  "language": {
+    "label": "Kieli",
+    "english": "Englanti",
+    "spanish": "Espanja",
+    "french": "Ranska",
+    "german": "Saksa",
+    "italian": "Italia",
+    "dutch": "Hollanti",
+    "portuguese": "Portugali",
+    "greek": "Kreikka",
+    "swedish": "Ruotsi",
+    "danish": "Tanska",
+    "finnish": "Suomi",
+    "polish": "Puola",
+    "czech": "Tšekki",
+    "hungarian": "Unkari",
+    "romanian": "Romania",
+    "croatian": "Kroatia",
+    "turkish": "Turkki"
+  },
+  "shell": {
+    "openNavigation": "Avaa navigointi",
+    "menu": "Valikko",
+    "closeNavigation": "Sulje navigointi"
+  },
+  "sidebar": {
+    "workspace": "Työtila",
+    "checkingSession": "Tarkistetaan istuntoa…",
+    "notSignedIn": "Ei kirjautuneena"
+  },
+  "help": {
+    "button": "Ohje",
+    "title": "Synthr‑avustaja",
+    "subtitle": "Kysy työnkulusta tai avaa koko opas.",
+    "placeholder": "Kirjoita kysymys…",
+    "ask": "Kysy avustajalta",
+    "thinking": "Miettii…",
+    "openManual": "Avaa käyttöopas",
+    "sendFeedback": "Lähetä palaute",
+    "s1": "Miten käsittelen uuden yhteydenoton?",
+    "s2": "Miten julkaisen ilmoituksen?",
+    "s3": "Mistä voin yhdistää Gmailin?",
+    "s4": "Miten roolien oikeudet toimivat?"
+  },
+  "login": {
+    "title": "Kirjaudu sisään",
+    "subtitle": "Syötä työ‑sähköpostisi ja salasanasi avataksesi toimistosi työtilan.",
+    "back": "Takaisin",
+    "email": "Työsähköposti",
+    "password": "Salasana",
+    "continue": "Jatka",
+    "signingIn": "Kirjaudutaan sisään…",
+    "support": "Onko kirjautumisessa ongelmia? Kysy toimiston omistajalta tai ota yhteyttä Synthr‑tukeen.",
+    "apiMissing": "API‑URL ei ole määritetty.",
+    "missingCredentials": "Syötä sähköposti ja salasana.",
+    "failed": "Kirjautuminen epäonnistui."
+  },
+  "dashboard": {
+    "title": "Koontinäkymä",
+    "subtitle": "Tämän päivän operatiivinen yleiskuva toimistollesi.",
+    "overview": "Yleiskuva",
+    "agencyOverview": "Toimiston yleiskuva",
+    "myOverview": "Oma yleiskuva",
+    "readOnlyOverview": "Vain luku ‑yleiskuva",
+    "readOnlyAccess": "Sinulla on vain luku ‑oikeus.",
+    "signInPrompt": "Kirjaudu sisään nähdäksesi koontinäkymän.",
+    "signIn": "Kirjaudu sisään",
+    "viewInquiries": "Näytä yhteydenotot",
+    "viewListings": "Näytä ilmoitukset",
+    "newContact": "Uusi kontakti",
+    "newLead": "Uusi liidi",
+    "newListing": "Uusi ilmoitus",
+    "loading": "Ladataan koontinäkymää…",
+    "loadFailed": "Koontinäkymän lataus epäonnistui.",
+    "contacts": "Kontaktit",
+    "leads": "Liidit",
+    "newInquiries": "Uudet yhteydenotot",
+    "activeListings": "Aktiiviset ilmoitukset",
+    "tasksDueSoon": "Tehtävät pian",
+    "recentActivity": "Viimeisin toiminta",
+    "recentActivitySubtitle": "Uusimmat tapahtumat työtilassasi (roolin mukaan).",
+    "noRecentActivity": "Ei vielä viimeisintä toimintaa."
+  },
+  "manual": {
+    "title": "Käyttöopas",
+    "subtitle": "Roolipohjainen opas päivittäisiin työnkulkuihin Synthr Adminissa."
+  },
+  "feedback": {
+    "title": "Palaute",
+    "subtitle": "Ilmoita ongelmista, ideoista ja toiveista.",
+    "intro": "Jaa tuoteongelmat ja toiveet. MVP:ssä palaute lähetetään sähköpostilla.",
+    "send": "Lähetä palaute",
+    "clear": "Tyhjennä",
+    "sentHint": "Sähköpostisovelluksen pitäisi aueta nyt. Jos ei, lähetä palaute manuaalisesti osoitteeseen support@synthrstate.com.",
+    "types": {
+      "bug": "Bug",
+      "feature": "Toimintopyyntö",
+      "uiux": "UI/UX",
+      "performance": "Suorituskyky",
+      "other": "Muu"
+    },
+    "placeholder": "Kuvaile mitä tapahtui, missä se tapahtui ja mitä odotit…"
+  }
+}
+

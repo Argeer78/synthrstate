@@ -1,0 +1,131 @@
+{
+  "common": {
+    "home": "Domů",
+    "crm": "CRM",
+    "listings": "Nabídky",
+    "billing": "Fakturace",
+    "ai": "AI",
+    "userManagement": "Správa uživatelů",
+    "apiFeeds": "API a feedy",
+    "userManual": "Uživatelská příručka",
+    "feedback": "Zpětná vazba",
+    "close": "Zavřít",
+    "back": "Zpět",
+    "save": "Uložit",
+    "cancel": "Zrušit",
+    "refresh": "Obnovit",
+    "loading": "Načítání…",
+    "signOut": "Odhlásit se",
+    "signingOut": "Odhlašování…"
+  },
+  "theme": {
+    "label": "Motiv",
+    "system": "Systém",
+    "dark": "Tmavý",
+    "light": "Světlý"
+  },
+  "language": {
+    "label": "Jazyk",
+    "english": "Angličtina",
+    "spanish": "Španělština",
+    "french": "Francouzština",
+    "german": "Němčina",
+    "italian": "Italština",
+    "dutch": "Nizozemština",
+    "portuguese": "Portugalština",
+    "greek": "Řečtina",
+    "swedish": "Švédština",
+    "danish": "Dánština",
+    "finnish": "Finština",
+    "polish": "Polština",
+    "czech": "Čeština",
+    "hungarian": "Maďarština",
+    "romanian": "Rumunština",
+    "croatian": "Chorvatština",
+    "turkish": "Turečtina"
+  },
+  "shell": {
+    "openNavigation": "Otevřít navigaci",
+    "menu": "Menu",
+    "closeNavigation": "Zavřít navigaci"
+  },
+  "sidebar": {
+    "workspace": "Pracovní prostor",
+    "checkingSession": "Kontrola relace…",
+    "notSignedIn": "Nepřihlášeno"
+  },
+  "help": {
+    "button": "Nápověda",
+    "title": "Asistent Synthr",
+    "subtitle": "Zeptejte se na postup nebo otevřete kompletní příručku.",
+    "placeholder": "Napište dotaz…",
+    "ask": "Zeptat se asistenta",
+    "thinking": "Přemýšlí…",
+    "openManual": "Otevřít uživatelskou příručku",
+    "sendFeedback": "Odeslat zpětnou vazbu",
+    "s1": "Jak zpracovat nový dotaz?",
+    "s2": "Jak publikovat nabídku?",
+    "s3": "Kde mohu připojit Gmail?",
+    "s4": "Jak fungují oprávnění rolí?"
+  },
+  "login": {
+    "title": "Přihlásit se",
+    "subtitle": "Zadejte pracovní e‑mail a heslo pro otevření prostoru vaší agentury.",
+    "back": "Zpět",
+    "email": "Pracovní e‑mail",
+    "password": "Heslo",
+    "continue": "Pokračovat",
+    "signingIn": "Přihlašování…",
+    "support": "Problémy s přihlášením? Obraťte se na vlastníka agentury nebo podporu Synthr.",
+    "apiMissing": "URL API není nastaveno.",
+    "missingCredentials": "Zadejte e‑mail a heslo.",
+    "failed": "Přihlášení se nezdařilo."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Dnešní provozní přehled pro vaši agenturu.",
+    "overview": "Přehled",
+    "agencyOverview": "Přehled agentury",
+    "myOverview": "Můj přehled",
+    "readOnlyOverview": "Přehled jen pro čtení",
+    "readOnlyAccess": "Máte přístup jen pro čtení.",
+    "signInPrompt": "Přihlaste se pro zobrazení dashboardu.",
+    "signIn": "Přihlásit se",
+    "viewInquiries": "Zobrazit poptávky",
+    "viewListings": "Zobrazit nabídky",
+    "newContact": "Nový kontakt",
+    "newLead": "Nový lead",
+    "newListing": "Nová nabídka",
+    "loading": "Načítání dashboardu…",
+    "loadFailed": "Dashboard se nepodařilo načíst.",
+    "contacts": "Kontakty",
+    "leads": "Leady",
+    "newInquiries": "Nové poptávky",
+    "activeListings": "Aktivní nabídky",
+    "tasksDueSoon": "Úkoly brzy",
+    "recentActivity": "Nedávná aktivita",
+    "recentActivitySubtitle": "Poslední události v prostoru (dle role).",
+    "noRecentActivity": "Zatím žádná nedávná aktivita."
+  },
+  "manual": {
+    "title": "Uživatelská příručka",
+    "subtitle": "Role‑based průvodce denními postupy v Synthr Admin."
+  },
+  "feedback": {
+    "title": "Zpětná vazba",
+    "subtitle": "Nahlašte problémy, nápady a požadavky.",
+    "intro": "Sdílejte problémy a požadavky. V MVP se zpětná vazba odesílá e‑mailem.",
+    "send": "Odeslat",
+    "clear": "Vymazat",
+    "sentHint": "Vaše e‑mailová aplikace by se měla nyní otevřít. Pokud ne, pošlete to ručně na support@synthrstate.com.",
+    "types": {
+      "bug": "Chyba",
+      "feature": "Požadavek na funkci",
+      "uiux": "UI/UX",
+      "performance": "Výkon",
+      "other": "Jiné"
+    },
+    "placeholder": "Popište co se stalo, kde se to stalo a jaký výsledek jste čekali…"
+  }
+}
+

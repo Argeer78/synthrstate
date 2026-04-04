@@ -1,6 +1,8 @@
 import Link from "next/link";
 import PublicListingCard from "../../components/PublicListingCard";
+import { ListingsBrowseClient } from "../../components/ListingsBrowseClient";
 import { fetchPublicListings } from "../../lib/public-api";
+import { getMergedMessages } from "../../lib/messages";
 
 export const metadata = {
   title: "Demo listings — Synthr",
@@ -10,32 +12,48 @@ export const metadata = {
 /** Fetch on each request; avoids failing `next build` when the API is unreachable. */
 export const dynamic = "force-dynamic";
 
-export default async function ListingsIndexPage() {
+/** @param {Record<string, string | string[] | undefined>} sp */
+function searchParamsToQuery(sp) {
+  if (!sp || typeof sp !== "object") return {};
+  const o = {};
+  for (const [k, v] of Object.entries(sp)) {
+    if (v === undefined || v === "") continue;
+    o[k] = Array.isArray(v) ? v[0] : v;
+  }
+  return o;
+}
+
+export default async function ListingsIndexPage({ searchParams }) {
+  const resolved = searchParams && typeof searchParams.then === "function" ? await searchParams : searchParams;
+  const query = searchParamsToQuery(resolved ?? {});
+
+  const messages = getMergedMessages("en");
+  const L = messages.listings;
+
   let data;
   let errorMessage = null;
 
   try {
-    data = await fetchPublicListings();
+    data = await fetchPublicListings(query);
   } catch (e) {
-    errorMessage = e instanceof Error ? e.message : "Something went wrong";
+    errorMessage = e instanceof Error ? e.message : messages.listings.genericError;
   }
 
   return (
     <div className="shell listings-page">
       <header className="listings-page__header">
         <Link href="/" className="listings-page__back">
-          ← Synthr
+          ← {L.backBrand}
         </Link>
-        <h1 className="listings-page__title">Demo listings</h1>
-        <p className="listings-page__lead">
-          Live data from the Synthr public API (<code>demo-agency</code>). This page is for product preview, not
-          the marketing homepage.
-        </p>
+        <h1 className="listings-page__title">{L.demoTitle}</h1>
+        <p className="listings-page__lead">{L.lead}</p>
       </header>
+
+      <ListingsBrowseClient m={messages} />
 
       {errorMessage ? (
         <div className="state-block state-block--error" role="alert">
-          <p className="state-block__title">Could not load listings</p>
+          <p className="state-block__title">{L.loadError}</p>
           <p style={{ margin: 0 }}>{errorMessage}</p>
         </div>
       ) : null}
@@ -46,10 +64,8 @@ export default async function ListingsIndexPage() {
           if (items.length === 0) {
             return (
               <div className="state-block">
-                <p className="state-block__title">No published listings</p>
-                <p style={{ margin: 0 }}>
-                  When your agency publishes active listings in Synthr, they will appear here.
-                </p>
+                <p className="state-block__title">{L.emptyTitle}</p>
+                <p style={{ margin: 0 }}>{L.emptyBody}</p>
               </div>
             );
           }

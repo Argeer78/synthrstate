@@ -5,5 +5,6 @@ export type JwtClaims = {
   agencyId: string;
   membershipId: string;
   role: UserRole;
+  email?: string;
 };
 

@@ -1,0 +1,131 @@
+{
+  "common": {
+    "home": "Ana sayfa",
+    "crm": "CRM",
+    "listings": "İlanlar",
+    "billing": "Faturalandırma",
+    "ai": "Yapay zekâ",
+    "userManagement": "Kullanıcı yönetimi",
+    "apiFeeds": "API ve akışlar",
+    "userManual": "Kullanım kılavuzu",
+    "feedback": "Geri bildirim",
+    "close": "Kapat",
+    "back": "Geri",
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "refresh": "Yenile",
+    "loading": "Yükleniyor…",
+    "signOut": "Çıkış yap",
+    "signingOut": "Çıkış yapılıyor…"
+  },
+  "theme": {
+    "label": "Tema",
+    "system": "Sistem",
+    "dark": "Koyu",
+    "light": "Açık"
+  },
+  "language": {
+    "label": "Dil",
+    "english": "İngilizce",
+    "spanish": "İspanyolca",
+    "french": "Fransızca",
+    "german": "Almanca",
+    "italian": "İtalyanca",
+    "dutch": "Felemenkçe",
+    "portuguese": "Portekizce",
+    "greek": "Yunanca",
+    "swedish": "İsveççe",
+    "danish": "Danca",
+    "finnish": "Fince",
+    "polish": "Lehçe",
+    "czech": "Çekçe",
+    "hungarian": "Macarca",
+    "romanian": "Rumence",
+    "croatian": "Hırvatça",
+    "turkish": "Türkçe"
+  },
+  "shell": {
+    "openNavigation": "Gezinmeyi aç",
+    "menu": "Menü",
+    "closeNavigation": "Gezinmeyi kapat"
+  },
+  "sidebar": {
+    "workspace": "Çalışma alanı",
+    "checkingSession": "Oturum kontrol ediliyor…",
+    "notSignedIn": "Giriş yapılmadı"
+  },
+  "help": {
+    "button": "Yardım",
+    "title": "Synthr Asistanı",
+    "subtitle": "Bir iş akışı sorusu sorun veya tam kılavuzu açın.",
+    "placeholder": "Bir soru yazın…",
+    "ask": "Asistana sor",
+    "thinking": "Düşünüyor…",
+    "openManual": "Kullanım kılavuzunu aç",
+    "sendFeedback": "Geri bildirim gönder",
+    "s1": "Yeni bir talebi nasıl işlerim?",
+    "s2": "Bir ilanı nasıl yayınlarım?",
+    "s3": "Gmail’i nereden bağlayabilirim?",
+    "s4": "Rol izinleri nasıl çalışır?"
+  },
+  "login": {
+    "title": "Giriş yap",
+    "subtitle": "Ajans çalışma alanınızı açmak için iş e‑postanızı ve şifrenizi girin.",
+    "back": "Geri",
+    "email": "İş e‑postası",
+    "password": "Şifre",
+    "continue": "Devam",
+    "signingIn": "Giriş yapılıyor…",
+    "support": "Girişte sorun mu var? Ajans sahibinize sorun veya Synthr desteğe ulaşın.",
+    "apiMissing": "API URL’i yapılandırılmamış.",
+    "missingCredentials": "E‑posta ve şifreyi girin.",
+    "failed": "Giriş başarısız."
+  },
+  "dashboard": {
+    "title": "Panel",
+    "subtitle": "Ajansınız için bugünkü operasyon özeti.",
+    "overview": "Genel bakış",
+    "agencyOverview": "Ajans genel bakışı",
+    "myOverview": "Benim genel bakışım",
+    "readOnlyOverview": "Salt okunur genel bakış",
+    "readOnlyAccess": "Salt okunur erişiminiz var.",
+    "signInPrompt": "Paneli görmek için giriş yapın.",
+    "signIn": "Giriş yap",
+    "viewInquiries": "Talepleri görüntüle",
+    "viewListings": "İlanları görüntüle",
+    "newContact": "Yeni kişi",
+    "newLead": "Yeni lead",
+    "newListing": "Yeni ilan",
+    "loading": "Panel yükleniyor…",
+    "loadFailed": "Panel yüklenemedi.",
+    "contacts": "Kişiler",
+    "leads": "Leads",
+    "newInquiries": "Yeni talepler",
+    "activeListings": "Aktif ilanlar",
+    "tasksDueSoon": "Yaklaşan görevler",
+    "recentActivity": "Son etkinlik",
+    "recentActivitySubtitle": "Çalışma alanınızdaki en son olaylar (role göre).",
+    "noRecentActivity": "Henüz son etkinlik yok."
+  },
+  "manual": {
+    "title": "Kullanım kılavuzu",
+    "subtitle": "Synthr Admin’de günlük iş akışları için rol bazlı rehber."
+  },
+  "feedback": {
+    "title": "Geri bildirim",
+    "subtitle": "Sorunları, fikirleri ve özellik isteklerini bildirin.",
+    "intro": "Ürün sorunlarını ve istekleri paylaşın. MVP’de geri bildirim e‑posta ile gönderilir.",
+    "send": "Gönder",
+    "clear": "Temizle",
+    "sentHint": "E‑posta uygulamanız şimdi açılmalı. Açılmazsa, support@synthrstate.com adresine manuel olarak gönderin.",
+    "types": {
+      "bug": "Hata",
+      "feature": "Özellik isteği",
+      "uiux": "UI/UX",
+      "performance": "Performans",
+      "other": "Diğer"
+    },
+    "placeholder": "Ne olduğunu, nerede olduğunu ve ne beklediğinizi açıklayın…"
+  }
+}
+

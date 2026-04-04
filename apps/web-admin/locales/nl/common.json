@@ -1,0 +1,131 @@
+{
+  "common": {
+    "home": "Start",
+    "crm": "CRM",
+    "listings": "Advertenties",
+    "billing": "Facturatie",
+    "ai": "AI",
+    "userManagement": "Gebruikersbeheer",
+    "apiFeeds": "API & feeds",
+    "userManual": "Gebruikershandleiding",
+    "feedback": "Feedback",
+    "close": "Sluiten",
+    "back": "Terug",
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "refresh": "Vernieuwen",
+    "loading": "Laden…",
+    "signOut": "Afmelden",
+    "signingOut": "Bezig met afmelden…"
+  },
+  "theme": {
+    "label": "Thema",
+    "system": "Systeem",
+    "dark": "Donker",
+    "light": "Licht"
+  },
+  "language": {
+    "label": "Taal",
+    "english": "Engels",
+    "spanish": "Spaans",
+    "french": "Frans",
+    "german": "Duits",
+    "italian": "Italiaans",
+    "dutch": "Nederlands",
+    "portuguese": "Portugees",
+    "greek": "Grieks",
+    "swedish": "Zweeds",
+    "danish": "Deens",
+    "finnish": "Fins",
+    "polish": "Pools",
+    "czech": "Tsjechisch",
+    "hungarian": "Hongaars",
+    "romanian": "Roemeens",
+    "croatian": "Kroatisch",
+    "turkish": "Turks"
+  },
+  "shell": {
+    "openNavigation": "Navigatie openen",
+    "menu": "Menu",
+    "closeNavigation": "Navigatie sluiten"
+  },
+  "sidebar": {
+    "workspace": "Werkruimte",
+    "checkingSession": "Sessie controleren…",
+    "notSignedIn": "Niet aangemeld"
+  },
+  "help": {
+    "button": "Help",
+    "title": "Synthr-assistent",
+    "subtitle": "Stel een workflowvraag of open de volledige handleiding.",
+    "placeholder": "Typ een vraag…",
+    "ask": "Vraag assistent",
+    "thinking": "Denken…",
+    "openManual": "Gebruikershandleiding openen",
+    "sendFeedback": "Feedback verzenden",
+    "s1": "Hoe verwerk ik een nieuwe aanvraag?",
+    "s2": "Hoe publiceer ik een advertentie?",
+    "s3": "Waar kan ik Gmail koppelen?",
+    "s4": "Hoe werken roldrechten?"
+  },
+  "login": {
+    "title": "Aanmelden",
+    "subtitle": "Voer je zakelijke e‑mail en wachtwoord in om de werkruimte van je makelaarskantoor te openen.",
+    "back": "Terug",
+    "email": "Zakelijke e‑mail",
+    "password": "Wachtwoord",
+    "continue": "Doorgaan",
+    "signingIn": "Bezig met aanmelden…",
+    "support": "Problemen met aanmelden? Vraag je eigenaar of neem contact op met Synthr support.",
+    "apiMissing": "API-URL is niet geconfigureerd.",
+    "missingCredentials": "Vul je e‑mail en wachtwoord in.",
+    "failed": "Aanmelden mislukt."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Het operationele overzicht van vandaag voor je kantoor.",
+    "overview": "Overzicht",
+    "agencyOverview": "Kantooroverzicht",
+    "myOverview": "Mijn overzicht",
+    "readOnlyOverview": "Alleen-lezen overzicht",
+    "readOnlyAccess": "Je hebt alleen-lezen toegang.",
+    "signInPrompt": "Meld je aan om je dashboard te zien.",
+    "signIn": "Aanmelden",
+    "viewInquiries": "Aanvragen bekijken",
+    "viewListings": "Advertenties bekijken",
+    "newContact": "Nieuw contact",
+    "newLead": "Nieuwe lead",
+    "newListing": "Nieuwe advertentie",
+    "loading": "Dashboard laden…",
+    "loadFailed": "Dashboard laden mislukt.",
+    "contacts": "Contacten",
+    "leads": "Leads",
+    "newInquiries": "Nieuwe aanvragen",
+    "activeListings": "Actieve advertenties",
+    "tasksDueSoon": "Taken binnenkort",
+    "recentActivity": "Recente activiteit",
+    "recentActivitySubtitle": "Laatste gebeurtenissen in je werkruimte (rol-afhankelijk).",
+    "noRecentActivity": "Nog geen recente activiteit."
+  },
+  "manual": {
+    "title": "Gebruikershandleiding",
+    "subtitle": "Rolgebaseerde gids voor dagelijkse workflows in Synthr Admin."
+  },
+  "feedback": {
+    "title": "Feedback",
+    "subtitle": "Meld problemen, ideeën en feature‑verzoeken.",
+    "intro": "Deel problemen en verzoeken. In de MVP wordt feedback per e‑mail verzonden.",
+    "send": "Feedback verzenden",
+    "clear": "Wissen",
+    "sentHint": "Je e‑mailapp zou nu moeten openen. Zo niet, stuur feedback handmatig naar support@synthrstate.com.",
+    "types": {
+      "bug": "Bug",
+      "feature": "Featureverzoek",
+      "uiux": "UI/UX",
+      "performance": "Prestaties",
+      "other": "Overig"
+    },
+    "placeholder": "Beschrijf wat er gebeurde, waar het gebeurde en wat je verwachtte…"
+  }
+}
+

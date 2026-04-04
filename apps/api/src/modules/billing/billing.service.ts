@@ -161,6 +161,9 @@ export class BillingService {
     } else if (event.type === "customer.subscription.updated" || event.type === "customer.subscription.deleted") {
       const sub = event.data.object as Stripe.Subscription;
       await this.applySubscriptionUpdate(sub);
+    } else if (event.type === "invoice.payment_failed" || event.type === "invoice.paid") {
+      const invoice = event.data.object as Stripe.Invoice;
+      await this.applyInvoiceEvent(invoice, event.type);
     }
 
     await this.prisma.stripeWebhookEvent.update({
@@ -240,6 +243,30 @@ export class BillingService {
     });
   }
 
+  private async applyInvoiceEvent(invoice: Stripe.Invoice, eventType: "invoice.payment_failed" | "invoice.paid") {
+    const invoiceLike = invoice as any;
+    const subscriptionId = typeof invoiceLike.subscription === "string" ? invoiceLike.subscription : null;
+    if (!subscriptionId) return;
+
+    const status =
+      eventType === "invoice.payment_failed"
+        ? AgencySubscriptionStatus.PAST_DUE
+        : AgencySubscriptionStatus.ACTIVE;
+
+    const updated = await this.prisma.agencySubscription.updateMany({
+      where: { stripeSubscriptionId: subscriptionId },
+      data: { status },
+    });
+
+    if (updated.count > 0) return;
+    if (typeof invoiceLike.customer !== "string") return;
+
+    await this.prisma.agencySubscription.updateMany({
+      where: { stripeCustomerId: invoiceLike.customer },
+      data: { status },
+    });
+  }
+
   private resolvePlanCodeFromSubscription(sub: Stripe.Subscription | null | undefined): SubscriptionPlanCode | null {
     if (!sub) return null;
     const priceIds = sub.items.data.map((i) => i.price.id);
@@ -288,6 +315,10 @@ export class BillingService {
         return StripeWebhookEventType.CUSTOMER_SUBSCRIPTION_UPDATED;
       case "customer.subscription.deleted":
         return StripeWebhookEventType.CUSTOMER_SUBSCRIPTION_DELETED;
+      case "invoice.payment_failed":
+        return StripeWebhookEventType.INVOICE_PAYMENT_FAILED;
+      case "invoice.paid":
+        return StripeWebhookEventType.INVOICE_PAID;
       default:
         return StripeWebhookEventType.UNKNOWN;
     }

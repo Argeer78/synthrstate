@@ -3,6 +3,7 @@
 import { useTranslation } from "react-i18next";
 import { useI18nSettings } from "./I18nProvider";
 import type { AppLanguage } from "../../lib/i18n";
+import { LANGUAGE_LABEL_I18N_KEYS, SUPPORTED_LANGUAGES } from "../../lib/supported-languages";
 
 export function LanguageSwitcher() {
   const { t } = useTranslation();
@@ -24,13 +25,11 @@ export function LanguageSwitcher() {
           fontWeight: 650,
         }}
       >
-        <option value="en">{t("language.english")}</option>
-        <option value="es">{t("language.spanish")}</option>
-        <option value="fr">{t("language.french")}</option>
-        <option value="de">{t("language.german")}</option>
-        <option value="it">{t("language.italian")}</option>
-        <option value="pt">{t("language.portuguese")}</option>
-        <option value="el">{t("language.greek")}</option>
+        {SUPPORTED_LANGUAGES.map((code) => (
+          <option key={code} value={code}>
+            {t(`language.${LANGUAGE_LABEL_I18N_KEYS[code]}`)}
+          </option>
+        ))}
       </select>
     </div>
   );

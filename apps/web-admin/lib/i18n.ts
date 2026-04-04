@@ -1,27 +1,36 @@
 import i18n from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import { initReactI18next } from "react-i18next";
+import csCommon from "../locales/cs/common.json";
+import daCommon from "../locales/da/common.json";
+import deCommon from "../locales/de/common.json";
+import elCommon from "../locales/el/common.json";
 import enCommon from "../locales/en/common.json";
 import esCommon from "../locales/es/common.json";
+import fiCommon from "../locales/fi/common.json";
 import frCommon from "../locales/fr/common.json";
-import deCommon from "../locales/de/common.json";
+import hrCommon from "../locales/hr/common.json";
+import huCommon from "../locales/hu/common.json";
 import itCommon from "../locales/it/common.json";
+import nlCommon from "../locales/nl/common.json";
+import plCommon from "../locales/pl/common.json";
 import ptCommon from "../locales/pt/common.json";
-import elCommon from "../locales/el/common.json";
+import roCommon from "../locales/ro/common.json";
+import svCommon from "../locales/sv/common.json";
+import trCommon from "../locales/tr/common.json";
+import { type AppLanguage, isAppLanguage } from "./supported-languages";
+
+export { type AppLanguage, SUPPORTED_LANGUAGES } from "./supported-languages";
 
 export const I18N_STORAGE_KEY = "synthr_admin_lang";
-export const SUPPORTED_LANGUAGES = ["en", "es", "fr", "de", "it", "pt", "el"] as const;
-export type AppLanguage = (typeof SUPPORTED_LANGUAGES)[number];
 export const DEFAULT_LANGUAGE: AppLanguage = "en";
 
 function normalizeLanguage(value: string | null | undefined): AppLanguage {
-  if (value === "fr") return "fr";
-  if (value === "de") return "de";
-  if (value === "it") return "it";
-  if (value === "pt") return "pt";
-  if (value === "el") return "el";
-  if (value === "es") return "es";
-  return "en";
+  const v = String(value ?? "")
+    .toLowerCase()
+    .split("-")[0];
+  if (isAppLanguage(v)) return v;
+  return DEFAULT_LANGUAGE;
 }
 
 if (!i18n.isInitialized) {
@@ -31,12 +40,22 @@ if (!i18n.isInitialized) {
     .init({
       resources: {
         en: { common: enCommon },
-        es: { common: esCommon },
-        fr: { common: frCommon },
+        cs: { common: csCommon },
+        da: { common: daCommon },
         de: { common: deCommon },
-        it: { common: itCommon },
-        pt: { common: ptCommon },
         el: { common: elCommon },
+        es: { common: esCommon },
+        fi: { common: fiCommon },
+        fr: { common: frCommon },
+        hr: { common: hrCommon },
+        hu: { common: huCommon },
+        it: { common: itCommon },
+        nl: { common: nlCommon },
+        pl: { common: plCommon },
+        pt: { common: ptCommon },
+        ro: { common: roCommon },
+        sv: { common: svCommon },
+        tr: { common: trCommon },
       },
       fallbackLng: DEFAULT_LANGUAGE,
       defaultNS: "common",
@@ -71,4 +90,3 @@ export function applyLanguage(lang: AppLanguage) {
 }
 
 export default i18n;
-

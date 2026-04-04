@@ -1,0 +1,131 @@
+{
+  "common": {
+    "home": "Acasă",
+    "crm": "CRM",
+    "listings": "Anunțuri",
+    "billing": "Facturare",
+    "ai": "AI",
+    "userManagement": "Administrare utilizatori",
+    "apiFeeds": "API și feeduri",
+    "userManual": "Manual utilizator",
+    "feedback": "Feedback",
+    "close": "Închide",
+    "back": "Înapoi",
+    "save": "Salvează",
+    "cancel": "Anulează",
+    "refresh": "Reîmprospătează",
+    "loading": "Se încarcă…",
+    "signOut": "Deconectare",
+    "signingOut": "Se deconectează…"
+  },
+  "theme": {
+    "label": "Temă",
+    "system": "Sistem",
+    "dark": "Întunecată",
+    "light": "Luminoasă"
+  },
+  "language": {
+    "label": "Limbă",
+    "english": "Engleză",
+    "spanish": "Spaniolă",
+    "french": "Franceză",
+    "german": "Germană",
+    "italian": "Italiană",
+    "dutch": "Olandeză",
+    "portuguese": "Portugheză",
+    "greek": "Greacă",
+    "swedish": "Suedeză",
+    "danish": "Daneză",
+    "finnish": "Finlandeză",
+    "polish": "Poloneză",
+    "czech": "Cehă",
+    "hungarian": "Maghiară",
+    "romanian": "Română",
+    "croatian": "Croată",
+    "turkish": "Turcă"
+  },
+  "shell": {
+    "openNavigation": "Deschide navigarea",
+    "menu": "Meniu",
+    "closeNavigation": "Închide navigarea"
+  },
+  "sidebar": {
+    "workspace": "Spațiu de lucru",
+    "checkingSession": "Se verifică sesiunea…",
+    "notSignedIn": "Neautentificat"
+  },
+  "help": {
+    "button": "Ajutor",
+    "title": "Asistent Synthr",
+    "subtitle": "Pune o întrebare despre fluxul de lucru sau deschide ghidul complet.",
+    "placeholder": "Tastează o întrebare…",
+    "ask": "Întreabă asistentul",
+    "thinking": "Se gândește…",
+    "openManual": "Deschide manualul",
+    "sendFeedback": "Trimite feedback",
+    "s1": "Cum procesez o cerere nouă?",
+    "s2": "Cum public un anunț?",
+    "s3": "Unde pot conecta Gmail?",
+    "s4": "Cum funcționează permisiunile pe roluri?"
+  },
+  "login": {
+    "title": "Autentificare",
+    "subtitle": "Introdu e‑mailul de serviciu și parola pentru a deschide spațiul agenției tale.",
+    "back": "Înapoi",
+    "email": "E‑mail de serviciu",
+    "password": "Parolă",
+    "continue": "Continuă",
+    "signingIn": "Se autentifică…",
+    "support": "Probleme la autentificare? Întreabă owner‑ul agenției sau contactează suportul Synthr.",
+    "apiMissing": "URL‑ul API nu este configurat.",
+    "missingCredentials": "Introdu e‑mailul și parola.",
+    "failed": "Autentificarea a eșuat."
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Privire de ansamblu operațională pentru agenția ta.",
+    "overview": "Prezentare generală",
+    "agencyOverview": "Prezentare agenție",
+    "myOverview": "Prezentarea mea",
+    "readOnlyOverview": "Prezentare doar-citire",
+    "readOnlyAccess": "Ai acces doar pentru citire.",
+    "signInPrompt": "Autentifică-te pentru a vedea dashboard-ul.",
+    "signIn": "Autentificare",
+    "viewInquiries": "Vezi cereri",
+    "viewListings": "Vezi anunțuri",
+    "newContact": "Contact nou",
+    "newLead": "Lead nou",
+    "newListing": "Anunț nou",
+    "loading": "Se încarcă dashboard-ul…",
+    "loadFailed": "Nu s-a putut încărca dashboard-ul.",
+    "contacts": "Contacte",
+    "leads": "Lead-uri",
+    "newInquiries": "Cereri noi",
+    "activeListings": "Anunțuri active",
+    "tasksDueSoon": "Sarcini în curând",
+    "recentActivity": "Activitate recentă",
+    "recentActivitySubtitle": "Ultimele evenimente din spațiul tău (în funcție de rol).",
+    "noRecentActivity": "Nu există activitate recentă."
+  },
+  "manual": {
+    "title": "Manual utilizator",
+    "subtitle": "Ghid pe roluri pentru fluxurile zilnice în Synthr Admin."
+  },
+  "feedback": {
+    "title": "Feedback",
+    "subtitle": "Raportează probleme, idei și cereri de funcționalități.",
+    "intro": "Împărtășește probleme și cereri. În MVP, feedback-ul este trimis prin e‑mail.",
+    "send": "Trimite",
+    "clear": "Șterge",
+    "sentHint": "Aplicația de e‑mail ar trebui să se deschidă acum. Dacă nu, trimite manual la support@synthrstate.com.",
+    "types": {
+      "bug": "Bug",
+      "feature": "Cerere funcționalitate",
+      "uiux": "UI/UX",
+      "performance": "Performanță",
+      "other": "Altul"
+    },
+    "placeholder": "Descrie ce s-a întâmplat, unde s-a întâmplat și ce rezultat așteptai…"
+  }
+}
+
