@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "npm --prefix apps/web-public run dev",
-    "build": "npm --prefix apps/web-public install && npm --prefix apps/web-public run build",
+    "build": "node scripts/hostinger-build-web-public.mjs",
     "start": "npm --prefix apps/web-public run start",
     "hostinger:build": "node scripts/hostinger-build-web-public.mjs",
     "hostinger:start": "npm --prefix apps/web-public run start",
