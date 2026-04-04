@@ -3,7 +3,6 @@
 import { Suspense } from "react";
 import CookieBanner from "./CookieBanner";
 import GoogleAnalyticsClient from "./GoogleAnalyticsClient";
-import SentryInit from "./SentryInit";
 
 export default function AppProviders({ children }) {
   return (
@@ -13,7 +12,6 @@ export default function AppProviders({ children }) {
       <Suspense fallback={null}>
         <GoogleAnalyticsClient />
       </Suspense>
-      <SentryInit />
     </>
   );
 }
