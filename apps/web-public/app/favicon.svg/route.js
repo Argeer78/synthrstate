@@ -1,3 +1,5 @@
+export const runtime = "nodejs";
+
 const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <defs>
     <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
@@ -10,8 +12,6 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <path d="M24 34h9" stroke="#fafafa" stroke-width="3" stroke-linecap="round"/>
   <path d="M24 28h14" stroke="#fafafa" stroke-width="3" stroke-linecap="round"/>
 </svg>`;
-
-export const runtime = "nodejs";
 
 export async function GET() {
   return new Response(svg, {
