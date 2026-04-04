@@ -4,7 +4,7 @@ import AppProviders from "../components/AppProviders";
 /** @type {import("next").Metadata} */
 export const metadata = {
   icons: {
-    icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],
+    icon: [{ url: "/alphasynth-logo.png", type: "image/png" }],
   },
 };
 
