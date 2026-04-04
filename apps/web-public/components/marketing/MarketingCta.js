@@ -1,5 +1,22 @@
 export default function MarketingCta({ m }) {
-  const c = m.cta;
+  const c = m?.cta ?? {
+    title: "Ready to run your agency on one system?",
+    lead: "Start free to test your workflow with listings, inquiries, CRM, and team collaboration.",
+    startFree: "Start free",
+    viewDemo: "View demo",
+    name: "Name",
+    workEmail: "Work email",
+    agencyName: "Agency name",
+    noteLabel: "What are you looking to solve?",
+    submit: "Request a walkthrough",
+    formNote: "This form is static for MVP.",
+    placeholders: {
+      name: "Alex Papadopoulos",
+      email: "you@agency.gr",
+      agency: "Acropolis Realty",
+      note: "CRM migration, public site, portal feeds…",
+    },
+  };
   const adminBase = (process.env.NEXT_PUBLIC_ADMIN_APP_URL ?? "https://app.synthrstate.com").replace(/\/$/, "");
   return (
     <section id="contact" className="mk-section mk-cta" aria-labelledby="cta-heading">

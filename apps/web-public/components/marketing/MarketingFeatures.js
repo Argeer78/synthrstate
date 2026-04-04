@@ -1,5 +1,14 @@
 export default function MarketingFeatures({ m }) {
-  const { title, subtitle, items } = m.features;
+  const s = m?.features ?? {};
+  const title = s.title ?? "Why agencies choose Synthr";
+  const subtitle = s.subtitle ?? "Real outcomes for real estate teams: faster execution, cleaner data, and better conversion from inquiry to deal.";
+  const items = Array.isArray(s.items)
+    ? s.items
+    : [
+        { title: "Manage leads and listings in one place", body: "Run CRM and inventory from one workspace." },
+        { title: "Publish listings everywhere", body: "Push listings to your website and channels with clear status." },
+        { title: "Never miss an inquiry", body: "Capture inquiries and convert them to actionable leads." },
+      ];
   return (
     <section id="features" className="mk-section mk-section--alt" aria-labelledby="features-heading">
       <div className="shell">

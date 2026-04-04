@@ -1,7 +1,29 @@
 import Link from "next/link";
 
 export default function MarketingProductPreview({ m }) {
-  const { title, subtitle, cards, preview } = m.product;
+  const p = m?.product ?? {};
+  const title = p.title ?? "Built for daily agency operations";
+  const subtitle = p.subtitle ?? "CRM, listings, distribution, AI tools, and team workflow in one place.";
+  const cards = Array.isArray(p.cards)
+    ? p.cards
+    : [
+        { title: "CRM", body: "Track contacts, leads, tasks, and notes." },
+        { title: "Listings", body: "Create and manage listings with media." },
+        { title: "Distribution", body: "Publish to website and channels." },
+      ];
+  const preview = p.preview ?? {
+    urlLine: "app.synthrstate.com · Listings",
+    navAll: "All listings",
+    navDraft: "Draft",
+    navActive: "Active",
+    navPublications: "Publications",
+    pillActive: "12 active",
+    pillQueued: "3 queued",
+    badgeActive: "Active",
+    captionBefore: "Illustrative UI. See public listing output in our",
+    captionLink: "demo listings",
+    captionAfter: "page.",
+  };
   return (
     <section id="product" className="mk-section" aria-labelledby="preview-heading">
       <div className="shell">

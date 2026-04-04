@@ -1,5 +1,14 @@
 export default function MarketingHowItWorks({ m }) {
-  const { title, subtitle, steps } = m.howItWorks;
+  const s = m?.howItWorks ?? {};
+  const title = s.title ?? "How Synthr works";
+  const subtitle = s.subtitle ?? "A practical workflow from listing creation to closed deals.";
+  const steps = Array.isArray(s.steps)
+    ? s.steps
+    : [
+        { step: "01", title: "Add your listing", body: "Create property and listing details once." },
+        { step: "02", title: "Publish everywhere", body: "Push listings to site and channels." },
+        { step: "03", title: "Capture inquiries", body: "Convert inquiries into leads quickly." },
+      ];
   return (
     <section id="how-it-works" className="mk-section" aria-labelledby="how-heading">
       <div className="shell">

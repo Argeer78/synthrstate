@@ -18,7 +18,7 @@ export const metadata = {
 
 export default async function MarketingHomePage() {
   const locale = await getRequestLocale();
-  const messages = getMergedMessages(locale);
+  const messages = getMergedMessages(locale) || getMergedMessages("en") || {};
   return (
     <>
       <MarketingHeader m={messages} locale={locale} />
