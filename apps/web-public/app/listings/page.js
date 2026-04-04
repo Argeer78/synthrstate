@@ -72,7 +72,7 @@ export default async function ListingsIndexPage({ searchParams }) {
           return (
             <div className="listings-grid">
               {items.map((listing) => (
-                <PublicListingCard key={listing.id} listing={listing} />
+                <PublicListingCard key={listing.id} listing={listing} m={messages} />
               ))}
             </div>
           );
