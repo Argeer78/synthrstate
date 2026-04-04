@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { FormEvent } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslation } from "react-i18next";
 
@@ -91,6 +92,11 @@ export function LoginForm() {
       <button type="submit" className="admin-btn admin-btn-primary">
         {isLoading ? t("login.signingIn") : t("login.continue")}
       </button>
+      <p style={{ margin: "-0.25rem 0 0", fontSize: "0.85rem", color: "var(--admin-muted)" }}>
+        <Link className="admin-link" href="/forgot-password/">
+          Forgot password?
+        </Link>
+      </p>
       {error ? (
         <p style={{ margin: 0, color: "#ffb4b4", fontSize: "0.85rem", lineHeight: 1.4 }}>
           {error}
