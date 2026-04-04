@@ -1,6 +1,7 @@
 {
   "common": {
     "home": "Kezdőlap",
+    "account": "Account",
     "crm": "CRM",
     "listings": "Hirdetések",
     "billing": "Számlázás",

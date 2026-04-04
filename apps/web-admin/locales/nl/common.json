@@ -1,6 +1,7 @@
 {
   "common": {
     "home": "Start",
+    "account": "Account",
     "crm": "CRM",
     "listings": "Advertenties",
     "billing": "Facturatie",

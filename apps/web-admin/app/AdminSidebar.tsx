@@ -45,6 +45,9 @@ export function AdminSidebar(props: { onNavigate?: () => void; variant?: "deskto
         <Link className="admin-btn admin-btn-ghost" href="/" onClick={props.onNavigate}>
           {t("common.home")}
         </Link>
+        <Link className="admin-btn admin-btn-ghost" href="/account/" onClick={props.onNavigate}>
+          {t("common.account")}
+        </Link>
         <Link className="admin-btn admin-btn-ghost" href="/listings/" onClick={props.onNavigate}>
           {t("common.listings")}
         </Link>

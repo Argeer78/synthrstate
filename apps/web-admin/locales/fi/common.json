@@ -1,6 +1,7 @@
 {
   "common": {
     "home": "Etusivu",
+    "account": "Account",
     "crm": "CRM",
     "listings": "Ilmoitukset",
     "billing": "Laskutus",

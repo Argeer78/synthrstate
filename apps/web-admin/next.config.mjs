@@ -1,5 +1,14 @@
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Monorepo: pin Turbopack root to this app to avoid parent lockfile inference.
+  turbopack: {
+    root: path.resolve(__dirname, "../.."),
+  },
   reactStrictMode: true,
   // Required for Hostinger File Manager–only hosting (static files, no Node).
   output: "export",

@@ -1,6 +1,7 @@
 {
   "common": {
     "home": "Home",
+    "account": "Account",
     "crm": "CRM",
     "listings": "Listings",
     "billing": "Billing",
