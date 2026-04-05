@@ -27,6 +27,7 @@ export const PUBLIC_PROPERTY_TYPE_LABELS = {
   APARTMENT: "Apartment",
   HOUSE: "House",
   VILLA: "Villa",
+  HOTEL: "Hotel",
   STUDIO: "Studio",
   LAND: "Land",
   COMMERCIAL: "Commercial",
