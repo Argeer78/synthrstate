@@ -30,8 +30,16 @@ const nextConfig = {
       process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "G-RJ417X6FEG",
     NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL || "https://synthrstate.com",
     NEXT_PUBLIC_TURNSTILE_INQUIRY_SITE_KEY:
-      process.env.NEXT_PUBLIC_TURNSTILE_INQUIRY_SITE_KEY || "",
-    NEXT_PUBLIC_TURNSTILE_SITE_KEY: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || "",
+      process.env.NEXT_PUBLIC_TURNSTILE_INQUIRY_SITE_KEY ||
+      process.env.TURNSTILE_INQUIRY_SITE_KEY ||
+      process.env.TURNSTILE_SITE_KEY ||
+      process.env.TURNSTILE ||
+      "",
+    NEXT_PUBLIC_TURNSTILE_SITE_KEY:
+      process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ||
+      process.env.TURNSTILE_SITE_KEY ||
+      process.env.TURNSTILE ||
+      "",
   },
 };
 

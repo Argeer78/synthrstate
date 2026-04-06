@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getRequestLocale } from "../lib/i18n.server";
+import MarketingHeader from "./marketing/MarketingHeader";
 import PublicSiteFooter from "./PublicSiteFooter";
 
 export default async function LegalDocumentShell({ title, updated, children }) {
@@ -7,6 +8,7 @@ export default async function LegalDocumentShell({ title, updated, children }) {
 
   return (
     <>
+      <MarketingHeader m={{}} locale={locale} />
       <div className="shell">
         <Link href="/" className="legal-back">
           ← Home
