@@ -57,10 +57,9 @@ export default function ListingInquirySection({ listingTitle, listingSlug, m }) 
     return nameOk && hasEmailOrPhone;
   }, [form.email, form.name, form.phone]);
 
-  const isSubmitDisabled =
-    !isFormValid || !turnstileOk || status === "sending" || status === "success";
+  const isSubmitDisabled = !isFormValid || status === "sending" || status === "success";
 
-  const canSend = isFormValid && turnstileOk;
+  const canSend = isFormValid;
   const submitVariant =
     status === "sending" ? "sending" : status === "success" ? "done" : canSend ? "ready" : "inactive";
 
@@ -79,6 +78,11 @@ export default function ListingInquirySection({ listingTitle, listingSlug, m }) 
     if (!form.email.trim() && !form.phone.trim()) {
       setStatus("error");
       setMessage(L.errContact);
+      return;
+    }
+    if (!turnstileOk) {
+      setStatus("error");
+      setMessage(L.turnstileRequired);
       return;
     }
 
