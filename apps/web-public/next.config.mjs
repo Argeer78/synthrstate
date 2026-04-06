@@ -5,6 +5,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: "standalone",
   // Monorepo: pin Turbopack to this app so the parent pnpm-lock is not treated as the workspace root.
   turbopack: {
     root: __dirname,
