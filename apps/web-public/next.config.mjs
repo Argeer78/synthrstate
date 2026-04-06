@@ -34,12 +34,12 @@ const nextConfig = {
       process.env.TURNSTILE_INQUIRY_SITE_KEY ||
       process.env.TURNSTILE_SITE_KEY ||
       process.env.TURNSTILE ||
-      "",
+      "0x4AAAAAACyCVfP63pZHR5cL",
     NEXT_PUBLIC_TURNSTILE_SITE_KEY:
       process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ||
       process.env.TURNSTILE_SITE_KEY ||
       process.env.TURNSTILE ||
-      "",
+      "0x4AAAAAACyCVfP63pZHR5cL",
   },
 };
 
