@@ -1,5 +1,8 @@
 export const runtime = "nodejs";
 
+const BOOT_AT = new Date().toISOString();
+const BOOT_ID = `${process.pid}-${Date.now()}`;
+
 function pickCommit() {
   return (
     process.env.GIT_COMMIT_SHA ||
@@ -15,6 +18,10 @@ export async function GET() {
     app: "web-public",
     commit: pickCommit(),
     nodeEnv: process.env.NODE_ENV || "unknown",
+    pid: process.pid,
+    bootAt: BOOT_AT,
+    bootId: BOOT_ID,
+    uptimeSeconds: Math.floor(process.uptime()),
     timestamp: new Date().toISOString(),
   };
 
@@ -22,6 +29,7 @@ export async function GET() {
     headers: {
       "Content-Type": "application/json; charset=utf-8",
       "Cache-Control": "no-store, no-cache, must-revalidate",
+      "x-boot-id": BOOT_ID,
     },
   });
 }
