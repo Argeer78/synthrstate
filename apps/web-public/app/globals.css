@@ -553,6 +553,54 @@ a {
   border-radius: 8px;
   cursor: not-allowed;
   opacity: 0.5;
+  transform: translateY(0);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+}
+
+.inquiry-form__submit--inactive {
+  cursor: not-allowed;
+  opacity: 0.5;
+  filter: saturate(0.8);
+}
+
+.inquiry-form__submit--ready {
+  cursor: pointer;
+  opacity: 1;
+  box-shadow: 0 8px 20px rgb(26 115 232 / 28%);
+  animation: inquiry-submit-ready-pulse 2.2s ease-in-out infinite;
+}
+
+.inquiry-form__submit--ready:hover,
+.inquiry-form__submit--ready:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px rgb(26 115 232 / 34%);
+}
+
+.inquiry-form__submit--sending {
+  cursor: progress;
+  opacity: 0.9;
+}
+
+.inquiry-form__submit--done {
+  cursor: default;
+  opacity: 1;
+  background: #167a4f;
+  box-shadow: 0 8px 20px rgb(22 122 79 / 24%);
+}
+
+@keyframes inquiry-submit-ready-pulse {
+  0%,
+  100% {
+    box-shadow: 0 8px 20px rgb(26 115 232 / 24%);
+  }
+
+  50% {
+    box-shadow: 0 10px 26px rgb(26 115 232 / 38%);
+  }
 }
 
 .inquiry-form__note {
