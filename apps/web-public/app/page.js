@@ -23,6 +23,7 @@ function buildSafeMarketingMessages(raw) {
   const section = (value) => (value && typeof value === "object" && !Array.isArray(value) ? value : {});
   const source = raw && typeof raw === "object" && !Array.isArray(raw) ? raw : {};
   return {
+    ...source,
     nav: {},
     hero: {},
     features: section(source.features),
@@ -31,7 +32,6 @@ function buildSafeMarketingMessages(raw) {
     socialProof: section(source.socialProof),
     cta: section(source.cta),
     footer: {},
-    ...source,
   };
 }
 
