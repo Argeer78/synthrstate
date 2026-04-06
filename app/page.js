@@ -12,16 +12,30 @@ import { getMergedMessages } from "../lib/messages";
 function buildSafeMarketingMessages(raw) {
   const section = (value) => (value && typeof value === "object" && !Array.isArray(value) ? value : {});
   const source = raw && typeof raw === "object" && !Array.isArray(raw) ? raw : {};
+  const home = section(source.home);
+  const pickSection = (name) => section(home[name] ?? source[name]);
+  const pickFlat = (name) => section(home[name] ?? source[name]);
   return {
     ...source,
-    nav: {},
-    hero: {},
-    features: section(source.features),
-    product: section(source.product),
-    howItWorks: section(source.howItWorks),
-    socialProof: section(source.socialProof),
-    cta: section(source.cta),
-    footer: {},
+    home: {
+      ...home,
+      nav: pickSection("nav"),
+      hero: pickSection("hero"),
+      features: pickSection("features"),
+      product: pickSection("product"),
+      howItWorks: pickSection("howItWorks"),
+      socialProof: pickSection("socialProof"),
+      cta: pickSection("cta"),
+      footer: pickSection("footer"),
+    },
+    nav: pickFlat("nav"),
+    hero: pickFlat("hero"),
+    features: pickFlat("features"),
+    product: pickFlat("product"),
+    howItWorks: pickFlat("howItWorks"),
+    socialProof: pickFlat("socialProof"),
+    cta: pickFlat("cta"),
+    footer: pickFlat("footer"),
   };
 }
 
