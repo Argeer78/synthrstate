@@ -10,18 +10,19 @@ import MarketingSocialProof from "../components/marketing/MarketingSocialProof";
 import { getMergedMessages } from "../lib/messages";
 
 function buildSafeMarketingMessages(raw) {
-  const base = {
+  const section = (value) => (value && typeof value === "object" && !Array.isArray(value) ? value : {});
+  const source = raw && typeof raw === "object" && !Array.isArray(raw) ? raw : {};
+  return {
+    ...source,
     nav: {},
     hero: {},
-    features: {},
-    product: {},
-    howItWorks: {},
-    socialProof: {},
-    cta: {},
+    features: section(source.features),
+    product: section(source.product),
+    howItWorks: section(source.howItWorks),
+    socialProof: section(source.socialProof),
+    cta: section(source.cta),
     footer: {},
   };
-  if (!raw || typeof raw !== "object") return base;
-  return { ...base, ...raw };
 }
 
 export const metadata = {
@@ -32,7 +33,7 @@ export const metadata = {
 
 export default async function MarketingHomePage() {
   const locale = "en";
-  const messages = buildSafeMarketingMessages(getMergedMessages("en"));
+  const messages = buildSafeMarketingMessages(getMergedMessages(locale));
   return (
     <>
       <MarketingHeader m={messages} locale={locale} />
