@@ -1,5 +1,9 @@
-/** Demo agency slug used in public API paths (matches seed). */
-export const PUBLIC_AGENCY_SLUG = "demo-agency";
+/**
+ * Agency slug used in public API paths.
+ * Keep demo slug as fallback so local seed flows still work.
+ */
+export const PUBLIC_AGENCY_SLUG =
+  process.env.NEXT_PUBLIC_PUBLIC_AGENCY_SLUG || process.env.NEXT_PUBLIC_AGENCY_SLUG || "demo-agency";
 
 const DEMO_FALLBACK_IMAGE_BY_SLUG = {
   "modern-2br-apartment-with-balcony": "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1600&q=80",
