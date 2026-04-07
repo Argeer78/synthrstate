@@ -10,6 +10,15 @@ import { NotificationsService } from "../collaboration/notifications.service";
 import { NotificationType, UserRole } from "@prisma/client";
 import { TurnstileService } from "../../common/turnstile/turnstile.service";
 
+function resolvePublicSort(sort?: SearchListingsQueryDto["sort"]) {
+  if (sort === "createdAt_asc") return { createdAt: "asc" } as const;
+  if (sort === "price_asc") return { price: "asc" } as const;
+  if (sort === "price_desc") return { price: "desc" } as const;
+  if (sort === "title_asc") return { title: "asc" } as const;
+  if (sort === "title_desc") return { title: "desc" } as const;
+  return { createdAt: "desc" } as const;
+}
+
 function limitInt(value: number | undefined, fallback: number) {
   if (typeof value !== "number" || Number.isNaN(value)) return fallback;
   return value;
@@ -52,6 +61,83 @@ export class PublicService {
     return agency.id;
   }
 
+  private normalizeHost(host?: string | null) {
+    if (!host) return "";
+    return host.trim().toLowerCase().replace(/^https?:\/\//, "").replace(/\/.*$/, "").replace(/:\d+$/, "");
+  }
+
+  async resolveAgencySlug({ host, listingSlug }: { host?: string; listingSlug?: string } = {}) {
+    const normalizedHost = this.normalizeHost(host);
+
+    if (listingSlug?.trim()) {
+      const rows = await this.prisma.listing.findMany({
+        where: {
+          slug: listingSlug.trim(),
+          status: ListingStatus.ACTIVE,
+          deletedAt: null,
+          property: { deletedAt: null },
+        },
+        select: { agency: { select: { slug: true } } },
+        take: 20,
+      });
+      const slugs = [...new Set(rows.map((r) => r.agency.slug))];
+      if (slugs.length === 1) {
+        return { agencySlug: slugs[0], mode: "listingSlug" as const };
+      }
+      if (slugs.length > 1 && normalizedHost) {
+        const hostPrefix = normalizedHost.split(".")[0];
+        const match = slugs.find((s) => s.toLowerCase() === hostPrefix);
+        if (match) {
+          return { agencySlug: match, mode: "listingSlug+host" as const };
+        }
+      }
+    }
+
+    if (normalizedHost) {
+      const hostPrefix = normalizedHost.split(".")[0];
+      const hostCandidates = [normalizedHost, hostPrefix].filter(Boolean);
+      const hostMatch = await this.prisma.agency.findFirst({
+        where: {
+          slug: { in: hostCandidates },
+        },
+        select: { slug: true },
+      });
+      if (hostMatch) {
+        return { agencySlug: hostMatch.slug, mode: "host" as const };
+      }
+    }
+
+    const activeByAgency = await this.prisma.listing.groupBy({
+      by: ["agencyId"],
+      where: {
+        status: ListingStatus.ACTIVE,
+        deletedAt: null,
+        property: { deletedAt: null },
+      },
+      _count: { _all: true },
+      orderBy: { _count: { _all: "desc" } },
+      take: 1,
+    });
+    if (activeByAgency.length > 0) {
+      const agency = await this.prisma.agency.findUnique({
+        where: { id: activeByAgency[0].agencyId },
+        select: { slug: true },
+      });
+      if (agency) {
+        return { agencySlug: agency.slug, mode: "mostActive" as const };
+      }
+    }
+
+    const fallback = await this.prisma.agency.findFirst({
+      orderBy: { createdAt: "asc" },
+      select: { slug: true },
+    });
+    if (!fallback) {
+      throw new NotFoundException("Agency not found");
+    }
+    return { agencySlug: fallback.slug, mode: "firstAgency" as const };
+  }
+
   private async signedMediaUrl(storageKey: string) {
     const base = process.env.S3_PUBLIC_BASE_URL;
     if (base && base.length > 0) {
@@ -60,10 +146,12 @@ export class PublicService {
     }
 
     const endpoint = process.env.S3_ENDPOINT;
-    const bucket = process.env.S3_BUCKET;
-    if (!endpoint || !bucket) return null;
+    const bucket = process.env.S3_BUCKET?.trim();
+    const accessKeyId = process.env.S3_ACCESS_KEY_ID?.trim();
+    const secretAccessKey = process.env.S3_SECRET_ACCESS_KEY?.trim();
+    if (!endpoint || !bucket || bucket === "CHANGE_ME_BUCKET" || !accessKeyId || !secretAccessKey) return null;
 
-    const signedUrlTtlSeconds = Number(process.env.S3_SIGNED_URL_TTL_SECONDS ?? 3600);
+    const signedUrlTtlSeconds = Math.max(60, Number(process.env.S3_SIGNED_URL_TTL_SECONDS ?? 3600));
     const cmd = new GetObjectCommand({ Bucket: bucket, Key: storageKey });
     return getSignedUrl(this.s3, cmd, { expiresIn: signedUrlTtlSeconds });
   }
@@ -106,9 +194,40 @@ export class PublicService {
     if (query.listingType) where.listingType = query.listingType;
     if (typeof query.minPrice === "number") where.price = { ...(where.price ?? {}), gte: query.minPrice };
     if (typeof query.maxPrice === "number") where.price = { ...(where.price ?? {}), lte: query.maxPrice };
-    if (typeof query.bedrooms === "number") where.bedrooms = query.bedrooms;
+    if (typeof query.minSqm === "number") where.sqm = { ...(where.sqm ?? {}), gte: query.minSqm };
+    if (typeof query.maxSqm === "number") where.sqm = { ...(where.sqm ?? {}), lte: query.maxSqm };
+
+    if (typeof query.bedrooms === "number") {
+      where.bedrooms = query.bedrooms;
+    } else if (typeof query.minBedrooms === "number" || typeof query.maxBedrooms === "number") {
+      where.bedrooms = {
+        ...(typeof query.minBedrooms === "number" ? { gte: query.minBedrooms } : {}),
+        ...(typeof query.maxBedrooms === "number" ? { lte: query.maxBedrooms } : {}),
+      };
+    }
+
+    if (typeof query.bathrooms === "number") {
+      where.bathrooms = query.bathrooms;
+    } else if (typeof query.minBathrooms === "number" || typeof query.maxBathrooms === "number") {
+      where.bathrooms = {
+        ...(typeof query.minBathrooms === "number" ? { gte: query.minBathrooms } : {}),
+        ...(typeof query.maxBathrooms === "number" ? { lte: query.maxBathrooms } : {}),
+      };
+    }
+
     if (query.city) where.property = { ...(where.property ?? {}), city: { equals: query.city } };
     if (query.area) where.property = { ...(where.property ?? {}), area: { equals: query.area } };
+    if (query.propertyType) where.property = { ...(where.property ?? {}), propertyType: query.propertyType };
+
+    if (query.q?.trim()) {
+      const q = query.q.trim();
+      where.OR = [
+        { title: { contains: q, mode: "insensitive" } },
+        { description: { contains: q, mode: "insensitive" } },
+        { property: { is: { city: { contains: q, mode: "insensitive" } } } },
+        { property: { is: { area: { contains: q, mode: "insensitive" } } } },
+      ];
+    }
 
     if (query.city && !query.area) {
       // still allow broader matches if area isn't provided
@@ -118,7 +237,7 @@ export class PublicService {
     const [items, total] = await Promise.all([
       this.prisma.listing.findMany({
         where,
-        orderBy: { createdAt: "desc" },
+        orderBy: resolvePublicSort(query.sort),
         skip,
         take,
         include: {
@@ -132,6 +251,7 @@ export class PublicService {
               address: true,
               city: true,
               area: true,
+              propertyType: true,
               latitude: true,
               longitude: true,
             },
@@ -248,6 +368,7 @@ export class PublicService {
         address: listing.property.address,
         city: listing.property.city,
         area: listing.property.area,
+        propertyType: listing.property.propertyType,
         latitude: listing.property.latitude,
         longitude: listing.property.longitude,
         owner: {

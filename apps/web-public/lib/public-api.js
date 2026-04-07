@@ -5,6 +5,53 @@
 export const PUBLIC_AGENCY_SLUG =
   process.env.NEXT_PUBLIC_PUBLIC_AGENCY_SLUG || process.env.NEXT_PUBLIC_AGENCY_SLUG || "demo-agency";
 
+let resolvedAgencySlugPromise = null;
+
+function getSiteHostGuess() {
+  if (typeof window !== "undefined" && window.location?.hostname) {
+    return window.location.hostname;
+  }
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+  if (!siteUrl) return "";
+  try {
+    return new URL(siteUrl).hostname;
+  } catch {
+    return "";
+  }
+}
+
+async function resolvePublicAgencySlug({ listingSlug } = {}) {
+  // Explicit env override always wins.
+  const envSlug = process.env.NEXT_PUBLIC_PUBLIC_AGENCY_SLUG || process.env.NEXT_PUBLIC_AGENCY_SLUG;
+  if (envSlug) return envSlug;
+
+  const resolveOnce = async () => {
+    const base = getPublicApiBase();
+    const params = new URLSearchParams();
+    const host = getSiteHostGuess();
+    if (host) params.set("host", host);
+    if (listingSlug) params.set("listingSlug", listingSlug);
+    const res = await fetch(`${base}/public/resolve-agency?${params.toString()}`, {
+      cache: "no-store",
+      headers: { Accept: "application/json" },
+    });
+    if (!res.ok) return PUBLIC_AGENCY_SLUG;
+    const data = await res.json().catch(() => null);
+    const slug = typeof data?.agencySlug === "string" ? data.agencySlug.trim() : "";
+    return slug || PUBLIC_AGENCY_SLUG;
+  };
+
+  // Listing-scoped resolve avoids ambiguity when slugs can overlap between agencies.
+  if (listingSlug) {
+    return resolveOnce();
+  }
+
+  if (!resolvedAgencySlugPromise) {
+    resolvedAgencySlugPromise = resolveOnce();
+  }
+  return resolvedAgencySlugPromise;
+}
+
 const DEMO_FALLBACK_IMAGE_BY_SLUG = {
   "modern-2br-apartment-with-balcony": "https://images.unsplash.com/photo-1494526585095-c41746248156?auto=format&fit=crop&w=1600&q=80",
   "renovated-3br-townhome-parking-included": "https://images.unsplash.com/photo-1460317442991-0ec209397118?auto=format&fit=crop&w=1600&q=80",
@@ -45,6 +92,7 @@ export const PUBLIC_PROPERTY_TYPE_LABELS = {
  */
 export async function fetchPublicListings(query = {}) {
   const base = getPublicApiBase();
+  const agencySlug = await resolvePublicAgencySlug();
   const sp = new URLSearchParams();
   for (const [k, v] of Object.entries(query)) {
     if (v === undefined || v === "") continue;
@@ -53,7 +101,7 @@ export async function fetchPublicListings(query = {}) {
     sp.set(k, String(val));
   }
   const qs = sp.toString();
-  const url = `${base}/public/${PUBLIC_AGENCY_SLUG}/listings${qs ? `?${qs}` : ""}`;
+  const url = `${base}/public/${agencySlug}/listings${qs ? `?${qs}` : ""}`;
   const res = await fetch(url, {
     cache: "no-store",
     headers: { Accept: "application/json" },
@@ -72,7 +120,8 @@ export async function fetchPublicListings(query = {}) {
  */
 export async function fetchPublicListingDetail(slug) {
   const base = getPublicApiBase();
-  const url = `${base}/public/${PUBLIC_AGENCY_SLUG}/listings/${encodeURIComponent(slug)}`;
+  const agencySlug = await resolvePublicAgencySlug({ listingSlug: slug });
+  const url = `${base}/public/${agencySlug}/listings/${encodeURIComponent(slug)}`;
   const res = await fetch(url, {
     cache: "no-store",
     headers: { Accept: "application/json" },
@@ -93,7 +142,8 @@ export async function fetchPublicListingDetail(slug) {
  */
 export async function createPublicInquiry(slug, dto) {
   const base = getPublicApiBase();
-  const url = `${base}/public/${PUBLIC_AGENCY_SLUG}/listings/${encodeURIComponent(slug)}/inquiries`;
+  const agencySlug = await resolvePublicAgencySlug({ listingSlug: slug });
+  const url = `${base}/public/${agencySlug}/listings/${encodeURIComponent(slug)}/inquiries`;
   const res = await fetch(url, {
     method: "POST",
     headers: { Accept: "application/json", "content-type": "application/json" },

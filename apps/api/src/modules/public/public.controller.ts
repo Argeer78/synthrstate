@@ -10,6 +10,14 @@ import { getClientIp } from "../../common/http/client-ip.util";
 export class PublicController {
   constructor(private readonly publicService: PublicService) {}
 
+  @Get("resolve-agency")
+  resolveAgency(
+    @Query("host") host?: string,
+    @Query("listingSlug") listingSlug?: string,
+  ) {
+    return this.publicService.resolveAgencySlug({ host, listingSlug });
+  }
+
   @Get(":agencySlug/listings")
   searchListings(
     @Param("agencySlug") agencySlug: string,
