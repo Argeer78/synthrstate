@@ -12,7 +12,6 @@ export default {
     accent: ", která pomáhá uzavírat více obchodů s menší administrativou.",
     lead:
       "Kontakty, leady, úkoly, nabídky, publikace a poptávky v jednom systému. Tým je sladěný, nabídky jdou online rychleji, každá poptávka je sledovaná až do uzavření.",
-    viewDemo: "Zobrazit demo",
     app17: "Plná aplikace je připravena v 17 jazycích.",
   },
   share: { title: "Sdílet Synthr", x: "Sdílet na X", facebook: "Facebook", linkedin: "LinkedIn", whatsapp: "WhatsApp" },

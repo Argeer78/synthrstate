@@ -12,7 +12,6 @@ export default {
     accent: " ve daha az iş yüküyle daha çok anlaşma kazanmanıza yardımcı olur.",
     lead:
       "Kişiler, potansiyeller, görevler, ilanlar, yayın ve talepler tek sistemde. Ekibiniz uyumlu kalır, ilanlarınız daha hızlı yayına girer, her talep kapanışa kadar izlenir.",
-    viewDemo: "Demoyu gör",
     app17: "Tam uygulama 17 dilde hazırdır.",
   },
   share: { title: "Synthr'ı paylaş", x: "X'te paylaş", facebook: "Facebook", linkedin: "LinkedIn", whatsapp: "WhatsApp" },

@@ -12,7 +12,6 @@ export default {
     accent: " und hilft, mehr Geschäfte mit weniger Verwaltungsaufwand abzuschließen.",
     lead:
       "Kontakte, Leads, Aufgaben, Inserate, Veröffentlichungen und Anfragen in einem System. Ihr Team bleibt synchron, Inserate gehen schneller live, jede Anfrage wird vom ersten Kontakt bis zum Abschluss erfasst.",
-    viewDemo: "Demo ansehen",
     app17: "Die vollständige App ist in 17 Sprachen verfügbar.",
   },
   share: { title: "Synthr teilen", x: "Auf X teilen", facebook: "Auf Facebook teilen", linkedin: "Auf LinkedIn teilen", whatsapp: "WhatsApp" },

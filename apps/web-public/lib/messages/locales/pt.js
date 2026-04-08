@@ -12,7 +12,6 @@ export default {
     accent: " que ajuda a fechar mais negócios com menos trabalho administrativo.",
     lead:
       "Contactos, leads, tarefas, anúncios, publicações e pedidos num sistema. Equipa alinhada, anúncios online mais rápido, cada pedido seguido até ao fecho.",
-    viewDemo: "Ver demo",
     app17: "A aplicação completa está disponível em 17 idiomas.",
   },
   share: { title: "Partilhar Synthr", x: "Partilhar no X", facebook: "Facebook", linkedin: "LinkedIn", whatsapp: "WhatsApp" },

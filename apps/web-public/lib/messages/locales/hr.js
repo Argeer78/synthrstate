@@ -12,7 +12,6 @@ export default {
     accent: " koja pomaže u zatvaranju više poslova s manje administracije.",
     lead:
       "Kontakti, leadovi, zadaci, oglasi, objava i upiti u jednom sustavu. Tim je usklađen, oglasi brže online, svaki upit praćen do zatvaranja.",
-    viewDemo: "Pogledaj demo",
     app17: "Cijela aplikacija je dostupna na 17 jezika.",
   },
   share: { title: "Podijeli Synthr", x: "Podijeli na X", facebook: "Facebook", linkedin: "LinkedIn", whatsapp: "WhatsApp" },

@@ -18,7 +18,6 @@ export default {
     headline: "A modern workspace for your real estate agency",
     subheadline:
       "Manage contacts, leads, and listings in one unified system. Boost your team's productivity and close more deals with less effort.",
-    viewDemo: "View demo",
     app17: "The full app is available in 17 languages.",
   },
   demoCard: {

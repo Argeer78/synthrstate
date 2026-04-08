@@ -12,7 +12,6 @@ export default {
     accent: " der hjælper jer med at lukke flere handler med mindre administration.",
     lead:
       "Kontakter, leads, opgaver, annoncer, publiceringer og henvendelser i ét system. Holdet på linje, annoncer live hurtigere, hver henvendelse fulgt til lukning.",
-    viewDemo: "Se demo",
     app17: "Hele appen er klar på 17 sprog.",
   },
   share: { title: "Del Synthr", x: "Del på X", facebook: "Facebook", linkedin: "LinkedIn", whatsapp: "WhatsApp" },

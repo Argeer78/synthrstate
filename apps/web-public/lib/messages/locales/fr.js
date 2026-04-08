@@ -12,7 +12,6 @@ export default {
     accent: " qui vous aide à conclure plus d'affaires avec moins d'administratif.",
     lead:
       "Contacts, leads, tâches, annonces, publications et demandes dans un seul système. Équipe alignée, annonces en ligne plus vite, chaque demande suivie jusqu'à la conclusion.",
-    viewDemo: "Voir la démo",
     app17: "L'application complète est disponible en 17 langues.",
   },
   share: { title: "Partager Synthr", x: "Partager sur X", facebook: "Facebook", linkedin: "LinkedIn", whatsapp: "WhatsApp" },

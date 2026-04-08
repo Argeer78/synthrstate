@@ -12,7 +12,6 @@ export default {
     accent: " dat helpt meer deals te sluiten met minder administratie.",
     lead:
       "Contacten, leads, taken, listings, publicaties en aanvragen in één systeem. Team op één lijn, sneller live, elke aanvraag gevolgd tot deal.",
-    viewDemo: "Bekijk demo",
     app17: "De volledige app is beschikbaar in 17 talen.",
   },
   share: { title: "Synthr delen", x: "Delen op X", facebook: "Facebook", linkedin: "LinkedIn", whatsapp: "WhatsApp" },

@@ -12,7 +12,6 @@ export default {
     accent: " care ajută la mai multe tranzacții cu mai puțină administrare.",
     lead:
       "Contacte, lead-uri, sarcini, anunțuri, publicare și solicitări într-un singur sistem. Echipa rămâne aliniată, anunțurile apar mai rapid, fiecare solicitare este urmărită până la închidere.",
-    viewDemo: "Vezi demo",
     app17: "Aplicația completă este disponibilă în 17 limbi.",
   },
   share: { title: "Distribuie Synthr", x: "Distribuie pe X", facebook: "Facebook", linkedin: "LinkedIn", whatsapp: "WhatsApp" },

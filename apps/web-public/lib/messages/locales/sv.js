@@ -12,7 +12,6 @@ export default {
     accent: " som hjälper er stänga fler affärer med mindre administration.",
     lead:
       "Kontakter, leads, uppgifter, annonser, publiceringar och förfrågningar i ett system. Teamet synkat, annonser live snabbare, varje förfrågan följd till avslut.",
-    viewDemo: "Se demo",
     app17: "Hela appen finns på 17 språk.",
   },
   share: { title: "Dela Synthr", x: "Dela på X", facebook: "Facebook", linkedin: "LinkedIn", whatsapp: "WhatsApp" },

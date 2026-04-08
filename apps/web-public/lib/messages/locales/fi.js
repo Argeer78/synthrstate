@@ -12,7 +12,6 @@ export default {
     accent: " joka auttaa sulkemaan enemmän kauppoja vähemmällä hallinnolla.",
     lead:
       "Yhteystiedot, liidit, tehtävät, ilmoitukset, julkaisut ja yhteydenotot yhdessä järjestelmässä. Tiimi linjassa, ilmoitukset nopeammin liveen, jokainen yhteydenotto seurattuna kauppaan asti.",
-    viewDemo: "Katso demo",
     app17: "Koko sovellus on saatavilla 17 kielellä.",
   },
   share: { title: "Jaa Synthr", x: "Jaa X:ssä", facebook: "Facebook", linkedin: "LinkedIn", whatsapp: "WhatsApp" },

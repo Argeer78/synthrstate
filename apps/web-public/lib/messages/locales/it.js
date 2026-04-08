@@ -12,7 +12,6 @@ export default {
     accent: " che ti aiuta a chiudere più trattative con meno lavoro amministrativo.",
     lead:
       "Contatti, lead, attività, annunci, pubblicazioni e richieste in un sistema. Il team allineato, annunci online più velocemente, ogni richiesta seguita fino alla chiusura.",
-    viewDemo: "Vedi demo",
     app17: "L'app completa è disponibile in 17 lingue.",
   },
   share: { title: "Condividi Synthr", x: "Condividi su X", facebook: "Facebook", linkedin: "LinkedIn", whatsapp: "WhatsApp" },

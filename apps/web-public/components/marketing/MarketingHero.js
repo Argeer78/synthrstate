@@ -1,23 +1,47 @@
 import MarketingHeroMockup from "./MarketingHeroMockup";
 
-export default function MarketingHero({ m }) {
+const DEMO_CARD_BY_LOCALE = {
+  en: { title: "Try the demo", body: "Open the app and see how Synthr works", emailLabel: "Email", passwordLabel: "Password", openApp: "Open app" },
+  cs: { title: "Vyzkousejte demo", body: "Otevrete aplikaci a podivejte se, jak Synthr funguje", emailLabel: "E-mail", passwordLabel: "Heslo", openApp: "Otevrit aplikaci" },
+  da: { title: "Prov demoen", body: "Aben appen og se, hvordan Synthr fungerer", emailLabel: "E-mail", passwordLabel: "Adgangskode", openApp: "Aben app" },
+  de: { title: "Demo testen", body: "Offnen Sie die App und sehen Sie, wie Synthr funktioniert", emailLabel: "E-Mail", passwordLabel: "Passwort", openApp: "App offnen" },
+  el: { title: "Δοκιμαστε την επιδειξη", body: "Μπειτε στην εφαρμογη και δειτε πως λειτουργει το Synthr", emailLabel: "Ηλεκτρονικο ταχυδρομειο", passwordLabel: "Κωδικος", openApp: "Ανοιγμα εφαρμογης" },
+  es: { title: "Probar la demo", body: "Abre la app y mira como funciona Synthr", emailLabel: "Correo", passwordLabel: "Contrasena", openApp: "Abrir app" },
+  fi: { title: "Kokeile demoa", body: "Avaa sovellus ja katso, miten Synthr toimii", emailLabel: "Sahkoposti", passwordLabel: "Salasana", openApp: "Avaa sovellus" },
+  fr: { title: "Essayer la demo", body: "Ouvrez l'application et voyez comment Synthr fonctionne", emailLabel: "E-mail", passwordLabel: "Mot de passe", openApp: "Ouvrir l'app" },
+  hr: { title: "Isprobajte demo", body: "Otvorite aplikaciju i pogledajte kako Synthr radi", emailLabel: "E-mail", passwordLabel: "Lozinka", openApp: "Otvori aplikaciju" },
+  hu: { title: "Probald ki a demot", body: "Nyisd meg az alkalmazast, es nezd meg, hogyan mukodik a Synthr", emailLabel: "E-mail", passwordLabel: "Jelszo", openApp: "Alkalmazas megnyitasa" },
+  it: { title: "Prova la demo", body: "Apri l'app e guarda come funziona Synthr", emailLabel: "Email", passwordLabel: "Password", openApp: "Apri app" },
+  nl: { title: "Probeer de demo", body: "Open de app en bekijk hoe Synthr werkt", emailLabel: "E-mail", passwordLabel: "Wachtwoord", openApp: "Open app" },
+  pl: { title: "Wyprobuj demo", body: "Otworz aplikacje i zobacz, jak dziala Synthr", emailLabel: "E-mail", passwordLabel: "Haslo", openApp: "Otworz aplikacje" },
+  pt: { title: "Experimente a demo", body: "Abra a app e veja como o Synthr funciona", emailLabel: "E-mail", passwordLabel: "Senha", openApp: "Abrir app" },
+  ro: { title: "Incearca demo", body: "Deschide aplicatia si vezi cum functioneaza Synthr", emailLabel: "E-mail", passwordLabel: "Parola", openApp: "Deschide aplicatia" },
+  sv: { title: "Prova demon", body: "Oppna appen och se hur Synthr fungerar", emailLabel: "E-post", passwordLabel: "Losenord", openApp: "Oppna app" },
+  tr: { title: "Demoyu deneyin", body: "Uygulamayi acin ve Synthr'in nasil calistigini gorun", emailLabel: "E-posta", passwordLabel: "Sifre", openApp: "Uygulamayi ac" },
+};
+
+export default function MarketingHero({ m, locale = "en" }) {
   const adminBase = (process.env.NEXT_PUBLIC_ADMIN_APP_URL ?? "https://app.synthrstate.com").replace(/\/$/, "");
   const h = m?.hero ?? {};
   const dc = m?.demoCard ?? {};
-  const headline = h.headline ?? "A modern workspace for your real estate agency";
+  const accent = typeof h.accent === "string" ? h.accent : "";
+  const legacyHeadline = typeof h.title === "string" ? `${h.title}${accent}`.trim() : "";
+  const legacySubheadline = typeof h.lead === "string" ? h.lead : "";
+  const headline = h.headline ?? legacyHeadline ?? "A modern workspace for your real estate agency";
   const subheadline =
-    h.subheadline ??
+    h.subheadline ?? legacySubheadline ??
     "Manage contacts, leads, and listings in one unified system. Boost your team's productivity and close more deals with less effort.";
   const startFree = m?.nav?.startFree ?? "Start free";
-  const viewDemo = h.viewDemo ?? "View demo";
   const app17 = h.app17 ?? "The full app is available in 17 languages.";
-  const demoTitle = dc.title ?? "Try the demo";
-  const demoBody = dc.body ?? "Open the app and see how Synthr works";
-  const demoEmailLabel = dc.emailLabel ?? "Email";
-  const demoPasswordLabel = dc.passwordLabel ?? "Password";
+  const lang = String(locale || "en").toLowerCase().split("-")[0];
+  const fallbackDemo = DEMO_CARD_BY_LOCALE[lang] ?? DEMO_CARD_BY_LOCALE.en;
+  const demoTitle = dc.title ?? fallbackDemo.title;
+  const demoBody = dc.body ?? fallbackDemo.body;
+  const demoEmailLabel = dc.emailLabel ?? fallbackDemo.emailLabel;
+  const demoPasswordLabel = dc.passwordLabel ?? fallbackDemo.passwordLabel;
   const demoEmailValue = dc.emailValue ?? "demo@synthrstate.com";
   const demoPasswordValue = dc.passwordValue ?? "demosynthr1";
-  const demoOpenApp = dc.openApp ?? "Open app";
+  const demoOpenApp = dc.openApp ?? fallbackDemo.openApp;
 
   return (
     <section className="relative overflow-hidden" aria-labelledby="hero-heading">
@@ -46,14 +70,6 @@ export default function MarketingHero({ m }) {
                 className="inline-flex min-h-[2.75rem] items-center justify-center rounded-xl bg-neutral-900 px-6 text-sm font-semibold text-white shadow-sm transition hover:bg-neutral-800"
               >
                 {startFree}
-              </a>
-              <a
-                href={adminBase}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex min-h-[2.75rem] items-center justify-center rounded-xl border border-neutral-300 bg-white px-6 text-sm font-semibold text-neutral-900 shadow-sm transition hover:bg-neutral-50"
-              >
-                {viewDemo}
               </a>
             </div>
             <p className="mt-8 text-sm text-neutral-500">{app17}</p>
@@ -87,6 +103,7 @@ export default function MarketingHero({ m }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="mt-4 inline-flex min-h-10 w-full items-center justify-center rounded-xl bg-blue-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+                style={{ backgroundColor: "#2563eb", color: "#ffffff", border: "1px solid #2563eb", textDecoration: "none" }}
               >
                 {demoOpenApp}
               </a>

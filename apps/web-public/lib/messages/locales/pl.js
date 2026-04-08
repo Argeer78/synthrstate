@@ -12,7 +12,6 @@ export default {
     accent: " która pomaga zamykać więcej transakcji przy mniejszej administracji.",
     lead:
       "Kontakty, leady, zadania, oferty, publikacje i zapytania w jednym systemie. Zespół zsynchronizowany, oferty szybciej online, każde zapytanie śledzone do zamknięcia.",
-    viewDemo: "Zobacz demo",
     app17: "Pełna aplikacja jest dostępna w 17 językach.",
   },
   share: { title: "Udostępnij Synthr", x: "Udostępnij na X", facebook: "Facebook", linkedin: "LinkedIn", whatsapp: "WhatsApp" },

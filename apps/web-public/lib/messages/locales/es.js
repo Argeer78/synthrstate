@@ -12,7 +12,6 @@ export default {
     accent: " que le ayuda a cerrar más operaciones con menos trabajo administrativo.",
     lead:
       "Gestione contactos, leads, tareas, anuncios, publicaciones y consultas en un sistema. Su equipo alineado, anuncios en vivo más rápido y cada consulta seguida hasta el cierre.",
-    viewDemo: "Ver demo",
     app17: "La aplicación completa está disponible en 17 idiomas.",
   },
   share: { title: "Compartir Synthr", x: "Compartir en X", facebook: "Facebook", linkedin: "LinkedIn", whatsapp: "WhatsApp" },

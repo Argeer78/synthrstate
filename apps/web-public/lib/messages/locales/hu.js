@@ -12,7 +12,6 @@ export default {
     accent: ", amely kevesebb adminisztrációval segít több üzletet kötni.",
     lead:
       "Kapcsolatok, leadek, feladatok, hirdetések, közzététel és megkeresések egy rendszerben. A csapat összhangban marad, a hirdetések gyorsabban élnek, minden megkeresés nyomon követhető a lezárásig.",
-    viewDemo: "Demó megtekintése",
     app17: "A teljes alkalmazás 17 nyelven elérhető.",
   },
   share: { title: "Synthr megosztása", x: "Megosztás X-en", facebook: "Facebook", linkedin: "LinkedIn", whatsapp: "WhatsApp" },

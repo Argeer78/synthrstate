@@ -63,7 +63,7 @@ export default async function MarketingHomePage() {
     <>
       <MarketingHeader m={messages} locale={locale} />
       <main>
-        <MarketingHero m={messages} />
+        <MarketingHero m={messages} locale={locale} />
         <MarketingFeatures m={messages} />
         <MarketingProductPreview m={messages} />
         <MarketingHowItWorks m={messages} />
