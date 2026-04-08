@@ -1,6 +1,7 @@
 import Link from "next/link";
 import PublicListingCard from "../../components/PublicListingCard";
 import { ListingsBrowseClient } from "../../components/ListingsBrowseClient";
+import { getRequestLocale } from "../../lib/i18n.server";
 import { fetchPublicListings } from "../../lib/public-api";
 import { getMergedMessages } from "../../lib/messages";
 
@@ -27,7 +28,8 @@ export default async function ListingsIndexPage({ searchParams }) {
   const resolved = searchParams && typeof searchParams.then === "function" ? await searchParams : searchParams;
   const query = searchParamsToQuery(resolved ?? {});
 
-  const messages = getMergedMessages("en");
+  const locale = await getRequestLocale();
+  const messages = getMergedMessages(locale);
   const L = messages.listings;
 
   let data;

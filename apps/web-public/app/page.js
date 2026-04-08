@@ -7,6 +7,7 @@ import MarketingHowItWorks from "../components/marketing/MarketingHowItWorks";
 import MarketingPricing from "../components/marketing/MarketingPricing";
 import MarketingProductPreview from "../components/marketing/MarketingProductPreview";
 import MarketingSocialProof from "../components/marketing/MarketingSocialProof";
+import { getRequestLocale } from "../lib/i18n.server";
 
 async function loadMergedMessages(locale) {
   try {
@@ -56,7 +57,7 @@ export const metadata = {
 };
 
 export default async function MarketingHomePage() {
-  const locale = "en";
+  const locale = await getRequestLocale();
   const messages = buildSafeMarketingMessages(await loadMergedMessages(locale));
   return (
     <>

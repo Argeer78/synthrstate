@@ -3,6 +3,7 @@ import MarketingHeroMockup from "./MarketingHeroMockup";
 export default function MarketingHero({ m }) {
   const adminBase = (process.env.NEXT_PUBLIC_ADMIN_APP_URL ?? "https://app.synthrstate.com").replace(/\/$/, "");
   const h = m?.hero ?? {};
+  const dc = m?.demoCard ?? {};
   const headline = h.headline ?? "A modern workspace for your real estate agency";
   const subheadline =
     h.subheadline ??
@@ -10,6 +11,13 @@ export default function MarketingHero({ m }) {
   const startFree = m?.nav?.startFree ?? "Start free";
   const viewDemo = h.viewDemo ?? "View demo";
   const app17 = h.app17 ?? "The full app is available in 17 languages.";
+  const demoTitle = dc.title ?? "Try the demo";
+  const demoBody = dc.body ?? "Open the app and see how Synthr works";
+  const demoEmailLabel = dc.emailLabel ?? "Email";
+  const demoPasswordLabel = dc.passwordLabel ?? "Password";
+  const demoEmailValue = dc.emailValue ?? "demo@synthrstate.com";
+  const demoPasswordValue = dc.passwordValue ?? "demosynthr1";
+  const demoOpenApp = dc.openApp ?? "Open app";
 
   return (
     <section className="relative overflow-hidden" aria-labelledby="hero-heading">
@@ -49,6 +57,40 @@ export default function MarketingHero({ m }) {
               </a>
             </div>
             <p className="mt-8 text-sm text-neutral-500">{app17}</p>
+
+            <aside
+              className="mx-auto mt-6 w-full max-w-xl rounded-2xl border border-neutral-200/90 bg-white/95 p-4 text-left shadow-[0_18px_40px_-24px_rgba(15,23,42,0.45)] backdrop-blur sm:p-5 lg:mx-0"
+              aria-label={demoTitle}
+            >
+              <h2 className="text-sm font-semibold tracking-tight text-neutral-900">{demoTitle}</h2>
+              <p className="mt-1 text-sm text-neutral-600">{demoBody}</p>
+
+              <dl className="mt-4 space-y-3">
+                <div>
+                  <dt className="text-[0.72rem] font-semibold uppercase tracking-[0.08em] text-neutral-500">{demoEmailLabel}</dt>
+                  <dd className="mt-1 rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2 font-mono text-[0.84rem] text-neutral-900">
+                    {demoEmailValue}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-[0.72rem] font-semibold uppercase tracking-[0.08em] text-neutral-500">
+                    {demoPasswordLabel}
+                  </dt>
+                  <dd className="mt-1 rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2 font-mono text-[0.84rem] text-neutral-900">
+                    {demoPasswordValue}
+                  </dd>
+                </div>
+              </dl>
+
+              <a
+                href={adminBase}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-4 inline-flex min-h-10 w-full items-center justify-center rounded-xl bg-blue-600 px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2"
+              >
+                {demoOpenApp}
+              </a>
+            </aside>
           </div>
 
           <div className="relative flex justify-center lg:justify-end">
