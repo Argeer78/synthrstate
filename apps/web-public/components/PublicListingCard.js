@@ -31,7 +31,7 @@ export default function PublicListingCard({ listing, m }) {
   const area = property?.area;
   const location =
     [city, area].filter(Boolean).join(" · ") || property?.address || card.dash;
-  const coverUrl = cover?.url || getDemoListingFallbackImage(slug);
+  const coverUrl = cover?.url || getDemoListingFallbackImage(slug, listing?.id || title, listing);
 
   const bedLabel =
     bedrooms != null

@@ -65,6 +65,45 @@ const DEMO_FALLBACK_IMAGE_BY_SLUG = {
   "balcony-bike-storage-rented": "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=1600&q=80",
 };
 
+const DEMO_EXTRA_SAMPLE_IMAGES = [
+  "https://images.unsplash.com/photo-1416331108676-a22ccb276e35?auto=format&fit=crop&w=1600&q=80",
+  "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=1600&q=80",
+  "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?auto=format&fit=crop&w=1600&q=80",
+  "https://images.unsplash.com/photo-1600047509807-ba8f99d2cdde?auto=format&fit=crop&w=1600&q=80",
+  "https://images.unsplash.com/photo-1572120360610-d971b9d7767c?auto=format&fit=crop&w=1600&q=80",
+  "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=1600&q=80",
+  "https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?auto=format&fit=crop&w=1600&q=80",
+  "https://images.unsplash.com/photo-1613977257363-707ba9348227?auto=format&fit=crop&w=1600&q=80",
+  "https://images.unsplash.com/photo-1515263487990-61b07816b324?auto=format&fit=crop&w=1600&q=80",
+  "https://images.unsplash.com/photo-1513584684374-8bab748fbf90?auto=format&fit=crop&w=1600&q=80",
+];
+
+const DEMO_FALLBACK_IMAGE_POOL = [...Object.values(DEMO_FALLBACK_IMAGE_BY_SLUG), ...DEMO_EXTRA_SAMPLE_IMAGES];
+
+/**
+ * Pick a stable demo image for any listing key so cards stay visually consistent.
+ * @param {string | number | null | undefined} key
+ * @returns {string | null}
+ */
+function pickDemoFallbackImageByKey(key) {
+  if (DEMO_FALLBACK_IMAGE_POOL.length === 0) return null;
+  const source = String(key ?? "demo-listing");
+  let hash = 0;
+  for (let i = 0; i < source.length; i += 1) {
+    hash = (hash * 31 + source.charCodeAt(i)) >>> 0;
+  }
+  return DEMO_FALLBACK_IMAGE_POOL[hash % DEMO_FALLBACK_IMAGE_POOL.length] || null;
+}
+
+/**
+ * @param {Record<string, any> | null | undefined} listing
+ * @returns {boolean}
+ */
+function isDemoListing(listing) {
+  const agencySlug = String(listing?.agencySlug ?? "").trim().toLowerCase();
+  return agencySlug === "demo-agency";
+}
+
 /** Default API origin — keep in sync with `next.config.mjs` env default. */
 const DEFAULT_PUBLIC_API_URL = "https://api.synthrstate.com";
 
@@ -112,7 +151,15 @@ export async function fetchPublicListings(query = {}) {
       `Listings request failed (${res.status} ${res.statusText})${text ? `: ${text.slice(0, 200)}` : ""}`,
     );
   }
-  return res.json();
+  const data = await res.json();
+  if (!Array.isArray(data?.items)) return data;
+  return {
+    ...data,
+    items: data.items.map((item) => ({
+      ...item,
+      agencySlug: item?.agencySlug || agencySlug,
+    })),
+  };
 }
 
 /**
@@ -133,7 +180,9 @@ export async function fetchPublicListingDetail(slug) {
       `Listing request failed (${res.status} ${res.statusText})${text ? `: ${text.slice(0, 200)}` : ""}`,
     );
   }
-  return res.json();
+  const data = await res.json();
+  if (!data || typeof data !== "object") return data;
+  return { ...data, agencySlug: data?.agencySlug || agencySlug };
 }
 
 /**
@@ -204,11 +253,17 @@ export function formatPropertyType(code) {
 
 /**
  * @param {string | null | undefined} slug
+ * @param {string | number | null | undefined} [fallbackKey]
+ * @param {Record<string, any> | null | undefined} [listing]
  * @returns {string | null}
  */
-export function getDemoListingFallbackImage(slug) {
-  if (!slug) return null;
-  return DEMO_FALLBACK_IMAGE_BY_SLUG[String(slug)] || null;
+export function getDemoListingFallbackImage(slug, fallbackKey, listing) {
+  const slugKey = slug ? String(slug) : "";
+  if (slugKey && DEMO_FALLBACK_IMAGE_BY_SLUG[slugKey]) {
+    return DEMO_FALLBACK_IMAGE_BY_SLUG[slugKey];
+  }
+  if (!isDemoListing(listing)) return null;
+  return pickDemoFallbackImageByKey(fallbackKey ?? slugKey);
 }
 
 /**
@@ -230,7 +285,7 @@ export function collectListingImageUrls(listing) {
     push(g?.url);
   }
   if (out.length === 0) {
-    push(getDemoListingFallbackImage(listing?.slug));
+    push(getDemoListingFallbackImage(listing?.slug, listing?.id ?? listing?.title, listing));
   }
   return out;
 }

@@ -1,7 +1,17 @@
 import MarketingHeroMockup from "./MarketingHeroMockup";
 
+const DEFAULT_HEADLINE = "A modern workspace for your real estate agency";
+const DEFAULT_SUBHEADLINE =
+  "Manage contacts, leads, and listings in one unified system. Boost your team's productivity and close more deals with less effort.";
+const EN_DEMO_CARD = {
+  title: "Try the demo",
+  body: "Open the app and see how Synthr works",
+  emailLabel: "Email",
+  passwordLabel: "Password",
+  openApp: "Open app",
+};
 const DEMO_CARD_BY_LOCALE = {
-  en: { title: "Try the demo", body: "Open the app and see how Synthr works", emailLabel: "Email", passwordLabel: "Password", openApp: "Open app" },
+  en: EN_DEMO_CARD,
   cs: { title: "Vyzkousejte demo", body: "Otevrete aplikaci a podivejte se, jak Synthr funguje", emailLabel: "E-mail", passwordLabel: "Heslo", openApp: "Otevrit aplikaci" },
   da: { title: "Prov demoen", body: "Aben appen og se, hvordan Synthr fungerer", emailLabel: "E-mail", passwordLabel: "Adgangskode", openApp: "Aben app" },
   de: { title: "Demo testen", body: "Offnen Sie die App und sehen Sie, wie Synthr funktioniert", emailLabel: "E-Mail", passwordLabel: "Passwort", openApp: "App offnen" },
@@ -24,24 +34,31 @@ export default function MarketingHero({ m, locale = "en" }) {
   const adminBase = (process.env.NEXT_PUBLIC_ADMIN_APP_URL ?? "https://app.synthrstate.com").replace(/\/$/, "");
   const h = m?.hero ?? {};
   const dc = m?.demoCard ?? {};
+  const lang = String(locale || "en").toLowerCase().split("-")[0];
+  const fallbackDemo = DEMO_CARD_BY_LOCALE[lang] ?? DEMO_CARD_BY_LOCALE.en;
   const accent = typeof h.accent === "string" ? h.accent : "";
   const legacyHeadline = typeof h.title === "string" ? `${h.title}${accent}`.trim() : "";
   const legacySubheadline = typeof h.lead === "string" ? h.lead : "";
-  const headline = h.headline ?? legacyHeadline ?? "A modern workspace for your real estate agency";
-  const subheadline =
-    h.subheadline ?? legacySubheadline ??
-    "Manage contacts, leads, and listings in one unified system. Boost your team's productivity and close more deals with less effort.";
+  const hasLocalizedLegacy = Boolean(legacyHeadline);
+  const isHeadlineDefaultEnglish = h.headline === DEFAULT_HEADLINE;
+  const isSubheadlineDefaultEnglish = h.subheadline === DEFAULT_SUBHEADLINE;
+  const headline = hasLocalizedLegacy && (h.headline == null || isHeadlineDefaultEnglish) ? legacyHeadline : (h.headline ?? DEFAULT_HEADLINE);
+  const subheadline = legacySubheadline && (h.subheadline == null || isSubheadlineDefaultEnglish) ? legacySubheadline : (h.subheadline ?? DEFAULT_SUBHEADLINE);
   const startFree = m?.nav?.startFree ?? "Start free";
   const app17 = h.app17 ?? "The full app is available in 17 languages.";
-  const lang = String(locale || "en").toLowerCase().split("-")[0];
-  const fallbackDemo = DEMO_CARD_BY_LOCALE[lang] ?? DEMO_CARD_BY_LOCALE.en;
-  const demoTitle = dc.title ?? fallbackDemo.title;
-  const demoBody = dc.body ?? fallbackDemo.body;
-  const demoEmailLabel = dc.emailLabel ?? fallbackDemo.emailLabel;
-  const demoPasswordLabel = dc.passwordLabel ?? fallbackDemo.passwordLabel;
+  const pickDemoText = (value, englishValue, localizedFallback) => {
+    if (typeof value === "string" && value.trim() && (lang === "en" || value !== englishValue)) {
+      return value;
+    }
+    return localizedFallback;
+  };
+  const demoTitle = pickDemoText(dc.title, EN_DEMO_CARD.title, fallbackDemo.title);
+  const demoBody = pickDemoText(dc.body, EN_DEMO_CARD.body, fallbackDemo.body);
+  const demoEmailLabel = pickDemoText(dc.emailLabel, EN_DEMO_CARD.emailLabel, fallbackDemo.emailLabel);
+  const demoPasswordLabel = pickDemoText(dc.passwordLabel, EN_DEMO_CARD.passwordLabel, fallbackDemo.passwordLabel);
   const demoEmailValue = dc.emailValue ?? "demo@synthrstate.com";
   const demoPasswordValue = dc.passwordValue ?? "demosynthr1";
-  const demoOpenApp = dc.openApp ?? fallbackDemo.openApp;
+  const demoOpenApp = pickDemoText(dc.openApp, EN_DEMO_CARD.openApp, fallbackDemo.openApp);
 
   return (
     <section className="relative overflow-hidden" aria-labelledby="hero-heading">

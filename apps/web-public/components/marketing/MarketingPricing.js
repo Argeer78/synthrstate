@@ -20,73 +20,79 @@ function CheckIcon({ className }) {
   );
 }
 
-const tiers = [
-  {
-    id: "starter",
-    name: "Starter",
-    price: "€49",
-    period: "/month",
-    description: "For small agencies that need core CRM, listings, and distribution in one clean workflow.",
-    cta: "Start free",
-    ctaVariant: "secondary",
-    featured: false,
-    action: "checkout",
-    features: [
-      "Up to 3 team seats",
-      "Limited active listings",
-      "Basic CRM — contacts & pipeline",
-      "Property & listing records",
-      "Public website + XML feed",
-      "Email support",
-    ],
-  },
-  {
-    id: "growth",
-    name: "Growth",
-    price: "€129",
-    period: "/month",
-    description: "For growing agencies that need stronger automation, AI support, and reliable publishing.",
-    cta: "Start free",
-    ctaVariant: "primary",
-    featured: true,
-    action: "checkout",
-    features: [
-      "Unlimited listings",
-      "Full CRM — contacts, leads, tasks & notes",
-      "AI listing descriptions & lead summaries",
-      "Gmail integration (connect and sync)",
-      "Multi-channel publishing & queue-based sync",
-      "Publication logs & retry-safe exports",
-      "Priority support",
-      "Everything in Starter",
-    ],
-  },
-  {
-    id: "custom",
-    name: "Custom / Enterprise",
-    price: "Custom",
-    period: "",
-    description: "For multi-office agencies that need custom workflows, integrations, and rollout support.",
-    cta: "Talk to sales",
-    ctaVariant: "secondary",
-    featured: false,
-    action: "sales",
-    features: [
-      "Advanced team governance",
-      "Workflow automation & guardrails",
-      "API access for your stack",
-      "Custom integrations & channel adapters",
-      "Dedicated onboarding & success",
-      "SLA options",
-      "Tailored onboarding and migration support",
-    ],
-  },
-];
-
-export default function MarketingPricing() {
+export default function MarketingPricing({ m }) {
   const adminBase = (process.env.NEXT_PUBLIC_ADMIN_APP_URL ?? "https://app.synthrstate.com").replace(/\/$/, "");
   const supportEmail = process.env.NEXT_PUBLIC_BILLING_SUPPORT_EMAIL ?? "support@synthrstate.com";
-  const safeTiers = Array.isArray(tiers) ? tiers.filter(Boolean) : [];
+  const p = m?.pricing ?? {};
+  const tierSource = p?.tiers ?? {};
+  const safeTiers = [
+    {
+      id: "starter",
+      name: tierSource?.starter?.name ?? "Starter",
+      price: tierSource?.starter?.price ?? "€49",
+      period: tierSource?.starter?.period ?? "/month",
+      description: tierSource?.starter?.description ?? "For small agencies that need core CRM, listings, and distribution in one clean workflow.",
+      cta: tierSource?.starter?.cta ?? "Start free",
+      ctaVariant: "secondary",
+      featured: false,
+      action: "checkout",
+      features: Array.isArray(tierSource?.starter?.features)
+        ? tierSource.starter.features
+        : [
+            "Up to 3 team seats",
+            "Limited active listings",
+            "Basic CRM — contacts & pipeline",
+            "Property & listing records",
+            "Public website + XML feed",
+            "Email support",
+          ],
+    },
+    {
+      id: "growth",
+      name: tierSource?.growth?.name ?? "Growth",
+      price: tierSource?.growth?.price ?? "€129",
+      period: tierSource?.growth?.period ?? "/month",
+      description: tierSource?.growth?.description ?? "For growing agencies that need stronger automation, AI support, and reliable publishing.",
+      cta: tierSource?.growth?.cta ?? "Start free",
+      ctaVariant: "primary",
+      featured: true,
+      action: "checkout",
+      features: Array.isArray(tierSource?.growth?.features)
+        ? tierSource.growth.features
+        : [
+            "Unlimited listings",
+            "Full CRM — contacts, leads, tasks & notes",
+            "AI listing descriptions & lead summaries",
+            "Gmail integration (connect and sync)",
+            "Multi-channel publishing & queue-based sync",
+            "Publication logs & retry-safe exports",
+            "Priority support",
+            "Everything in Starter",
+          ],
+    },
+    {
+      id: "custom",
+      name: tierSource?.custom?.name ?? "Custom / Enterprise",
+      price: tierSource?.custom?.price ?? "Custom",
+      period: tierSource?.custom?.period ?? "",
+      description: tierSource?.custom?.description ?? "For multi-office agencies that need custom workflows, integrations, and rollout support.",
+      cta: tierSource?.custom?.cta ?? "Talk to sales",
+      ctaVariant: "secondary",
+      featured: false,
+      action: "sales",
+      features: Array.isArray(tierSource?.custom?.features)
+        ? tierSource.custom.features
+        : [
+            "Advanced team governance",
+            "Workflow automation & guardrails",
+            "API access for your stack",
+            "Custom integrations & channel adapters",
+            "Dedicated onboarding & success",
+            "SLA options",
+            "Tailored onboarding and migration support",
+          ],
+    },
+  ];
 
   return (
     <section
@@ -100,24 +106,24 @@ export default function MarketingPricing() {
             id="pricing-heading"
             className="text-3xl font-semibold tracking-tight text-neutral-950 sm:text-4xl"
           >
-            Pricing built for agency growth
+            {p.heading ?? "Pricing built for agency growth"}
           </h2>
           <p className="mt-4 text-base leading-relaxed text-neutral-600 sm:text-lg">
-            Start simple, scale when your team grows. Monthly pricing in EUR.
+            {p.subheading ?? "Start simple, scale when your team grows. Monthly pricing in EUR."}
           </p>
         </div>
 
         {/* Toggle-ready: monthly live; annual reserved for later */}
-        <div className="mt-10 flex justify-center" role="group" aria-label="Billing period">
+        <div className="mt-10 flex justify-center" role="group" aria-label={p.billingAria ?? "Billing period"}>
           <div className="inline-flex items-center gap-1 rounded-full border border-neutral-200/90 bg-white p-1 shadow-sm">
             <span className="rounded-full bg-neutral-950 px-4 py-2 text-sm font-medium text-white">
-              Monthly
+              {p.monthly ?? "Monthly"}
             </span>
             <span
               className="rounded-full px-4 py-2 text-sm font-medium text-neutral-400"
-              title="Annual billing coming soon"
+              title={p.annualTitle ?? "Annual billing coming soon"}
             >
-              Annual <span className="text-xs font-normal text-neutral-400">(soon)</span>
+              {p.annual ?? "Annual"} <span className="text-xs font-normal text-neutral-400">{p.annualSoon ?? "(soon)"}</span>
             </span>
           </div>
         </div>
@@ -135,7 +141,7 @@ export default function MarketingPricing() {
             >
               {tier.featured ? (
                 <p className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-blue-600 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-white shadow-sm">
-                  Most popular
+                  {p.mostPopular ?? "Most popular"}
                 </p>
               ) : null}
 
@@ -185,8 +191,8 @@ export default function MarketingPricing() {
         </div>
 
         <p className="mx-auto mt-10 max-w-xl text-center text-xs leading-relaxed text-neutral-500">
-          Need migration support or custom integration work? Choose Custom / Enterprise and we will scope it with
-          your team.
+          {p.footerNote ??
+            "Need migration support or custom integration work? Choose Custom / Enterprise and we will scope it with your team."}
         </p>
       </div>
     </section>
