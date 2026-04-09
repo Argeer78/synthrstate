@@ -11,6 +11,55 @@ import {
 
 export const dynamic = "force-dynamic";
 
+function getSiteUrl() {
+  const raw = process.env.NEXT_PUBLIC_SITE_URL || "https://synthrstate.com";
+  return raw.replace(/\/+$/, "");
+}
+
+export async function generateMetadata({ params }) {
+  const { slug } = await params;
+  const listing = await fetchPublicListingDetail(slug).catch(() => null);
+  const site = getSiteUrl();
+  const url = `${site}/listings/${encodeURIComponent(slug)}`;
+
+  if (!listing) {
+    return {
+      title: "Listing",
+      description: "Property listing on Synthr.",
+      alternates: { canonical: url },
+    };
+  }
+
+  const title = listing.title || "Listing";
+  const priceText = formatPrice(listing.price, listing.currency);
+  const typeText = formatListingType(listing.listingType);
+  const city = listing.property?.city ? String(listing.property.city) : "";
+  const area = listing.property?.area ? String(listing.property.area) : "";
+  const location = [city, area].filter(Boolean).join(" · ");
+  const short = typeof listing.shortDescription === "string" && listing.shortDescription.trim() ? listing.shortDescription.trim() : "";
+  const description = short || [typeText, priceText, location].filter(Boolean).join(" • ") || "Property listing on Synthr.";
+  const image = collectListingImageUrls(listing)[0] || undefined;
+
+  return {
+    title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "article",
+      url,
+      title,
+      description,
+      images: image ? [{ url: image }] : undefined,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: image ? [image] : undefined,
+    },
+  };
+}
+
 function SpecRow({ label, value }) {
   if (value == null || value === "") return null;
   return (
